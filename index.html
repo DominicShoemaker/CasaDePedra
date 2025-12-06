@@ -1,12 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Luxary rental in Copacabana - Rio de Janeiro</title>
+
+<style>
+/* -------------------- GLOBAL STYLES -------------------- */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    color: #333;
+}
+header {
+    background: url('header-photo.jpg') center/cover no-repeat;
+    color: white;
+    text-align: center;
+    padding: 120px 20px;
+    background-color: rgba(0,0,0,0.5);
+    background-blend-mode: darken;
+}
+header h1 { font-size: 42px; margin: 0; }
+header p { font-size: 20px; margin-top: 15px; }
+
+nav {
+    background-color: #003f64;
+    padding: 10px 0;
+    text-align: center;
+}
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 20px;
+    font-weight: bold;
+}
+nav a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 30px 20px;
+}
+.section {
+    margin-bottom: 60px;
+}
+
+/* -------------------- GALLERY -------------------- */
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+.gallery img {
+    width: 320px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* -------------------- BOOKING SECTION -------------------- */
+#booking-widget {
+    border: 2px dashed #bbb;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.book-btn {
+    display: inline-block;
+    background: #0077cc;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 18px;
+    margin-top: 10px;
+}
+.book-btn:hover {
+    background: #005e9e;
+}
+
+/* -------------------- FOOTER -------------------- */
+footer {
+    background: #003f64;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+</style>
+
+<script>
+// Smooth Scroll for Navigation
+function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+}
+</script>
+
 </head>
 <body>
-    Casa de pedra - Luxary rental in Copacabana
+
+<!---------------------- HEADER ---------------------->
+<header>
+    <h1>Luxary rental in Copacabana</h1>
+    <p>Historic 4BR/4.5BA Villa — Steps away from the beach • Hot Tub • Workspace • Sleeps 10</p>
+</header>
+
+<!---------------------- NAVIGATION ---------------------->
+<nav>
+    <a href="javascript:scrollToSection('gallery')">Gallery</a>
+    <a href="javascript:scrollToSection('details')">Details</a>
+    <a href="javascript:scrollToSection('booking')">Book Now</a>
+    <a href="javascript:scrollToSection('contact')">Contact</a>
+</nav>
+
+<div class="container">
+
+<!---------------------- GALLERY SECTION ---------------------->
+<section id="gallery" class="section">
+    <h2>Photo Gallery</h2>
+    <div class="gallery">
+        <img src="images/house.jpg" alt="House">
+        <img src="images/living-room.jpg" alt="Living Room">
+        <img src="images/master-bedroom-1.jpg" alt="Master Bedroom">
+        <img src="images/kitchen.jpg" alt="Kitchen">
+        <img src="images/backyard.jpg" alt="Backyard">
+        <img src="images/jacuzzi.jpg" alt="Hot Tub">
+    </div>
+</section>
+
+<!---------------------- DETAILS ---------------------->
+<section id="details" class="section">
+    <h2>Property Details & Amenities</h2>
+    <ul>
+        <li>4 Bedrooms • 5 Beds • 4.5 Bathrooms</li>
+        <li>Accommodates up to 10 guests</li>
+        <li>Hot Tub • BBQ Area • Large Living Room</li>
+        <li>High-speed Wifi and dedicated workstation</li>
+        <li>Beach access — 8 minutes walking</li>
+        <li>Smart TVs, full kitchen, A/C</li>
+    </ul>
+</section>
+
+<!---------------------- BOOKING / SCHEDULER ---------------------->
+<section id="booking" class="section">
+    <h2>Check Availability & Book</h2>
+
+    <div id="booking-widget">
+        <p><strong>Booking Calendar Placeholder</strong></p>
+        <p>Insert your booking widget iframe or script here.</p>
+
+        <!-- Example for Bookingmood -->
+        <!-- <iframe src="YOUR_BOOKINGMOOD_EMBED_URL" width="100%" height="550" frameborder="0"></iframe> -->
+
+        <!-- Example for Lodgify -->
+        <!-- <script src="https://widgets.lodgify.com/YOUR_WIDGET.js"></script> -->
+    </div>
+
+    <a class="book-btn" href="mailto:your-email@example.com">Contact to Book</a>
+</section>
+
+<!---------------------- CONTACT ---------------------->
+<section id="contact" class="section">
+    <h2>Contact</h2>
+    <p>Email: <strong>your-email@example.com</strong></p>
+    <p>Phone/WhatsApp: <strong>+1 (669) 268-7875</strong></p>
+</section>
+
+</div>
+
+<!---------------------- FOOTER ---------------------->
+<footer>
+    <p>© 2025 Casarão Copacabana — All Rights Reserved</p>
+</footer>
+
 </body>
 </html>
