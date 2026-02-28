@@ -88,6 +88,56 @@
             margin-bottom: 20px;
         }
 
+        .booking-form {
+            width: 100%;
+            margin: 20px auto 0;
+            text-align: left;
+        }
+
+        .booking-form .input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .booking-form .form-group {
+            flex: 1 1 calc(33.333% - 15px);
+            min-width: 200px;
+        }
+
+        .booking-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .booking-form input[type="text"],
+        .booking-form input[type="email"],
+        .booking-form input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .booking-form .checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            font-weight: normal;
+            font-size: 14px;
+            gap: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .booking-form .checkbox-label input[type="checkbox"] {
+            margin-top: 2px;
+            transform: scale(1.2);
+        }
+
         .book-btn {
             display: inline-block;
             background: #0077cc;
@@ -109,6 +159,87 @@
             color: white;
             text-align: center;
             padding: 20px;
+
+        }
+
+        #booking-summary {
+            display: none;
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .summary-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .summary-left {
+            text-align: left;
+        }
+
+        .summary-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .summary-left p,
+        .summary-right p {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+
+        #booking-error {
+            color: #d93025;
+            margin-top: 15px;
+            display: none;
+            font-weight: bold;
+        }
+
+        #submit-booking:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        button.book-btn {
+            font-family: Arial, sans-serif;
+            border: none;
+            cursor: pointer;
+        }
+
+        .action-bar {
+            margin-top: 20px;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-bar button {
+            background: #0077cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .action-bar button:hover {
+            background: #005e9e;
+        }
+
+        .action-bar button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .right-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
     </style>
 
@@ -185,9 +316,39 @@
             <div id="booking-widget">
                 <str-date-range-picker api-url="https://shorttermreservation.azurewebsites.net/api/Reservation"
                     price-rules-url="date-range-picker/price_rules.json"></str-date-range-picker>
-            </div>
 
-            <a class="book-btn" href="mailto:casaemrio@gmail.com">Contact to Book</a>
+                <div class="booking-form">
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="guest-name">Full legal name</label>
+                            <input type="text" id="guest-name" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="guest-email">Email address</label>
+                            <input type="email" id="guest-email" placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="guest-phone">Phone number</label>
+                            <input type="text" id="guest-phone" placeholder="+1 234 567 8900">
+                        </div>
+                    </div>
+
+                    <label class="checkbox-label" for="agree-rules">
+                        <input type="checkbox" id="agree-rules">
+                        <span>I have read and agree to the House Rules and the Privacy Policy. Maximum number of guests
+                            is 10.</span>
+                    </label>
+
+                    <div class="action-bar" id="actionBar">
+                        <span id="priceInfo" class="price-display"></span>
+                        <div class="right-actions">
+                            <span id="statusText"></span>
+                            <button id="submit-booking" disabled>Book</button>
+                        </div>
+                    </div>
+                    <div id="booking-error"></div>
+                </div>
+            </div>
         </section>
 
         <!---------------------- CONTACT ---------------------->
@@ -204,6 +365,148 @@
         <p>© 2025 Casarão Copacabana — All Rights Reserved</p>
     </footer>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const picker = document.querySelector('str-date-range-picker');
+            const applyBtn = document.getElementById('applyBtn');
+            const priceInfo = document.getElementById('priceInfo');
+            const statusText = document.getElementById('statusText');
+
+            const nameInput = document.getElementById('guest-name');
+            const emailInput = document.getElementById('guest-email');
+            const phoneInput = document.getElementById('guest-phone');
+            const agreeInput = document.getElementById('agree-rules');
+
+            const submitBtn = document.getElementById('submit-booking');
+            const errorDiv = document.getElementById('booking-error');
+
+            let data = null;
+
+            function formatDate(date) {
+                if (!date) return '';
+                const yyyy = date.getFullYear();
+                const mm = String(date.getMonth() + 1).padStart(2, '0');
+                const dd = String(date.getDate()).padStart(2, '0');
+                return `${yyyy}-${mm}-${dd}`;
+            }
+
+            function validateForm() {
+                let isValid = true;
+                errorDiv.style.display = 'none';
+                errorDiv.textContent = '';
+
+                if (!data || !data.isComplete) {
+                    isValid = false;
+                }
+                if (!nameInput.value.trim()) isValid = false;
+                if (!emailInput.value.trim()) isValid = false;
+                if (!phoneInput.value.trim()) isValid = false;
+                if (!agreeInput.checked) isValid = false;
+
+                submitBtn.disabled = !isValid;
+            }
+
+            picker.addEventListener('selection-changed', (e) => {
+                data = e.detail;
+                if (data && data.isComplete) {
+                    //                    summary.style.display = 'block';
+                    //                    summaryFrom.textContent = formatDate(data.startDate);
+                    //                    summaryTo.textContent = formatDate(data.endDate);
+                    if (data.fullPrice > data.discountedPrice) {
+                        priceInfo.innerHTML = `${data.nights} nights: <span style="text-decoration: line-through; color: #717171;">$${data.fullPrice}</span> $${data.discountedPrice}`;
+                    } else {
+                        priceInfo.textContent = `${data.nights} nights: $${data.fullPrice}`;
+                    }
+                    statusText.textContent = `${data.startDate.toLocaleDateString()} - ${data.endDate.toLocaleDateString()}`;
+                } else {
+                    statusText.textContent = data.startDate ? 'Select end date' : 'Select from 3 to 28 nights';
+                }
+                validateForm();
+            });
+
+            [nameInput, emailInput, phoneInput, agreeInput].forEach(el => {
+                el.addEventListener('input', validateForm);
+                el.addEventListener('change', validateForm);
+            });
+
+            submitBtn.addEventListener('click', async () => {
+                submitBtn.disabled = true;
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Processing...';
+                errorDiv.style.display = 'none';
+
+                const payload = {
+                    fullName: nameInput.value.trim(),
+                    Email: emailInput.value.trim(),
+                    Phone: phoneInput.value.trim(),
+                    From: formatDate(data.startDate),
+                    To: formatDate(data.endDate)
+                };
+
+                try {
+                    // 1. Reservation API
+                    const resResponse = await fetch('https://shorttermreservation.azurewebsites.net/api/Reservation', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!resResponse.ok) {
+                        throw new Error('Reservation failed with status ' + resResponse.status);
+                    }
+
+                    let reservationID;
+                    const resContentType = resResponse.headers.get("content-type");
+                    if (resContentType && resContentType.indexOf("application/json") !== -1) {
+                        const data = await resResponse.json();
+                        reservationID = data.reservationID || data.id || data;
+                    } else {
+                        reservationID = await resResponse.text();
+                    }
+                    if (typeof reservationID === 'string') {
+                        reservationID = reservationID.replace(/^"|"$/g, '');
+                    }
+
+                    // 2. Payment API
+                    const payPayload = {
+                        reservationID: reservationID,
+                        amount: data.discountedPrice
+                    };
+
+                    const payResponse = await fetch('https://shorttermreservation.azurewebsites.net/api/Payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payPayload)
+                    });
+
+                    if (!payResponse.ok) {
+                        throw new Error('Payment failed with status ' + payResponse.status);
+                    }
+
+                    let paymentUrl;
+                    const payContentType = payResponse.headers.get("content-type");
+                    if (payContentType && payContentType.indexOf("application/json") !== -1) {
+                        const data = await payResponse.json();
+                        paymentUrl = data.url || data;
+                    } else {
+                        paymentUrl = await payResponse.text();
+                    }
+                    if (typeof paymentUrl === 'string') {
+                        paymentUrl = paymentUrl.replace(/^"|"$/g, '');
+                    }
+
+                    window.location.href = paymentUrl;
+
+                } catch (err) {
+                    console.error('Booking error:', err);
+                    errorDiv.textContent = 'There was an error on the website, please try again later or email the request with desirable dates.';
+                    errorDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
