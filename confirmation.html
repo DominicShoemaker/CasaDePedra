@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reservation Confirmation - Casarão Copacabana</title>
+    <style>
+        /* -------------------- GLOBAL STYLES -------------------- */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            background-blend-mode: darken;
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+            padding: 10px;
+        }
+
+        header p {
+            font-size: 20px;
+            margin: 0;
+            padding: 10px;
+        }
+
+        nav {
+            background-color: #003f64;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 50px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #003f64;
+            font-size: 32px;
+        }
+
+        .details-box {
+            background: #fdfdfd;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .details-box p {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .details-box p:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .action-btn {
+            background: #0077cc;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .action-btn:hover {
+            background: #005e9e;
+        }
+
+        .action-btn.secondary {
+            background: #666;
+        }
+
+        .action-btn.secondary:hover {
+            background: #444;
+        }
+
+        .error-message {
+            color: #d93025;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background: #003f64;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+
+        /* -------------------- PRINT STYLES -------------------- */
+        @media print {
+
+            header,
+            nav,
+            footer,
+            .action-btn {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .container {
+                box-shadow: none;
+                margin-top: 0;
+                padding-top: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!---------------------- HEADER ---------------------->
+    <header>
+        <h1>Luxary rental in Copacabana • Rio • Brazil</h1>
+        <p>Historic 4BR/4.5BA Villa — Steps away from the beach • Hot Tub • Workspace • Sleeps 10</p>
+    </header>
+
+    <!---------------------- NAVIGATION ---------------------->
+    <nav>
+        <a href="index.html">Back to Home Screen</a>
+    </nav>
+
+    <div class="container" id="content-container">
+        <!-- Content will be injected by JavaScript -->
+        <p>Loading your reservation details...</p>
+    </div>
+
+    <!---------------------- FOOTER ---------------------->
+    <footer>
+        <p>© 2025 Casarão Copacabana — All Rights Reserved</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById('content-container');
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Check status: 'success' or 'failed' (default to failed if missing parameters for security)
+            const status = urlParams.get('status');
+
+            if (status === 'success') {
+                const reservationID = urlParams.get('reservationID') || 'N/A';
+                const fromDate = urlParams.get('from') || 'N/A';
+                const toDate = urlParams.get('to') || 'N/A';
+                const amount = urlParams.get('amount') || '0.00';
+
+                // Calculate nights if both dates are valid
+                let nightsCount = 'N/A';
+                if (fromDate !== 'N/A' && toDate !== 'N/A') {
+                    const start = new Date(fromDate);
+                    const end = new Date(toDate);
+                    if (!isNaN(start) && !isNaN(end)) {
+                        const diffTime = Math.abs(end - start);
+                        nightsCount = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    }
+                }
+
+                container.innerHTML = `
+                    <h2>🎉 Reservation Confirmed!</h2>
+                    <p style="font-size: 18px; color: #555;">Thank you for booking with us. We look forward to hosting you at Casarão Copacabana.</p>
+                    
+                    <div class="details-box">
+                        <p><span>Reservation ID:</span> <strong>${reservationID}</strong></p>
+                        <p><span>Check-in:</span> <strong>${fromDate}</strong></p>
+                        <p><span>Check-out:</span> <strong>${toDate}</strong></p>
+                        <p><span>Total Nights:</span> <strong>${nightsCount}</strong></p>
+                        <p><span>Total Paid:</span> <strong>$${amount}</strong></p>
+                    </div>
+
+                    <div>
+                        <button class="action-btn" onclick="window.print()">Print Details</button>
+                        <a href="index.html" class="action-btn secondary">Return to Homepage</a>
+                    </div>
+                `;
+            } else {
+                // Failed state or fallback
+                container.innerHTML = `
+                    <h2 style="color: #d93025;">Reservation Incomplete</h2>
+                    <p class="error-message">We're sorry, but your reservation did not go through or the payment was unsuccessful.</p>
+                    <p style="font-size: 18px; color: #333; margin-bottom: 30px;">
+                        Please try booking again later. If the issue persists, we can process your reservation manually.<br><br>
+                        <strong>Contact Support:</strong><br>
+                        Email: <a href="mailto:casaemrio@gmail.com" style="color: #0077cc;">casaemrio@gmail.com</a><br>
+                        Phone/WhatsApp: <strong>+1 (669) 268-7875</strong>
+                    </p>
+                    
+                    <div>
+                        <a href="index.html" class="action-btn">Return to Homepage</a>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>
