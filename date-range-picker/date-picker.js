@@ -206,7 +206,7 @@ class StrDateRangePicker extends HTMLElement {
                     line-height: 1;
                     margin-top: 2px;
                 }
-                .day.selected .day-price, .day.range-start .day-price, .day.range-end .day-price {
+                .day.selected .day-price, .day.range-start .day-price, .day.range-end .day-price, .day.hover-end .day-price {
                     color: white; /* Make sure it's visible on selected background */
                 }
                 .day:hover:not(.disabled):not(.selected):not(.in-range) {
@@ -221,12 +221,18 @@ class StrDateRangePicker extends HTMLElement {
                     background: var(--primary-color);
                     color: white;
                 }
-                .day.in-range {
-                    background: #f7f7f7;
+                .day.in-range, .day.hover-range {
+                    background: lightsalmon;
                     /* connecting style */
                     border-radius: 0;
                     width: 100%;
                     margin: 0;
+                }
+                .day.hover-end {
+                    background: lightsalmon;
+                    color: white;
+                    border-top-right-radius: 50%;
+                    border-bottom-right-radius: 50%;
                 }
                 .day.range-start {
                     background: var(--primary-color);
@@ -318,7 +324,11 @@ class StrDateRangePicker extends HTMLElement {
             wrapper.appendChild(this.renderMonth(monthDate));
         }
 
-
+        wrapper.addEventListener('mouseleave', () => {
+            this.shadowRoot.querySelectorAll('.hover-range, .hover-end').forEach(el => {
+                el.classList.remove('hover-range', 'hover-end');
+            });
+        });
 
         // Update Button States
         const prevBtn = this.shadowRoot.getElementById('prevBtn');
@@ -546,8 +556,25 @@ class StrDateRangePicker extends HTMLElement {
     }
 
     handleDateHover(date) {
-        // Here we could implement "hover range" effect by re-rendering or toggling classes
-        // For simplicity/performance, we'll skip aggressive re-renders on hover for now
+        if (!this.startDate || this.endDate) return;
+
+        const days = this.shadowRoot.querySelectorAll('.day:not(.disabled)');
+
+        days.forEach(dayEl => {
+            const dayDateStr = dayEl.dataset.date;
+            if (!dayDateStr) return;
+            const dayDate = new Date(dayDateStr);
+
+            dayEl.classList.remove('hover-range', 'hover-end');
+
+            if (date > this.startDate) {
+                if (dayDate > this.startDate && dayDate < date) {
+                    dayEl.classList.add('hover-range');
+                } else if (this.isSameDay(dayDate, date)) {
+                    dayEl.classList.add('hover-end');
+                }
+            }
+        });
     }
 
 
