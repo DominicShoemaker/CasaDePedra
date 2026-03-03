@@ -226,7 +226,7 @@ class StrDateRangePicker extends HTMLElement {
                     /* connecting style */
                     border-radius: 0;
                     width: 100%;
-                    margin: 0;
+                    margin: 2px 0;
                 }
                 .day.hover-end {
                     background: lightsalmon;
@@ -558,6 +558,11 @@ class StrDateRangePicker extends HTMLElement {
     handleDateHover(date) {
         if (!this.startDate || this.endDate) return;
 
+        let hasOverlap = false;
+        if (date > this.startDate) {
+            hasOverlap = this.hasOverlap(this.startDate, date);
+        }
+
         const days = this.shadowRoot.querySelectorAll('.day:not(.disabled)');
 
         days.forEach(dayEl => {
@@ -567,7 +572,7 @@ class StrDateRangePicker extends HTMLElement {
 
             dayEl.classList.remove('hover-range', 'hover-end');
 
-            if (date > this.startDate) {
+            if (date > this.startDate && !hasOverlap) {
                 if (dayDate > this.startDate && dayDate < date) {
                     dayEl.classList.add('hover-range');
                 } else if (this.isSameDay(dayDate, date)) {
