@@ -32,8 +32,7 @@ class StrDateRangePicker extends HTMLElement {
         this.apiUrl = this.getAttribute('api-url');
         this.priceRulesUrl = this.getAttribute('price-rules-url');
         this.render();
-        this.fetchBusyDates();
-        this.fetchPriceRules();
+        this.loadData();
         this.addEventListeners();
 
         // Observe size changes to adjust number of visible months
@@ -64,31 +63,64 @@ class StrDateRangePicker extends HTMLElement {
         }
     }
 
-    async fetchBusyDates() {
+    async loadData() {
+        this.showOverlay("Loading calendar...", false);
         try {
-            const response = await fetch(this.apiUrl);
-            const data = await response.json();
-            // Map new API format [{From: "...", To: "..."}] to internal UI state
-            this.busyDates = data.map(range => ({
-                startDate: range.From ? range.From.split('T')[0] : range.startDate,
-                endDate: range.To ? range.To.split('T')[0] : range.endDate
-            }));
-            this.updateCalendars();
+            await Promise.all([
+                this.fetchBusyDates(),
+                this.fetchPriceRules()
+            ]);
+            this.hideOverlay();
         } catch (e) {
-            console.error("Failed to fetch busy dates", e);
+            this.showOverlay(`Calendar is not available.<br><br>Please reload the page after 1-2 minutes or request booking by email or WhatsApp.`, true);
         }
     }
 
-    async fetchPriceRules() {
-        try {
-            const response = await fetch(this.priceRulesUrl);
-            if (response.ok) {
-                this.priceRules = await response.json();
-                this.updateCalendars();
+    showOverlay(htmlContent, isError) {
+        const overlay = this.shadowRoot.getElementById('overlay');
+        const content = this.shadowRoot.getElementById('overlay-content');
+        if (overlay && content) {
+            content.innerHTML = htmlContent;
+            if (isError) {
+                content.style.color = 'var(--text-color)'; // using default color for readability
+                content.style.fontWeight = 'bold';
             }
-        } catch (e) {
-            console.error("Failed to fetch price rules", e);
+            overlay.style.display = 'flex';
         }
+    }
+
+    hideOverlay() {
+        const overlay = this.shadowRoot.getElementById('overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+
+    async fetchWithRetry(url, retries = 2, interval = 10000) {
+        for (let i = 0; i <= retries; i++) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (e) {
+                if (i === retries) throw e;
+                await new Promise(res => setTimeout(res, interval));
+            }
+        }
+    }
+
+    async fetchBusyDates() {
+        const data = await this.fetchWithRetry(this.apiUrl);
+        this.busyDates = data.map(range => ({
+            startDate: range.From ? range.From.split('T')[0] : range.startDate,
+            endDate: range.To ? range.To.split('T')[0] : range.endDate
+        }));
+        this.updateCalendars();
+    }
+
+    async fetchPriceRules() {
+        this.priceRules = await this.fetchWithRetry(this.priceRulesUrl);
+        this.updateCalendars();
     }
 
     // Helper to get YYYY-MM-DD from a Date object (Local time)
@@ -136,11 +168,28 @@ class StrDateRangePicker extends HTMLElement {
                 }
                 .picker-container {
                     display: inline-block;
+                    position: relative;
                     border: 1px solid #ddd;
                     border-radius: 32px; /* Airbnb roundness */
                     padding: 10px;
                     background: white;
                     user-select: none;
+                }
+                .overlay {
+                    position: absolute;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(255, 255, 255, 0.9);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10;
+                    border-radius: 32px;
+                }
+                .overlay-content {
+                    text-align: center;
+                    padding: 20px;
+                    color: var(--text-color);
+                    font-size: 16px;
                 }
                 .controls {
                     display: flex;
@@ -278,6 +327,9 @@ class StrDateRangePicker extends HTMLElement {
         this.shadowRoot.innerHTML = `
             ${this.getStyles()}
             <div class="picker-container">
+                <div class="overlay" id="overlay" style="display: none;">
+                    <div class="overlay-content" id="overlay-content"></div>
+                </div>
                 <div class="controls">
                     <button id="prevBtn">&lt;</button>
                     <button id="nextBtn">&gt;</button>
