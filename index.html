@@ -473,6 +473,7 @@
                     statusText.textContent = `${data.startDate.toLocaleDateString()} - ${data.endDate.toLocaleDateString()}`;
                 } else {
                     statusText.textContent = data.startDate ? 'Select end date' : 'Select from 3 to 28 nights';
+                    priceInfo.textContent = '';
                 }
                 validateForm();
             });
