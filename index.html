@@ -420,6 +420,42 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const pendingCookie = localStorage.getItem('booking_pending');
+            if (pendingCookie) {
+                try {
+                    const pendingData = JSON.parse(pendingCookie);
+                    fetch(`https://shorttermreservation.azurewebsites.net/api/Reservation/${pendingData.reservationID}/${pendingData.from}/${pendingData.to}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                localStorage.removeItem('booking_pending');
+                            } else {
+                                return response.json();
+                            }
+                        })
+                        .then(record => {
+                            if (record) {
+                                if (record.Status === "Paid" || record.status === "Paid") {
+                                    localStorage.removeItem('booking_pending');
+                                } else {
+                                    const params = new URLSearchParams({
+                                        reservationid: pendingData.reservationID,
+                                        from: pendingData.from,
+                                        to: pendingData.to
+                                    });
+                                    window.location.href = `cancellation.html?${params.toString()}`;
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error checking pending reservation:', err);
+                            localStorage.removeItem('booking_pending');
+                        });
+                } catch (e) {
+                    console.error('Error parsing booking cookie:', e);
+                    localStorage.removeItem('booking_pending');
+                }
+            }
+
             const picker = document.querySelector('str-date-range-picker');
             const applyBtn = document.getElementById('applyBtn');
             const priceInfo = document.getElementById('priceInfo');
@@ -548,6 +584,18 @@
                     if (typeof paymentUrl === 'string') {
                         paymentUrl = paymentUrl.replace(/^"|"$/g, '');
                     }
+
+                    const cookieData = JSON.stringify({
+                        reservationID: reservationID,
+                        from: formatDate(data.startDate),
+                        to: formatDate(data.endDate),
+                        fullName: nameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        phone: phoneInput.value.trim(),
+                        price: data.discountedPrice,
+                        paymentUrl: paymentUrl
+                    });
+                    localStorage.setItem('booking_pending', cookieData);
 
                     window.location.href = paymentUrl;
 

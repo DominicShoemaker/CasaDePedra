@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Incomplete Booking - Luxury rental in Copacabana - Rio de Janeiro</title>
+    <style>
+        /* -------------------- GLOBAL STYLES -------------------- */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            background-blend-mode: darken;
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+            padding: 10px;
+        }
+
+        header p {
+            font-size: 20px;
+            margin: 0;
+            padding: 10px;
+        }
+
+        nav {
+            background-color: #003f64;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 50px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #003f64;
+            font-size: 32px;
+        }
+
+        .details-box {
+            background: #fdfdfd;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .details-box p {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .details-box p:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .action-btn {
+            background: #0077cc;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .action-btn:hover {
+            background: #005e9e;
+        }
+
+        .action-btn.secondary {
+            background: #666;
+        }
+
+        .action-btn.secondary:hover {
+            background: #444;
+        }
+
+        footer {
+            background: #003f64;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+
+        @media print {
+
+            header,
+            nav,
+            footer,
+            .action-btn {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .container {
+                box-shadow: none;
+                margin-top: 0;
+                padding-top: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!---------------------- HEADER ---------------------->
+    <header>
+        <h1>Luxury rental in Copacabana • Rio • Brazil</h1>
+        <img src="images/collage house wide.png" alt="Casa de Pedra"
+            style="max-width: 100%; height: auto; max-height: 265px; display: block;" loading="lazy" decoding="async">
+        <p>Historic 4BR/4.5BA Villa — Steps away from the beach • Hot Tub • Workspace • Sleeps 10</p>
+    </header>
+
+    <!---------------------- NAVIGATION ---------------------->
+    <nav>
+        <a href="index.html">Back to Home Screen</a>
+    </nav>
+
+    <div class="container" id="content-container">
+        <h2>Booking Incomplete</h2>
+        <p style="font-size: 18px; color: #333; margin-bottom: 10px;">
+            It looks like you didn't finish your booking. Would you like to continue?
+        </p>
+
+        <div class="details-box" id="booking-details" style="display:none;"></div>
+
+        <div>
+            <button id="btn-continue" class="action-btn">Continue</button>
+            <button id="btn-cancel" class="action-btn secondary">Cancel Booking</button>
+        </div>
+    </div>
+
+    <!---------------------- FOOTER ---------------------->
+    <footer>
+        <p>© 2025 Casarão Copacabana — All Rights Reserved</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let paymentUrl = '';
+            let reservationID = '';
+            let fromDate = '';
+            let toDate = '';
+            let fullName = '';
+            let email = '';
+            let phone = '';
+            let price = '';
+
+            const pendingDataStr = localStorage.getItem('booking_pending');
+            if (pendingDataStr) {
+                try {
+                    const pendingData = JSON.parse(pendingDataStr);
+                    paymentUrl = pendingData.paymentUrl;
+                    reservationID = pendingData.reservationID;
+                    fromDate = pendingData.from;
+                    toDate = pendingData.to;
+                    fullName = pendingData.fullName || '';
+                    email = pendingData.email || '';
+                    phone = pendingData.phone || '';
+                    price = pendingData.price || '';
+                } catch (e) {
+                    console.error('Error parsing booking data:', e);
+                }
+            } else {
+                const urlParams = new URLSearchParams(window.location.search);
+                reservationID = urlParams.get('reservationid') || '';
+                fromDate = urlParams.get('from') || '';
+                toDate = urlParams.get('to') || '';
+                fullName = urlParams.get('name') || '';
+                email = urlParams.get('email') || '';
+                phone = urlParams.get('phone') || '';
+                price = urlParams.get('price') || '';
+            }
+
+            // Calculate nights
+            let nightsCount = 'N/A';
+            if (fromDate && toDate) {
+                const start = new Date(fromDate);
+                const end = new Date(toDate);
+                if (!isNaN(start) && !isNaN(end)) {
+                    nightsCount = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+                }
+            }
+
+            // Populate details box
+            const detailsBox = document.getElementById('booking-details');
+            let html = '';
+            if (fullName) html += `<p><span>Name:</span> <strong>${fullName}</strong></p>`;
+            if (email) html += `<p><span>Email:</span> <strong>${email}</strong></p>`;
+            if (phone) html += `<p><span>Phone:</span> <strong>${phone}</strong></p>`;
+            const formatDisplayDate = (dateStr) => {
+                const d = new Date(dateStr + 'T00:00:00');
+                return isNaN(d) ? dateStr : d.toLocaleDateString();
+            };
+
+            if (reservationID) html += `<p><span>Reservation ID:</span> <strong>${reservationID}</strong></p>`;
+            if (fromDate) html += `<p><span>Check-in:</span> <strong>${formatDisplayDate(fromDate)}</strong></p>`;
+            if (toDate) html += `<p><span>Check-out:</span> <strong>${formatDisplayDate(toDate)}</strong></p>`;
+            html += `<p><span>Total Nights:</span> <strong>${nightsCount}</strong></p>`;
+            if (price) html += `<p><span>Price:</span> <strong>$${price}</strong></p>`;
+            if (html) {
+                detailsBox.innerHTML = html;
+                detailsBox.style.display = 'block';
+            }
+
+            document.getElementById('btn-continue').addEventListener('click', () => {
+                if (paymentUrl) {
+                    window.location.href = paymentUrl;
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+
+            document.getElementById('btn-cancel').addEventListener('click', async () => {
+                const btn = document.getElementById('btn-cancel');
+                btn.disabled = true;
+                btn.textContent = 'Canceling...';
+
+                if (reservationID && fromDate && toDate) {
+                    try {
+                        const url = `https://shorttermreservation.azurewebsites.net/api/Reservation/${reservationID}/${fromDate}/${toDate}`;
+                        await fetch(url, { method: 'DELETE' });
+                    } catch (e) {
+                        console.error('Error deleting reservation:', e);
+                    }
+                }
+
+                localStorage.removeItem('booking_pending');
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+
+</html>
