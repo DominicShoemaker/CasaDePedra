@@ -209,6 +209,10 @@
             cursor: pointer;
         }
 
+        .input-error {
+            border-color: #d93025 !important;
+        }
+
         .action-bar {
             margin-top: 20px;
             padding-top: 10px;
@@ -508,9 +512,23 @@
                 if (!data || !data.isComplete) {
                     isValid = false;
                 }
-                if (!nameInput.value.trim()) isValid = false;
-                if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) isValid = false;
-                if (!phoneInput.value.trim() || !phoneRegex.test(phoneInput.value.trim())) isValid = false;
+
+                const nameVal = nameInput.value.trim();
+                const emailVal = emailInput.value.trim();
+                const phoneVal = phoneInput.value.trim();
+
+                if (!nameVal) {
+                    isValid = false;
+                }
+
+                const emailOk = emailVal && emailRegex.test(emailVal);
+                if (!emailOk) isValid = false;
+                emailInput.classList.toggle('input-error', emailVal.length > 0 && !emailOk);
+
+                const phoneOk = phoneVal && phoneRegex.test(phoneVal);
+                if (!phoneOk) isValid = false;
+                phoneInput.classList.toggle('input-error', phoneVal.length > 0 && !phoneOk);
+
                 if (!agreeInput.checked) isValid = false;
 
                 submitBtn.disabled = !isValid;
