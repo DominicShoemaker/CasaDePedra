@@ -419,10 +419,10 @@
     </footer>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        function checkBookingPending() {
             const pendingCookie = localStorage.getItem('booking_pending');
             if (pendingCookie) {
-                // Check 24-hour expiration
+                // Check expiration
                 try {
                     const parsed = JSON.parse(pendingCookie);
                     if (parsed.createdAt && (Date.now() - parsed.createdAt > 60 * 60 * 1000)) {
@@ -463,6 +463,16 @@
                     localStorage.removeItem('booking_pending');
                 }
             }
+        }
+
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                checkBookingPending();
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            checkBookingPending();
 
             const picker = document.querySelector('str-date-range-picker');
             const applyBtn = document.getElementById('applyBtn');
