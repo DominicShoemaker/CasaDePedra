@@ -325,11 +325,11 @@
                         </div>
                         <div class="form-group">
                             <label for="guest-email">Email address</label>
-                            <input type="email" id="guest-email" placeholder="john@example.com">
+                            <input type="email" id="guest-email" placeholder="john@example.com" maxlength="255">
                         </div>
                         <div class="form-group">
                             <label for="guest-phone">Phone number</label>
-                            <input type="text" id="guest-phone" placeholder="+1 234 567 8900">
+                            <input type="tel" id="guest-phone" placeholder="+1 234 567 8900" maxlength="20">
                         </div>
                     </div>
 
@@ -497,6 +497,9 @@
                 return `${yyyy}-${mm}-${dd}`;
             }
 
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^\+?[\d\s\-().]{7,20}$/;
+
             function validateForm() {
                 let isValid = true;
                 errorDiv.style.display = 'none';
@@ -506,8 +509,8 @@
                     isValid = false;
                 }
                 if (!nameInput.value.trim()) isValid = false;
-                if (!emailInput.value.trim()) isValid = false;
-                if (!phoneInput.value.trim()) isValid = false;
+                if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) isValid = false;
+                if (!phoneInput.value.trim() || !phoneRegex.test(phoneInput.value.trim())) isValid = false;
                 if (!agreeInput.checked) isValid = false;
 
                 submitBtn.disabled = !isValid;
