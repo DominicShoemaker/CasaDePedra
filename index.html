@@ -425,7 +425,7 @@
                 // Check 24-hour expiration
                 try {
                     const parsed = JSON.parse(pendingCookie);
-                    if (parsed.createdAt && (Date.now() - parsed.createdAt > 24 * 60 * 60 * 1000)) {
+                    if (parsed.createdAt && (Date.now() - parsed.createdAt > 60 * 60 * 1000)) {
                         localStorage.removeItem('booking_pending');
                         return;
                     }

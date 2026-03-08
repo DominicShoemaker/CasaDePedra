@@ -190,8 +190,28 @@
     </footer>
 
     <script>
-        window.addEventListener('popstate', () => {
+        async function cancelBooking(reservationID, fromDate, toDate) {
+            if (reservationID && fromDate && toDate) {
+                try {
+                    const url = `https://shorttermreservation.azurewebsites.net/api/Reservation/${reservationID}/${fromDate}/${toDate}`;
+                    await fetch(url, { method: 'DELETE' });
+                } catch (e) {
+                    console.error('Error deleting reservation:', e);
+                }
+            }
             localStorage.removeItem('booking_pending');
+        }
+
+        window.addEventListener('popstate', () => {
+            const pendingDataStr = localStorage.getItem('booking_pending');
+            if (pendingDataStr) {
+                try {
+                    const d = JSON.parse(pendingDataStr);
+                    cancelBooking(d.reservationID, d.from, d.to);
+                } catch (e) {
+                    localStorage.removeItem('booking_pending');
+                }
+            }
         });
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -274,16 +294,7 @@
                 btn.disabled = true;
                 btn.textContent = 'Canceling...';
 
-                if (reservationID && fromDate && toDate) {
-                    try {
-                        const url = `https://shorttermreservation.azurewebsites.net/api/Reservation/${reservationID}/${fromDate}/${toDate}`;
-                        await fetch(url, { method: 'DELETE' });
-                    } catch (e) {
-                        console.error('Error deleting reservation:', e);
-                    }
-                }
-
-                localStorage.removeItem('booking_pending');
+                await cancelBooking(reservationID, fromDate, toDate);
                 window.location.href = 'index.html';
             });
         });
