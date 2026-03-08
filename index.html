@@ -422,6 +422,14 @@
         document.addEventListener("DOMContentLoaded", () => {
             const pendingCookie = localStorage.getItem('booking_pending');
             if (pendingCookie) {
+                // Check 24-hour expiration
+                try {
+                    const parsed = JSON.parse(pendingCookie);
+                    if (parsed.createdAt && (Date.now() - parsed.createdAt > 24 * 60 * 60 * 1000)) {
+                        localStorage.removeItem('booking_pending');
+                        return;
+                    }
+                } catch (e) { /* proceed to existing logic */ }
                 try {
                     const pendingData = JSON.parse(pendingCookie);
                     fetch(`https://shorttermreservation.azurewebsites.net/api/Reservation/${pendingData.reservationID}/${pendingData.from}/${pendingData.to}`)
@@ -593,7 +601,8 @@
                         email: emailInput.value.trim(),
                         phone: phoneInput.value.trim(),
                         price: data.discountedPrice,
-                        paymentUrl: paymentUrl
+                        paymentUrl: paymentUrl,
+                        createdAt: Date.now()
                     });
                     localStorage.setItem('booking_pending', cookieData);
 

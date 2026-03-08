@@ -190,6 +190,10 @@
     </footer>
 
     <script>
+        window.addEventListener('popstate', () => {
+            localStorage.removeItem('booking_pending');
+        });
+
         document.addEventListener("DOMContentLoaded", () => {
             let paymentUrl = '';
             let reservationID = '';

@@ -189,6 +189,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            localStorage.removeItem('booking_pending');
             const container = document.getElementById('content-container');
             const urlParams = new URLSearchParams(window.location.search);
 
