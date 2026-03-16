@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Luxury rental in Copacabana - Rio de Janeiro</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
 
     <style>
         /* -------------------- GLOBAL STYLES -------------------- */
@@ -114,6 +115,7 @@
 
         .booking-form input[type="text"],
         .booking-form input[type="email"],
+        .booking-form input[type="tel"],
         .booking-form input[type="number"] {
             width: 100%;
             padding: 10px;
@@ -245,6 +247,50 @@
             align-items: center;
             gap: 12px;
         }
+
+        /* -------------------- PARTNER BOOKING -------------------- */
+        .partner-booking {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .partner-booking h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .partner-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .partner-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+            min-width: 150px;
+        }
+
+        .partner-btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-airbnb {
+            background-color: #FF5A5F;
+        }
+
+        .btn-vrbo {
+            background-color: #00487F;
+        }
     </style>
 
     <script>
@@ -351,6 +397,14 @@
                         </div>
                     </div>
                     <div id="booking-error"></div>
+                </div>
+            </div>
+
+            <div class="partner-booking">
+                <h3>Prefer to book through a platform?</h3>
+                <div class="partner-buttons">
+                    <a href="https://airbnb.com/h/copacabana-rio" target="_blank" class="partner-btn btn-airbnb">Book on Airbnb</a>
+                    <a href="https://www.vrbo.com/4972525?dateless=true" target="_blank" class="partner-btn btn-vrbo">Book on Vrbo</a>
                 </div>
             </div>
         </section>
