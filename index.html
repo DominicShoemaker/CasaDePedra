@@ -346,7 +346,7 @@
                     <div class="action-bar" id="actionBar">
                         <span id="priceInfo" class="price-display"></span>
                         <div class="right-actions">
-                            <span id="statusText"></span>
+                            <span id="statusText">Select from 3 to 28 nights</span>
                             <button id="submit-booking" disabled>Book</button>
                         </div>
                     </div>
@@ -547,7 +547,7 @@
                     }
                     statusText.textContent = `${data.startDate.toLocaleDateString()} - ${data.endDate.toLocaleDateString()}`;
                 } else {
-                    statusText.textContent = data.startDate ? 'Select end date' : 'Select from 3 to 28 nights';
+                    statusText.textContent = data && data.startDate ? 'Select end date' : 'Select from 3 to 28 nights';
                     priceInfo.textContent = '';
                 }
                 validateForm();
