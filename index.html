@@ -248,6 +248,87 @@
             gap: 12px;
         }
 
+        /* -------------------- MODALS -------------------- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #003f64;
+        }
+
+        .modal-body p, .modal-body li {
+            line-height: 1.6;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .modal-body ul, .modal-body ol {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .download-pdf {
+            display: inline-block;
+            background: #003f64;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .download-pdf:hover {
+            background: #002b44;
+        }
+
         /* -------------------- PARTNER BOOKING -------------------- */
         .partner-booking {
             margin-top: 40px;
@@ -385,7 +466,7 @@
 
                     <label class="checkbox-label" for="agree-rules">
                         <input type="checkbox" id="agree-rules">
-                        <span>I have read and agree to the House Rules and the Privacy Policy. Maximum number of guests
+                        <span>I have read and agree to the <a href="javascript:void(0)" onclick="openModal('rules-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">House Rules</a> and the <a href="javascript:void(0)" onclick="openModal('privacy-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">Privacy Policy</a>. Maximum number of guests
                             is 10. Check-in is anytime after 3:00 PM. Check-out is before 11:00 AM. </span>
                     </label>
 
@@ -473,12 +554,77 @@
 
     </div>
 
+    <!---------------------- MODALS ---------------------->
+    <div id="rules-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('rules-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>House Rules</h2>
+            </div>
+            <div class="modal-body">
+                <p>Welcome to our home! We’ve worked hard to make this a comfortable space. To ensure everyone has a great stay and we stay on good terms with our neighbors, please follow these rules:</p>
+                <ul>
+                    <li><strong>Check-in & Check-out:</strong> Check-in is anytime after 3:00 PM. Check-out is before 11:00 AM. This allows our cleaning team enough time to prepare for the next guest.</li>
+                    <li><strong>Occupancy:</strong> Only up to 10 guests total are allowed on the property at any time. No unauthorized visitors or overnight guests.</li>
+                    <li><strong>No Parties or Events:</strong> We have a strict "no party" policy. Excessive noise or large gatherings will result in immediate cancellation of your stay without a refund.</li>
+                    <li><strong>Quiet Hours:</strong> Please be mindful of our neighbors between 10:00 PM and 8:00 AM.</li>
+                    <li><strong>Smoking & Vaping:</strong> This is a 100% smoke-free and vape-free property. Smoking is prohibited indoors and near windows.</li>
+                    <li><strong>Pets:</strong> No pets allowed.</li>
+                    <li><strong>Care of Property:</strong> Please treat our home as you would your own. If something breaks, please let us know immediately so we can fix it for the next guest.</li>
+                    <li><strong>Trash & Recycling:</strong> Please place all trash in the designated bins.</li>
+                </ul>
+                <a href="docs/house-rules.pdf" class="download-pdf" target="_blank" download>Download PDF version</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('privacy-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>Privacy Policy</h2>
+            </div>
+            <div class="modal-body">
+                <p><em>Effective Date: March 19, 2026</em></p>
+                <ol>
+                    <li><strong>Information We Collect:</strong> When you book a stay, we collect personal information including your name, email address, phone number, and payment details. We may also request a copy of a government-issued ID to verify your identity.</li>
+                    <li><strong>How We Use Your Information:</strong> We use your data solely for the following purposes:
+                        <ul>
+                            <li>Processing your reservation and payment.</li>
+                            <li>Communicating check-in instructions and property updates.</li>
+                            <li>Complying with local tax or law enforcement regulations.</li>
+                            <li>Improving our guest experience.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Data Security:</strong> Your payment information is processed through secure, encrypted third-party gateways (Stripe). We do not store your full credit card details on our local servers.</li>
+                    <li><strong>Third-Party Sharing:</strong> We do not sell your data. We only share information with third parties necessary to fulfill your stay (e.g., payment processors or local tourism authorities if required by law).</li>
+                    <li><strong>Your Rights:</strong> You may request to view, edit, or delete your personal information at any time by contacting us directly at support@casadepedra.rio.</li>
+                </ol>
+                <a href="docs/privacy-policy.pdf" class="download-pdf" target="_blank" download>Download PDF version</a>
+            </div>
+        </div>
+    </div>
+
     <!---------------------- FOOTER ---------------------->
     <footer>
         <p>© 2025 Casarão Copacabana — All Rights Reserved</p>
     </footer>
 
     <script>
+        function openModal(id) {
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
         function checkBookingPending() {
             const pendingCookie = localStorage.getItem('booking_pending');
             if (pendingCookie) {
