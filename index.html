@@ -466,7 +466,7 @@
 
                     <label class="checkbox-label" for="agree-rules">
                         <input type="checkbox" id="agree-rules">
-                        <span>I have read and agree to the <a href="javascript:void(0)" onclick="openModal('rules-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">House Rules</a> and the <a href="javascript:void(0)" onclick="openModal('privacy-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">Privacy Policy</a>. Maximum number of guests
+                        <span>I have read and agree to the <a href="javascript:void(0)" onclick="openModal('rules-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">House Rules</a>, <a href="javascript:void(0)" onclick="openModal('privacy-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">Privacy Policy</a>, and <a href="javascript:void(0)" onclick="openModal('cancellation-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">Cancellation Policy</a>. Maximum number of guests
                             is 10. Check-in is anytime after 3:00 PM. Check-out is before 11:00 AM. </span>
                     </label>
 
@@ -601,6 +601,23 @@
                     <li><strong>Your Rights:</strong> You may request to view, edit, or delete your personal information at any time by contacting us directly at support@casadepedra.rio.</li>
                 </ol>
                 <a href="docs/privacy-policy.pdf" class="download-pdf" target="_blank" download>Download PDF version</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="cancellation-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('cancellation-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>Cancellation Policy</h2>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li><strong>Full Refund (Minus 3% Stripe Fees):</strong> If cancelled at least 30 days before check-in.</li>
+                    <li><strong>50% Refund:</strong> If cancelled between 7 and 14 days before check-in.</li>
+                    <li><strong>No Refund:</strong> If cancelled less than 7 days before check-in.</li>
+                </ul>
+                <a href="docs/cancellation-policy.pdf" class="download-pdf" target="_blank" download>Download PDF version</a>
             </div>
         </div>
     </div>
