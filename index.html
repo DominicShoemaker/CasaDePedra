@@ -5,383 +5,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Luxury rental in Copacabana - Rio de Janeiro</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Historic 4-bedroom luxury villa in Copacabana, Rio de Janeiro. Steps from the beach. Features a hot tub, dedicated workspace, and accommodates up to 10 guests.">
+    <meta property="og:title" content="Luxury Rental in Copacabana - Casa de Pedra">
+    <meta property="og:description" content="Historic 4-bedroom luxury villa. Steps away from the beach, featuring a hot tub, BBQ, and workspace. Sleeps 10.">
+    <meta property="og:image" content="https://casadepedra.rio/images/collage house wide.png">
+    <meta property="og:url" content="https://casadepedra.rio">
+    <meta property="og:type" content="website">
+
     <link rel="icon" type="image/png" href="images/favicon.png">
 
-    <style>
-        /* -------------------- GLOBAL STYLES -------------------- */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
-            color: #333;
-        }
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-        header {
-            display: flex;
-            flex-direction: column;
-            color: white;
-            text-align: center;
-            justify-content: center;
-            background-color: rgba(0, 0, 0, 0.5);
-            background-blend-mode: darken;
-        }
-
-        header h1 {
-            font-size: 36px;
-            margin: 0;
-            padding: 10px;
-        }
-
-        header p {
-            font-size: 20px;
-            margin: 0;
-            padding: 10px;
-        }
-
-        nav {
-            background-color: #003f64;
-            padding: 10px 0;
-            text-align: center;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 20px;
-            font-weight: bold;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 30px 20px;
-        }
-
-        .section {
-            margin-bottom: 60px;
-        }
-
-        /* -------------------- GALLERY -------------------- */
-        .gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .gallery img {
-            width: 320px;
-            height: 220px;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        /* -------------------- BOOKING SECTION -------------------- */
-        #booking-widget {
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .booking-form {
-            width: 100%;
-            margin: 20px auto 0;
-            text-align: left;
-        }
-
-        .booking-form .input-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .booking-form .form-group {
-            flex: 1 1 calc(33.333% - 15px);
-            min-width: 200px;
-        }
-
-        .booking-form label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .booking-form input[type="text"],
-        .booking-form input[type="email"],
-        .booking-form input[type="tel"],
-        .booking-form input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        .booking-form .checkbox-label {
-            display: flex;
-            align-items: flex-start;
-            font-weight: normal;
-            font-size: 14px;
-            gap: 10px;
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-
-        .booking-form .checkbox-label input[type="checkbox"] {
-            margin-top: 2px;
-            transform: scale(1.2);
-        }
-
-        .book-btn {
-            display: inline-block;
-            background: #0077cc;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 18px;
-            margin-top: 10px;
-        }
-
-        .book-btn:hover {
-            background: #005e9e;
-        }
-
-        /* -------------------- FOOTER -------------------- */
-        footer {
-            background: #003f64;
-            color: white;
-            text-align: center;
-            padding: 20px;
-
-        }
-
-        #booking-summary {
-            display: none;
-            margin-top: 20px;
-            border-top: 1px solid #ccc;
-            padding-top: 20px;
-        }
-
-        .summary-container {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .summary-left {
-            text-align: left;
-        }
-
-        .summary-right {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .summary-left p,
-        .summary-right p {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-        }
-
-        #booking-error {
-            color: #d93025;
-            margin-top: 15px;
-            display: none;
-            font-weight: bold;
-        }
-
-        #submit-booking:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        button.book-btn {
-            font-family: Arial, sans-serif;
-            border: none;
-            cursor: pointer;
-        }
-
-        .input-error {
-            border-color: #d93025 !important;
-        }
-
-        .action-bar {
-            margin-top: 20px;
-            padding-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .action-bar button {
-            background: #0077cc;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .action-bar button:hover {
-            background: #005e9e;
-        }
-
-        .action-bar button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .right-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* -------------------- MODALS -------------------- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(2px);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 30px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 700px;
-            border-radius: 12px;
-            position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .close-modal {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .close-modal:hover,
-        .close-modal:focus {
-            color: black;
-            text-decoration: none;
-        }
-
-        .modal-header {
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            font-size: 24px;
-            color: #003f64;
-        }
-
-        .modal-body p, .modal-body li {
-            line-height: 1.6;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
-        .modal-body ul, .modal-body ol {
-            padding-left: 20px;
-            margin-bottom: 20px;
-        }
-
-        .download-pdf {
-            display: inline-block;
-            background: #003f64;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-top: 20px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .download-pdf:hover {
-            background: #002b44;
-        }
-
-        /* -------------------- PARTNER BOOKING -------------------- */
-        .partner-booking {
-            margin-top: 40px;
-            text-align: center;
-        }
-
-        .partner-booking h3 {
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-
-        .partner-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .partner-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: bold;
-            transition: opacity 0.3s;
-            min-width: 150px;
-        }
-
-        .partner-btn:hover {
-            opacity: 0.9;
-        }
-
-        .btn-airbnb {
-            background-color: #FF5A5F;
-        }
-
-        .btn-vrbo {
-            background-color: #00487F;
-        }
-    </style>
-
-    <script>
-        // Smooth Scroll for Navigation
-        function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: "smooth" });
-        }
-    </script>
+    <!-- Styles and Scripts -->
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
     <script src="date-range-picker/date-picker.js"></script>
-
 </head>
 
 <body>
@@ -389,8 +35,6 @@
     <!---------------------- HEADER ---------------------->
     <header>
         <h1>Luxury rental in Copacabana • Rio • Brazil</h1>
-        <img src="images/collage house wide.png" alt="Casa de Pedra"
-            style="max-width: 100%; height: auto; max-height: 265px; display: block;" loading="lazy" decoding="async">
         <p>Historic 4BR/4.5BA Villa — Steps away from the beach • Hot Tub • Workspace • Sleeps 10</p>
     </header>
 
@@ -403,14 +47,14 @@
         <a href="javascript:scrollToSection('contact')">Contact</a>
     </nav>
 
-    <div class="container">
+    <main class="container">
         <!---------------------- VENUE SECTION ---------------------->
         <section id="venue" class="section">
             <h2>Venue & Lifestyle</h2>
             <div class="gallery">
-                <img src="images/Map with house.png" alt="House">
-                <img src="images/venue.png" alt="Living Room">
-                <img src="images/activities.png" alt="Master Bedroom">
+                <img src="images/Map with house.png" alt="House Location">
+                <img src="images/venue.png" alt="Living Room Setup">
+                <img src="images/activities.png" alt="Local Activities">
             </div>
         </section>
 
@@ -466,8 +110,7 @@
 
                     <label class="checkbox-label" for="agree-rules">
                         <input type="checkbox" id="agree-rules">
-                        <span>I have read and agree to the <a href="javascript:void(0)" onclick="openModal('rules-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">House Rules</a>, <a href="javascript:void(0)" onclick="openModal('privacy-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">Privacy Policy</a>, and <a href="javascript:void(0)" onclick="openModal('cancellation-modal')" style="color: #0077cc; font-weight: bold; text-decoration: underline;">Cancellation Policy</a>. Maximum number of guests
-                            is 10. Check-in is anytime after 3:00 PM. Check-out is before 11:00 AM. </span>
+                        <span>I have read and agree to the <a href="javascript:void(0)" onclick="openModal('rules-modal')" style="color: var(--accent-color); font-weight: bold; text-decoration: underline;">House Rules</a>, <a href="javascript:void(0)" onclick="openModal('privacy-modal')" style="color: var(--accent-color); font-weight: bold; text-decoration: underline;">Privacy Policy</a>, and <a href="javascript:void(0)" onclick="openModal('cancellation-modal')" style="color: var(--accent-color); font-weight: bold; text-decoration: underline;">Cancellation Policy</a>. Maximum number of guests is 10. Check-in is anytime after 3:00 PM. Check-out is before 11:00 AM.</span>
                     </label>
 
                     <div class="action-bar" id="actionBar">
@@ -484,75 +127,34 @@
             <div class="partner-booking">
                 <h3>Prefer to book through a platform?</h3>
                 <div class="partner-buttons">
-                    <a href="https://airbnb.com/h/copacabana-rio" target="_blank" class="partner-btn btn-airbnb">Book on
-                        Airbnb</a>
-                    <a href="https://www.vrbo.com/4972525?dateless=true" target="_blank"
-                        class="partner-btn btn-vrbo">Book on Vrbo</a>
+                    <a href="https://airbnb.com/h/copacabana-rio" target="_blank" class="partner-btn btn-airbnb">
+                        <i class="fab fa-airbnb" style="margin-right:8px;"></i> Book on Airbnb
+                    </a>
+                    <a href="https://www.vrbo.com/4972525?dateless=true" target="_blank" class="partner-btn btn-vrbo">
+                        Book on Vrbo
+                    </a>
                 </div>
             </div>
         </section>
 
         <!---------------------- CONTACT ---------------------->
-        <section id="contact" class="section">
+        <section id="contact" class="section" style="box-shadow: none; padding: 0; background: transparent;">
             <h2>Contact</h2>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-            <style>
-                .host-contact-container {
-                    font-family: sans-serif;
-                    padding: 20px;
-                    background: #f9f9f9;
-                    border-radius: 8px;
-                    max-width: 260px;
-                }
-
-                .host-link {
-                    display: flex;
-                    align-items: center;
-                    background-color: #25D366;
-                    /* WhatsApp Green */
-                    color: white;
-                    padding: 12px 20px;
-                    margin: 10px 0;
-                    border-radius: 50px;
-                    text-decoration: none;
-                    font-weight: bold;
-                    transition: background 0.3s ease;
-                }
-
-                .host-link:hover {
-                    background-color: #128C7E;
-                }
-
-                .host-link i {
-                    font-size: 1.5rem;
-                    margin-right: 15px;
-                }
-
-                .instruction-text {
-                    margin-bottom: 15px;
-                    color: #333;
-                    font-size: 0.95rem;
-                }
-            </style>
-
             <div class="host-contact-container">
                 <p>Email: <strong>support@casadepedra.rio</strong></p>
-                <p class="instruction-text">Questions? Chat with our hosts:</p>
+                <p class="instruction-text" style="color:#555; margin-bottom:15px;">Questions? Chat with our hosts:</p>
 
-                <a href="https://wa.me/5521983169242?text=Hi%20Luan,%20I%20would%20like%20to%20ask%20about%20the%20rental%20in%20Copacabana."
-                    class="host-link" target="_blank">
+                <a href="https://wa.me/5521983169242?text=Hi%20Luan,%20I%20would%20like%20to%20ask%20about%20the%20rental%20in%20Copacabana." class="host-link" target="_blank">
                     <i class="fab fa-whatsapp"></i> Chat with Luan
                 </a>
 
-                <a href="https://wa.me/14084559026?text=Hi%20Silvia,%20I%20would%20like%20to%20ask%20about%20the%20rental%20in%20Copacabana."
-                    class="host-link" target="_blank">
+                <a href="https://wa.me/14084559026?text=Hi%20Silvia,%20I%20would%20like%20to%20ask%20about%20the%20rental%20in%20Copacabana." class="host-link" target="_blank">
                     <i class="fab fa-whatsapp"></i> Chat with Silvia
                 </a>
             </div>
         </section>
 
-    </div>
+    </main>
 
     <!---------------------- MODALS ---------------------->
     <div id="rules-modal" class="modal">
@@ -624,250 +226,8 @@
 
     <!---------------------- FOOTER ---------------------->
     <footer>
-        <p>© 2025 Casarão Copacabana — All Rights Reserved</p>
+        <p>© 2026 Casa de Pedra, Copacabana — All Rights Reserved</p>
     </footer>
 
-    <script>
-        function openModal(id) {
-            document.getElementById(id).style.display = 'block';
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
-
-        function checkBookingPending() {
-            const pendingCookie = localStorage.getItem('booking_pending');
-            if (pendingCookie) {
-                // Check expiration
-                try {
-                    const parsed = JSON.parse(pendingCookie);
-                    if (parsed.createdAt && (Date.now() - parsed.createdAt > 60 * 60 * 1000)) {
-                        localStorage.removeItem('booking_pending');
-                        return;
-                    }
-                } catch (e) { /* proceed to existing logic */ }
-                try {
-                    const pendingData = JSON.parse(pendingCookie);
-                    fetch(`https://shorttermreservation.azurewebsites.net/api/Reservation/${pendingData.reservationID}/${pendingData.from}/${pendingData.to}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                localStorage.removeItem('booking_pending');
-                            } else {
-                                return response.json();
-                            }
-                        })
-                        .then(record => {
-                            if (record) {
-                                if (record.Status === "Paid" || record.status === "Paid") {
-                                    localStorage.removeItem('booking_pending');
-                                } else {
-                                    const params = new URLSearchParams({
-                                        reservationid: pendingData.reservationID,
-                                        from: pendingData.from,
-                                        to: pendingData.to
-                                    });
-                                    window.location.href = `cancellation.html?${params.toString()}`;
-                                }
-                            }
-                        })
-                        .catch(err => {
-                            console.error('Error checking pending reservation:', err);
-                            localStorage.removeItem('booking_pending');
-                        });
-                } catch (e) {
-                    console.error('Error parsing booking cookie:', e);
-                    localStorage.removeItem('booking_pending');
-                }
-            }
-        }
-
-        window.addEventListener('pageshow', (event) => {
-            if (event.persisted) {
-                checkBookingPending();
-            }
-        });
-
-        document.addEventListener("DOMContentLoaded", () => {
-            checkBookingPending();
-
-            const picker = document.querySelector('str-date-range-picker');
-            const applyBtn = document.getElementById('applyBtn');
-            const priceInfo = document.getElementById('priceInfo');
-            const statusText = document.getElementById('statusText');
-
-            const nameInput = document.getElementById('guest-name');
-            const emailInput = document.getElementById('guest-email');
-            const phoneInput = document.getElementById('guest-phone');
-            const agreeInput = document.getElementById('agree-rules');
-
-            const submitBtn = document.getElementById('submit-booking');
-            const errorDiv = document.getElementById('booking-error');
-
-            let data = null;
-
-            function formatDate(date) {
-                if (!date) return '';
-                const yyyy = date.getFullYear();
-                const mm = String(date.getMonth() + 1).padStart(2, '0');
-                const dd = String(date.getDate()).padStart(2, '0');
-                return `${yyyy}-${mm}-${dd}`;
-            }
-
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const phoneRegex = /^\+?[\d\s\-().]{7,20}$/;
-
-            function validateForm() {
-                let isValid = true;
-                errorDiv.style.display = 'none';
-                errorDiv.textContent = '';
-
-                if (!data || !data.isComplete) {
-                    isValid = false;
-                }
-
-                const nameVal = nameInput.value.trim();
-                const emailVal = emailInput.value.trim();
-                const phoneVal = phoneInput.value.trim();
-
-                if (!nameVal) {
-                    isValid = false;
-                }
-
-                const emailOk = emailVal && emailRegex.test(emailVal);
-                if (!emailOk) isValid = false;
-                emailInput.classList.toggle('input-error', emailVal.length > 0 && !emailOk);
-
-                const phoneOk = phoneVal && phoneRegex.test(phoneVal);
-                if (!phoneOk) isValid = false;
-                phoneInput.classList.toggle('input-error', phoneVal.length > 0 && !phoneOk);
-
-                if (!agreeInput.checked) isValid = false;
-
-                submitBtn.disabled = !isValid;
-            }
-
-            picker.addEventListener('selection-changed', (e) => {
-                data = e.detail;
-                if (data && data.isComplete) {
-                    //                    summary.style.display = 'block';
-                    //                    summaryFrom.textContent = formatDate(data.startDate);
-                    //                    summaryTo.textContent = formatDate(data.endDate);
-                    if (data.fullPrice > data.discountedPrice) {
-                        priceInfo.innerHTML = `${data.nights} nights: <span style="text-decoration: line-through; color: #717171;">$${data.fullPrice}</span> $${data.discountedPrice}`;
-                    } else {
-                        priceInfo.textContent = `${data.nights} nights: $${data.fullPrice}`;
-                    }
-                    statusText.textContent = `${data.startDate.toLocaleDateString()} - ${data.endDate.toLocaleDateString()}`;
-                } else {
-                    statusText.textContent = data && data.startDate ? 'Select end date' : 'Select from 3 to 28 nights';
-                    priceInfo.textContent = '';
-                }
-                validateForm();
-            });
-
-            [nameInput, emailInput, phoneInput, agreeInput].forEach(el => {
-                el.addEventListener('input', validateForm);
-                el.addEventListener('change', validateForm);
-            });
-
-            submitBtn.addEventListener('click', async () => {
-                submitBtn.disabled = true;
-                const originalText = submitBtn.textContent;
-                submitBtn.textContent = 'Processing...';
-                errorDiv.style.display = 'none';
-
-                const payload = {
-                    fullName: nameInput.value.trim(),
-                    Email: emailInput.value.trim(),
-                    Phone: phoneInput.value.trim(),
-                    From: formatDate(data.startDate),
-                    To: formatDate(data.endDate)
-                };
-
-                try {
-                    // 1. Reservation API
-                    const resResponse = await fetch('https://shorttermreservation.azurewebsites.net/api/Reservation', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!resResponse.ok) {
-                        throw new Error('Reservation failed with status ' + resResponse.status);
-                    }
-
-                    let reservationID;
-                    const resContentType = resResponse.headers.get("content-type");
-                    if (resContentType && resContentType.indexOf("application/json") !== -1) {
-                        const data = await resResponse.json();
-                        reservationID = data.reservationID || data.id || data;
-                    } else {
-                        reservationID = await resResponse.text();
-                    }
-                    if (typeof reservationID === 'string') {
-                        reservationID = reservationID.replace(/^"|"$/g, '');
-                    }
-
-                    // 2. Payment API
-                    const payPayload = {
-                        reservationID: reservationID,
-                        amount: data.discountedPrice
-                    };
-
-                    const payResponse = await fetch('https://shorttermreservation.azurewebsites.net/api/Payment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payPayload)
-                    });
-
-                    if (!payResponse.ok) {
-                        throw new Error('Payment failed with status ' + payResponse.status);
-                    }
-
-                    let paymentUrl;
-                    const payContentType = payResponse.headers.get("content-type");
-                    if (payContentType && payContentType.indexOf("application/json") !== -1) {
-                        const data = await payResponse.json();
-                        paymentUrl = data.url || data;
-                    } else {
-                        paymentUrl = await payResponse.text();
-                    }
-                    if (typeof paymentUrl === 'string') {
-                        paymentUrl = paymentUrl.replace(/^"|"$/g, '');
-                    }
-
-                    const cookieData = JSON.stringify({
-                        reservationID: reservationID,
-                        from: formatDate(data.startDate),
-                        to: formatDate(data.endDate),
-                        fullName: nameInput.value.trim(),
-                        email: emailInput.value.trim(),
-                        phone: phoneInput.value.trim(),
-                        price: data.discountedPrice,
-                        paymentUrl: paymentUrl,
-                        createdAt: Date.now()
-                    });
-                    localStorage.setItem('booking_pending', cookieData);
-
-                    window.location.href = paymentUrl;
-
-                } catch (err) {
-                    console.error('Booking error:', err);
-                    errorDiv.textContent = 'There was an error on the website, please try again later or email the request with desirable dates.';
-                    errorDiv.style.display = 'block';
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                }
-            });
-        });
-    </script>
 </body>
-
 </html>
