@@ -4,43 +4,56 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Incomplete Booking - Luxury rental in Copacabana - Rio de Janeiro</title>
-    
+    <title>Casa de Pedra - Luxury rental in Copacabana - Rio de Janeiro</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Historic 4-bedroom luxury villa in Copacabana, Rio de Janeiro. Steps from the beach. Features a hot tub, dedicated workspace, and accommodates up to 10 guests.">
+    <meta property="og:title" content="Luxury Rental in Copacabana - Casa de Pedra">
+    <meta property="og:description"
+        content="Historic 4-bedroom luxury villa. Steps away from the beach, featuring a hot tub, BBQ, and workspace. Sleeps 10.">
+    <meta property="og:image" content="https://casadepedra.rio/images/collage house wide.png">
+    <meta property="og:url" content="https://casadepedra.rio">
+    <meta property="og:type" content="website">
+
     <link rel="icon" type="image/png" href="images/favicon.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <!-- External CSS -->
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Styles and Scripts -->
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="rio-chic">
 
-    <!---------------------- HEADER ---------------------->
-    <header>
-        <h1>Luxury rental in Copacabana • Rio • Brazil</h1>
-        <p>Historic 4BR/4.5BA Villa — Steps away from the beach • Hot Tub • Workspace • Sleeps 10</p>
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-overlay">
+            <div class="hero-content">
+                <h1>Luxury rental in Copacabana</h1>
+                <h1>Rio • Brazil</h1>
+                <p>Historic 4BR/4.5BA Villa • Steps from the Beach • Hot Tub • Sleeps 10</p>
+            </div>
+        </div>
     </header>
 
-    <!---------------------- NAVIGATION ---------------------->
-    <nav>
-        <a href="index.html">Back to Home Screen</a>
-    </nav>
-
-    <main class="container section" id="content-container" style="max-width: 800px; text-align: center;">
+    <main class="container section confirmation-container" id="content-container">
         <h2>Booking Incomplete</h2>
-        <p style="font-size: 18px; color: #333; margin-bottom: 10px;">
+        <p class="confirmation-message" style="color: var(--text-main);">
             It looks like you didn't finish your booking. Would you like to continue?
         </p>
 
         <div class="details-box" id="booking-details" style="display:none;"></div>
 
-        <div>
-            <button id="btn-continue" class="action-btn">Continue</button>
-            <button id="btn-cancel" class="action-btn secondary">Cancel Booking</button>
+        <div class="confirmation-actions">
+            <button id="btn-continue" class="btn-primary">Continue</button>
+            <button id="btn-cancel" class="btn-outline">Cancel Booking</button>
         </div>
     </main>
 

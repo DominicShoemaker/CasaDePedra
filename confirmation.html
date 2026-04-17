@@ -4,33 +4,46 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reservation Confirmation - Luxury rental in Copacabana - Rio de Janeiro</title>
-    
+    <title>Casa de Pedra - Luxury rental in Copacabana - Rio de Janeiro</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Historic 4-bedroom luxury villa in Copacabana, Rio de Janeiro. Steps from the beach. Features a hot tub, dedicated workspace, and accommodates up to 10 guests.">
+    <meta property="og:title" content="Luxury Rental in Copacabana - Casa de Pedra">
+    <meta property="og:description"
+        content="Historic 4-bedroom luxury villa. Steps away from the beach, featuring a hot tub, BBQ, and workspace. Sleeps 10.">
+    <meta property="og:image" content="https://casadepedra.rio/images/collage house wide.png">
+    <meta property="og:url" content="https://casadepedra.rio">
+    <meta property="og:type" content="website">
+
     <link rel="icon" type="image/png" href="images/favicon.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <!-- External CSS -->
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Styles and Scripts -->
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="rio-chic">
 
-    <!---------------------- HEADER ---------------------->
-    <header>
-        <h1>Luxury rental in Copacabana • Rio • Brazil</h1>
-        <p>Historic 4BR/4.5BA Villa — Steps away from the beach • Hot Tub • Workspace • Sleeps 10</p>
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-overlay">
+            <div class="hero-content">
+                <h1>Luxury rental in Copacabana</h1>
+                <h1>Rio • Brazil</h1>
+                <p>Historic 4BR/4.5BA Villa • Steps from the Beach • Hot Tub • Sleeps 10</p>
+            </div>
+        </div>
     </header>
 
-    <!---------------------- NAVIGATION ---------------------->
-    <nav>
-        <a href="index.html">Back to Home Screen</a>
-    </nav>
-
-    <main class="container section" id="content-container" style="max-width: 800px; text-align: center;">
+    <main class="container section confirmation-container" id="content-container">
         <!-- Content will be injected by JavaScript -->
         <p>Loading your reservation details...</p>
     </main>
@@ -68,7 +81,7 @@
 
                 container.innerHTML = `
                     <h2>🎉 Reservation Confirmed!</h2>
-                    <p style="font-size: 18px; color: #555;">Thank you for booking with us. We look forward to hosting you at Casa de Pedra.</p>
+                    <p class="confirmation-message">Thank you for booking with us. We look forward to hosting you at Casa de Pedra.</p>
                     
                     <div class="details-box">
                         <p><span>Reservation ID:</span> <strong>${reservationID}</strong></p>
@@ -78,25 +91,25 @@
                         <p><span>Total Paid:</span> <strong>$${amount}</strong></p>
                     </div>
 
-                    <div>
-                        <button class="action-btn" onclick="window.print()">Print Details</button>
-                        <a href="/" class="action-btn secondary">Return to Homepage</a>
+                    <div class="confirmation-actions">
+                        <button class="btn-primary" onclick="window.print()">Print Details</button>
+                        <a href="index.html" class="btn-outline">Return to Homepage</a>
                     </div>
                 `;
             } else {
                 // Failed state or fallback
                 container.innerHTML = `
-                    <h2 style="color: var(--error-color);">Reservation Incomplete</h2>
-                    <p class="error-message" style="color: var(--error-color); font-size: 20px; margin-bottom: 20px;">We're sorry, but your reservation did not go through or the payment was unsuccessful.</p>
-                    <p style="font-size: 18px; color: #333; margin-bottom: 30px;">
+                    <h2 class="error-heading">Reservation Incomplete</h2>
+                    <p class="error-message">We're sorry, but your reservation did not go through or the payment was unsuccessful.</p>
+                    <p class="support-info">
                         Please try booking again later. If the issue persists, we can process your reservation manually.<br><br>
                         <strong>Contact Support:</strong><br>
-                        Email: <a href="mailto:support@casadepedra.rio" style="color: var(--accent-color);">support@casadepedra.rio</a><br>
+                        Email: <a href="mailto:support@casadepedra.rio" class="support-link">support@casadepedra.rio</a><br>
                         Phone/WhatsApp: <strong>+1 (669) 268-7875</strong>
                     </p>
                     
-                    <div>
-                        <a href="index.html" class="action-btn">Return to Homepage</a>
+                    <div class="confirmation-actions">
+                        <a href="index.html" class="btn-primary">Return to Homepage</a>
                     </div>
                 `;
             }
