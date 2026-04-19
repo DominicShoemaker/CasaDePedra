@@ -536,10 +536,8 @@ class StrDateRangePicker extends HTMLElement {
         if (!this.priceRules) return null;
         let price = this.priceRules.default;
 
-        // Check specific dates (MM-DD)
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        const dateKey = `${m}-${d}`;
+        // Check specific dates (YYYY-MM-DD)
+        const dateKey = this.toLocalISO(date);
 
         if (this.priceRules.dates && this.priceRules.dates[dateKey]) {
             price = this.priceRules.dates[dateKey];
