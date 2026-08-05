@@ -28,6 +28,8 @@
 
     <!-- Styles and Scripts -->
     <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+    <script src="pricing-client.js" defer></script>
     <script src="script.js" defer></script>
     <script src="date-range-picker/date-picker.js"></script>
 </head>
@@ -170,7 +172,7 @@
 
             <div id="booking-widget">
                 <str-date-range-picker api-url="https://shorttermreservation.azurewebsites.net/api/Reservation"
-                    price-rules-url="https://shorttermreservation.azurewebsites.net/api/price-rules"></str-date-range-picker>
+                    min-stay-days="1" max-stay-days="28" display-stay-nights="3"></str-date-range-picker>
 
                 <div class="booking-form">
                     <div class="input-row">
@@ -206,6 +208,7 @@
                             <button id="submit-booking" disabled>Book Now</button>
                         </div>
                     </div>
+                    <div id="priceAdjustmentInfo" class="price-adjustment-info" aria-live="polite"></div>
                     <div id="booking-error"></div>
                 </div>
             </div>

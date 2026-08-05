@@ -616,3 +616,10 @@ footer {
 .support-link:hover {
     text-decoration: underline;
 }
+.price-adjustment-info {
+    min-height: 1.4rem;
+    margin-top: 0.6rem;
+    color: #5f554b;
+    font-size: 0.9rem;
+    text-align: center;
+}

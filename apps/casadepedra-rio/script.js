@@ -124,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const picker = document.querySelector('str-date-range-picker');
     const priceInfo = document.getElementById('priceInfo');
+    const priceAdjustmentInfo = document.getElementById('priceAdjustmentInfo');
     const statusText = document.getElementById('statusText');
 
     const nameInput = document.getElementById('guest-name');
@@ -135,6 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const errorDiv = document.getElementById('booking-error');
 
     let data = null;
+    let pricingRequestVersion = 0;
 
     function formatDate(date) {
         if (!date) return '';
@@ -200,17 +202,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (picker) {
-        picker.addEventListener('selection-changed', (e) => {
-            data = e.detail;
-            if (data && data.isComplete) {
-                if (data.fullPrice > data.discountedPrice) {
-                    priceInfo.innerHTML = `${data.nights} nights: <span style="text-decoration: line-through; color: #717171;">$${data.fullPrice}</span> $${data.discountedPrice}`;
-                } else {
-                    priceInfo.textContent = `${data.nights} nights: $${data.fullPrice}`;
+        picker.addEventListener('selection-changed', async (e) => {
+            const requestVersion = ++pricingRequestVersion;
+            const selection = e.detail;
+            priceAdjustmentInfo.textContent = '';
+            if (selection && selection.isComplete) {
+                data = { ...selection, isComplete: false };
+                priceInfo.textContent = 'Calculating price…';
+                statusText.textContent = `${selection.startDate.toLocaleDateString()} - ${selection.endDate.toLocaleDateString()}`;
+                validateForm();
+                try {
+                    const quote = await globalThis.CasaPricing.evaluateStay(formatDate(selection.startDate), formatDate(selection.endDate));
+                    if (requestVersion !== pricingRequestVersion) return;
+                    const baseline = Number(quote.nightlySubtotal);
+                    const adjustment = Number(quote.stayAdjustment);
+                    const total = Number(quote.totalBeforeFeesAndTax);
+                    const money = value => new Intl.NumberFormat('en-US', {
+                        style: 'currency', currency: quote.currency
+                    }).format(value);
+                    data = { ...selection, fullPrice: baseline, discountedPrice: total, isComplete: true, pricingQuote: quote };
+                    priceInfo.textContent = `${selection.nights} ${selection.nights === 1 ? 'night' : 'nights'}: ${money(total)}`;
+                    if (adjustment > 0) {
+                        priceAdjustmentInfo.textContent = `Includes a ${money(adjustment)} short-stay adjustment compared with the standard three-night calendar rate.`;
+                    } else if (adjustment < 0) {
+                        priceAdjustmentInfo.textContent = `Includes a ${money(Math.abs(adjustment))} length-of-stay discount from the standard three-night calendar rate.`;
+                    } else {
+                        priceAdjustmentInfo.textContent = 'Standard three-night calendar rate applies.';
+                    }
+                } catch (error) {
+                    if (requestVersion !== pricingRequestVersion) return;
+                    data = null;
+                    priceInfo.textContent = '';
+                    priceAdjustmentInfo.textContent = error.code === 'MINIMUM_STAY_NOT_MET'
+                        ? 'These dates require a longer minimum stay.'
+                        : 'The price is temporarily unavailable. Please try again.';
                 }
-                statusText.textContent = `${data.startDate.toLocaleDateString()} - ${data.endDate.toLocaleDateString()}`;
             } else {
-                statusText.textContent = data && data.startDate ? 'Select end date' : 'Select from 3 to 28 nights';
+                data = selection;
+                statusText.textContent = selection && selection.startDate ? 'Select end date' : 'Select from 1 to 28 nights';
                 priceInfo.textContent = '';
             }
             validateForm();

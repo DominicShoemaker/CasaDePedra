@@ -24,9 +24,15 @@ await mkdir(resolve(dist, "pricing-casadepedra-rio/vendor/price-engine"), { recu
 await cp(engineSource, resolve(dist, "pricing-casadepedra-rio/vendor/price-engine"), { recursive: true });
 
 const pricingApiBaseUrl = String(process.env.PRICING_API_BASE_URL ?? "").replace(/\/$/, "");
+const runtimeConfig = `globalThis.PMC_CONFIG = Object.freeze(${JSON.stringify({ pricingApiBaseUrl }, null, 2)});\n`;
+await writeFile(
+  resolve(dist, "casadepedra-rio/config.js"),
+  runtimeConfig,
+  "utf8",
+);
 await writeFile(
   resolve(dist, "pricing-casadepedra-rio/config.js"),
-  `globalThis.PMC_CONFIG = Object.freeze(${JSON.stringify({ pricingApiBaseUrl }, null, 2)});\n`,
+  runtimeConfig,
   "utf8",
 );
 
