@@ -4,7 +4,7 @@
   "private": true,
   "description": "HTTP service that loads approved rule files and runs @pmc/price-engine.",
   "type": "module",
-  "main": "src/{index.js,functions/*.js}",
+  "main": "src/functions/*.js",
   "scripts": {
     "start": "func start",
     "start:legacy": "node src/server.js",
