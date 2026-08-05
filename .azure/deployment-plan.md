@@ -1,6 +1,6 @@
 # CasaDePedra GitHub and Azure Deployment Plan
 
-> **Status:** Partially Deployed — GitHub publication blocked by local approval quota
+> **Status:** Deployed — acceptance and custom-domain binding pending
 
 Generated: 2026-08-04
 
@@ -244,6 +244,11 @@ The discovery and planning phase is complete. No application or billable Azure r
 
 ### Validation Proof
 
+- 2026-08-05 pricing SPA release validation: confirmed subscription `Azure subscription 1` (`9c76be28-01ff-41da-80e6-9c66568b4f6c`) and target Free Static Web App `CasaDePedra-Pricing` in `STR-Pricing-West2`, West US 2, with hostname `proud-rock-087e47d1e.7.azurestaticapps.net`.
+- `pnpm test:pricing-spa`: 7 tests passed.
+- `PRICING_API_BASE_URL=https://str-price-engine-h9dfgcaeh9hnc8ga.westus2-01.azurewebsites.net pnpm build:static`: passed; generated 16 pricing SPA files totaling 141,361 bytes.
+- Release scan confirmed the built SPA contains the intended pricing API URL and contains no supplied Static Web Apps deployment token or deployment-secret name.
+
 - `az bicep build --file infra/main.bicep`: passed without diagnostics.
 - `az bicep lint --file infra/main.bicep`: passed without diagnostics.
 - `az deployment sub validate --location westus2 --template-file infra/main.bicep --parameters infra/main.parameters.json`: `Succeeded` after the final RBAC change.
@@ -254,6 +259,12 @@ The discovery and planning phase is complete. No application or billable Azure r
 - Application verification: 19 engine tests, 7 pricing-SPA tests, 10 pricing-API tests, deterministic static build, production Function packaging dry run, canonical YAML/JSON parity, secret scan, and local browser interaction all passed.
 
 ## 16. Deployment Record
+
+- Pricing SPA production deployment completed on 2026-08-05 to Static Web App `CasaDePedra-Pricing` in resource group `STR-Pricing-West2`.
+- Production SPA hostname: `https://proud-rock-087e47d1e.7.azurestaticapps.net`.
+- The production build targets `https://str-price-engine-h9dfgcaeh9hnc8ga.westus2-01.azurewebsites.net`.
+- Post-deployment checks passed: SPA root `200`, configuration loaded, pricing API readiness `200`, rule-set `200`, and CORS explicitly allowed the Static Web App production origin.
+- Remaining release work: rotate the exposed Static Web Apps deployment token, bind and validate `pricing.casadepedra.rio`, and complete owner acceptance testing.
 
 - Subscription deployment `casadepedra-pricing-prod-20260804`: `Succeeded` on 2026-08-04.
 - Created only the isolated `rg-casadepedra-pricing-prod` resources previewed by what-if; existing Casa and reservation resources were not changed.
