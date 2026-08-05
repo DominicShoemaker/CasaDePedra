@@ -1,0 +1,23 @@
+{
+  "name": "@pmc/pricing-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HTTP service that loads approved rule files and runs @pmc/price-engine.",
+  "type": "module",
+  "main": "src/{index.js,functions/*.js}",
+  "scripts": {
+    "start": "func start",
+    "start:legacy": "node src/server.js",
+    "test": "node --test test/service.test.js"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.11.0",
+    "@azure/identity": "^4.13.0",
+    "@azure/storage-blob": "^12.30.0",
+    "@pmc/price-engine": "workspace:*",
+    "yaml": "^2.8.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

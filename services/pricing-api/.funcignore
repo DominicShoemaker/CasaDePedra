@@ -1,0 +1,5 @@
+.git*
+.env*
+test/
+README.md
+src/server.js

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.deploy/
+.pnpm-store/
+local.settings.json
+*.publishsettings
+*.deployment-token
+.env
+.env.*
+!.env.example

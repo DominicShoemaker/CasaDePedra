@@ -1,0 +1,65 @@
+name: Deploy pricing.casadepedra.rio
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/pricing-casadepedra-rio/**"
+      - "packages/date-range-picker/**"
+      - "packages/price-engine/**"
+      - "scripts/build-static.mjs"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/deploy-pricing-casadepedra-rio.yml"
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches: [main]
+    paths:
+      - "apps/pricing-casadepedra-rio/**"
+      - "packages/date-range-picker/**"
+      - "packages/price-engine/**"
+      - "scripts/build-static.mjs"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/deploy-pricing-casadepedra-rio.yml"
+
+jobs:
+  build_and_deploy:
+    if: github.event_name == 'push' || github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      PRICING_API_BASE_URL: ${{ vars.PRICING_API_BASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm build:static
+      - uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PRICING_CASADEPEDRA_RIO }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: dist/pricing-casadepedra-rio
+          output_location: ""
+          skip_app_build: true
+
+  close_preview:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PRICING_CASADEPEDRA_RIO }}
+          action: close

@@ -1,0 +1,107 @@
+{
+  "id": "casa-de-pedra-rio-2026-2029-v1",
+  "notice": "Sanitized calendar snapshot with calculated Gregorian New Year, Rio Carnival, Western Easter, and fixed Brazil Independence Day facts for pricing evaluation.",
+  "expiresAt": "2029-12-31T23:59:59Z",
+  "coverage": {
+    "from": "2026-01-01",
+    "through": "2029-12-31",
+    "resolvedKeys": [
+      "br.independence-day",
+      "br.rj.rio.carnival",
+      "br.rj.rio.rock-in-rio",
+      "christian.easter.western",
+      "gregorian.new-year"
+    ]
+  },
+  "events": [
+    {
+      "key": "gregorian.new-year",
+      "date": "2026-01-01",
+      "status": "calculated"
+    },
+    {
+      "key": "gregorian.new-year",
+      "date": "2027-01-01",
+      "status": "calculated"
+    },
+    {
+      "key": "gregorian.new-year",
+      "date": "2028-01-01",
+      "status": "calculated"
+    },
+    {
+      "key": "gregorian.new-year",
+      "date": "2029-01-01",
+      "status": "calculated"
+    },
+    {
+      "key": "gregorian.new-year",
+      "date": "2030-01-01",
+      "status": "calculated"
+    },
+    {
+      "key": "br.rj.rio.carnival",
+      "localStart": "2026-02-15",
+      "localEndExclusive": "2026-02-18",
+      "status": "calculated"
+    },
+    {
+      "key": "br.rj.rio.carnival",
+      "localStart": "2027-02-07",
+      "localEndExclusive": "2027-02-10",
+      "status": "calculated"
+    },
+    {
+      "key": "br.rj.rio.carnival",
+      "localStart": "2028-02-27",
+      "localEndExclusive": "2028-03-01",
+      "status": "calculated"
+    },
+    {
+      "key": "br.rj.rio.carnival",
+      "localStart": "2029-02-11",
+      "localEndExclusive": "2029-02-14",
+      "status": "calculated"
+    },
+    {
+      "key": "christian.easter.western",
+      "date": "2026-04-05",
+      "status": "calculated"
+    },
+    {
+      "key": "christian.easter.western",
+      "date": "2027-03-28",
+      "status": "calculated"
+    },
+    {
+      "key": "christian.easter.western",
+      "date": "2028-04-16",
+      "status": "calculated"
+    },
+    {
+      "key": "christian.easter.western",
+      "date": "2029-04-01",
+      "status": "calculated"
+    },
+    {
+      "key": "br.independence-day",
+      "date": "2026-09-07",
+      "status": "calculated"
+    },
+    {
+      "key": "br.independence-day",
+      "date": "2027-09-07",
+      "status": "calculated"
+    },
+    {
+      "key": "br.independence-day",
+      "date": "2028-09-07",
+      "status": "calculated"
+    },
+    {
+      "key": "br.independence-day",
+      "date": "2029-09-07",
+      "status": "calculated"
+    }
+  ]
+}

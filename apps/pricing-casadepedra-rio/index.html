@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Offline Casa de Pedra calendar pricing laboratory powered entirely by the browser price engine.">
+    <title>Casa de Pedra · Calendar Pricing Lab</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">CP</span>
+        <span>
+          <strong>Casa de Pedra</strong>
+          <small>Calendar pricing lab</small>
+        </span>
+      </div>
+      <span class="offline-badge"><span aria-hidden="true">●</span> Browser calculation only</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Interactive pricing preview</p>
+        <h1 id="page-title">See how stay length changes every night.</h1>
+        <p>Explore two calendar years beginning today. Switch between one-, two-, and three-night rates, select an actual date range, and inspect the exact adjustment against the standard three-night calendar rate.</p>
+      </section>
+
+      <section class="surface calendar-surface" aria-labelledby="calendar-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Availability and nightly rates</p>
+            <h2 id="calendar-title">Select your stay</h2>
+          </div>
+          <p id="calendar-mode-copy" class="section-note">Calendar showing the 3-night rate.</p>
+        </div>
+
+        <div class="picker-frame">
+          <str-date-range-picker
+            id="price-calendar"
+            show-stay-length-options
+            display-stay-nights="3"
+            min-stay-days="1"
+            max-stay-days="28"
+            style="--primary-color: #0b7285; --hover-bg: #f4efe6; --text-color: #17323d; --muted-color: #68777d; --disabled-color: #d9d5cc;">
+          </str-date-range-picker>
+        </div>
+
+        <section id="quote-panel" class="quote-panel empty" aria-labelledby="quote-title" aria-live="polite" data-testid="quote-panel">
+          <div>
+            <p class="quote-kicker" id="quote-dates">No dates selected</p>
+            <h3 id="quote-title">Choose check-in and checkout</h3>
+            <p id="quote-comment">The exact stay subtotal and adjustment will appear here.</p>
+          </div>
+          <div class="quote-total">
+            <span>Stay subtotal before fees and taxes</span>
+            <strong id="quote-total">—</strong>
+            <small id="quote-average">—</small>
+          </div>
+          <dl class="quote-breakdown" id="quote-breakdown" hidden>
+            <div><dt>Standard 3-night-rate subtotal</dt><dd id="quote-baseline">—</dd></div>
+            <div><dt id="adjustment-label">Length-of-stay adjustment</dt><dd id="quote-adjustment">—</dd></div>
+          </dl>
+          <div id="quote-restriction" class="restriction" hidden></div>
+          <div id="quote-rules" class="rule-chips" hidden></div>
+        </section>
+      </section>
+
+      <section class="surface chart-surface" aria-labelledby="chart-title">
+        <div class="section-heading chart-heading">
+          <div>
+            <p class="eyebrow">Calculated nightly previews</p>
+            <h2 id="chart-title">One-, two-, and three-night rate chart</h2>
+          </div>
+          <div id="chart-legend" class="chart-legend" aria-label="Price series legend"></div>
+        </div>
+        <p class="chart-copy">The three connected lines cover two calendar years beginning today and use the same browser-engine results shown inside the calendar. Gold bands mark dates with a multi-night minimum.</p>
+        <div id="chart-viewport" class="chart-viewport" tabindex="0" aria-label="Horizontally scrollable price chart">
+          <div id="chart-stage" class="chart-stage">
+            <canvas id="price-chart" height="380" tabindex="0" role="img" aria-label="Nightly prices for one, two, and three-night bookings over the calendar coverage"></canvas>
+            <div id="chart-tooltip" class="chart-tooltip" hidden></div>
+          </div>
+        </div>
+        <div class="chart-foot">
+          <span>Scroll horizontally to inspect the full calendar period.</span>
+          <span id="chart-summary" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section class="surface editor-surface" aria-labelledby="editor-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Local inputs</p>
+            <h2 id="editor-title">Edit the calculation documents</h2>
+          </div>
+          <button id="apply-inputs" class="primary-button" type="button" data-testid="apply-inputs">Apply inputs</button>
+        </div>
+        <p class="editor-copy">Both documents remain in this page. Applying them rebuilds the three calendar series locally; no pricing request is sent to a backend service.</p>
+        <div class="editor-grid">
+          <label class="editor-field" for="rules-input">
+            <span>Price rules <small>pmc.price-rules/v1 JSON</small></span>
+            <textarea id="rules-input" spellcheck="false" data-testid="rules-input"></textarea>
+          </label>
+          <label class="editor-field" for="calendar-input">
+            <span>Calendar description <small>event snapshot JSON</small></span>
+            <textarea id="calendar-input" spellcheck="false" data-testid="calendar-input"></textarea>
+          </label>
+        </div>
+        <div id="input-status" class="input-status" role="status" aria-live="polite">Loading local example documents…</div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Casa de Pedra · Copacabana, Rio de Janeiro</span>
+      <span>Offline price-engine demonstration</span>
+    </footer>
+
+    <script src="./config.js"></script>
+    <script defer src="./date-picker.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

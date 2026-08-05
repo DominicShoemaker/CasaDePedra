@@ -15,6 +15,11 @@ class StrDateRangePicker extends HTMLElement {
         this.minStayDays = 3;
         this.maxStayDays = 28;
         this.monthsToShow = 2;
+        this.showStayLengthOptions = false;
+        this.displayStayNights = 3;
+        this.pricingProvider = null;
+        this.maxCheckInDate = null;
+        this.maxSelectableDate = null;
         this._resizeObserver = null;
 
         // Constraints
@@ -31,6 +36,10 @@ class StrDateRangePicker extends HTMLElement {
     connectedCallback() {
         this.apiUrl = this.getAttribute('api-url');
         this.priceRulesUrl = this.getAttribute('price-rules-url');
+        this.showStayLengthOptions = this.hasAttribute('show-stay-length-options');
+        this.displayStayNights = this.readIntegerAttribute('display-stay-nights', 3, 1, 3);
+        this.minStayDays = this.readIntegerAttribute('min-stay-days', this.minStayDays, 1, 3660);
+        this.maxStayDays = this.readIntegerAttribute('max-stay-days', this.maxStayDays, this.minStayDays, 3660);
         this.render();
         this.loadData();
         this.addEventListeners();
@@ -64,16 +73,69 @@ class StrDateRangePicker extends HTMLElement {
     }
 
     async loadData() {
+        if (!this.apiUrl && !this.priceRulesUrl) {
+            this.hideOverlay();
+            this.updateCalendars();
+            return;
+        }
         this.showOverlay("Loading calendar...", false);
         try {
-            await Promise.all([
-                this.fetchBusyDates(),
-                this.fetchPriceRules()
-            ]);
+            const requests = [];
+            if (this.apiUrl) requests.push(this.fetchBusyDates());
+            if (this.priceRulesUrl) requests.push(this.fetchPriceRules());
+            await Promise.all(requests);
             this.hideOverlay();
         } catch (e) {
             this.showOverlay(`Calendar is not available.<br><br>Please reload the page after 1-2 minutes or request booking by email or WhatsApp.`, true);
         }
+    }
+
+    readIntegerAttribute(name, fallback, minimum, maximum) {
+        const value = Number.parseInt(this.getAttribute(name), 10);
+        if (!Number.isInteger(value)) return fallback;
+        return Math.min(maximum, Math.max(minimum, value));
+    }
+
+    fromLocalISO(value) {
+        if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+        const [year, month, day] = value.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    setPricingProvider(provider) {
+        if (!provider || typeof provider.getPriceForDate !== 'function') {
+            throw new TypeError('Pricing provider must define getPriceForDate(date, assumedStayNights).');
+        }
+        this.pricingProvider = provider;
+        this.updateCalendars();
+    }
+
+    setBusyDates(ranges = []) {
+        this.busyDates = ranges.map(range => ({
+            startDate: range.From ? range.From.split('T')[0] : range.startDate,
+            endDate: range.To ? range.To.split('T')[0] : range.endDate
+        }));
+        this.updateCalendars();
+    }
+
+    setSelectableBounds(from, through) {
+        const first = this.fromLocalISO(from);
+        const last = this.fromLocalISO(through);
+        if (!first || !last || first > last) throw new TypeError('Selectable bounds must be valid ordered local dates.');
+
+        const tomorrow = new Date(this.today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        this.minSelectableDate = first > tomorrow ? first : tomorrow;
+        this.maxCheckInDate = last;
+        const checkoutBoundary = new Date(last);
+        checkoutBoundary.setDate(checkoutBoundary.getDate() + 1);
+        this.maxSelectableDate = checkoutBoundary;
+        this.maxNavDate = new Date(checkoutBoundary.getFullYear(), checkoutBoundary.getMonth() + 1, 1);
+
+        const currentMonth = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
+        const firstMonth = new Date(first.getFullYear(), first.getMonth(), 1);
+        if (currentMonth < firstMonth || currentMonth >= this.maxNavDate) this.currentDate = firstMonth;
+        this.updateCalendars();
     }
 
     showOverlay(htmlContent, isError) {
@@ -205,6 +267,54 @@ class StrDateRangePicker extends HTMLElement {
                     font-size: 18px;
                     color: var(--text-color);
                 }
+                .stay-options {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                    margin: 2px 10px 18px;
+                }
+                .stay-options-label {
+                    width: 100%;
+                    color: var(--muted-color);
+                    font-size: 12px;
+                    font-weight: 600;
+                    letter-spacing: 0.04em;
+                    text-align: center;
+                    text-transform: uppercase;
+                }
+                .stay-option {
+                    position: relative;
+                }
+                .stay-option input {
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    opacity: 0;
+                    pointer-events: none;
+                }
+                .stay-option label {
+                    display: block;
+                    min-width: 82px;
+                    padding: 8px 12px;
+                    border: 1px solid var(--disabled-color);
+                    border-radius: 999px;
+                    color: var(--text-color);
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-weight: 600;
+                    text-align: center;
+                }
+                .stay-option input:checked + label {
+                    border-color: var(--primary-color);
+                    background: var(--primary-color);
+                    color: white;
+                }
+                .stay-option input:focus-visible + label {
+                    outline: 3px solid color-mix(in srgb, var(--primary-color) 30%, transparent);
+                    outline-offset: 2px;
+                }
                 .calendars-wrapper {
                     display: flex;
                     flex-wrap: wrap;
@@ -319,8 +429,55 @@ class StrDateRangePicker extends HTMLElement {
                     background: linear-gradient(135deg, var(--disabled-color) 50%, var(--primary-color) 50%);
                     color: white;
                 }
+                .day.minimum-stay-required:not(.selected):not(.range-start):not(.range-end):not(.in-range):not(.hover-range):not(.hover-end) {
+                    background: #fff0c7;
+                    border-radius: 10px;
+                }
+                .day.checkout-only:not(.selected):not(.range-end) {
+                    border: 1px dashed var(--muted-color);
+                    color: var(--muted-color);
+                }
+                .minimum-stay-badge {
+                    position: absolute;
+                    top: 1px;
+                    right: 2px;
+                    color: #8a5a00;
+                    font-size: 7px;
+                    font-weight: 800;
+                    line-height: 1;
+                }
+                .day.selected .minimum-stay-badge,
+                .day.range-start .minimum-stay-badge,
+                .day.range-end .minimum-stay-badge {
+                    color: white;
+                }
+                .minimum-stay-note {
+                    max-width: 760px;
+                    margin: 16px auto 4px;
+                    padding: 10px 14px;
+                    border-left: 4px solid #d89519;
+                    background: #fff8e8;
+                    color: #72501a;
+                    font-size: 12px;
+                    line-height: 1.45;
+                    text-align: left;
+                }
             </style>
         `;
+    }
+
+    getStayLengthOptionsMarkup() {
+        if (!this.showStayLengthOptions) return '';
+        const options = [1, 2, 3].map(nights => `
+            <span class="stay-option">
+                <input type="radio" id="stay-${nights}" name="display-stay-nights" value="${nights}" ${this.displayStayNights === nights ? 'checked' : ''}>
+                <label for="stay-${nights}">${nights} ${nights === 1 ? 'night' : 'nights'}</label>
+            </span>
+        `).join('');
+        return `<div class="stay-options" role="radiogroup" aria-label="Calendar price assumption">
+            <span class="stay-options-label">Display nightly price for</span>
+            ${options}
+        </div>`;
     }
 
     render() {
@@ -331,10 +488,12 @@ class StrDateRangePicker extends HTMLElement {
                     <div class="overlay-content" id="overlay-content"></div>
                 </div>
                 <div class="controls">
-                    <button id="prevBtn">&lt;</button>
-                    <button id="nextBtn">&gt;</button>
+                    <button id="prevBtn" aria-label="Previous month">&lt;</button>
+                    <button id="nextBtn" aria-label="Next month">&gt;</button>
                 </div>
+                ${this.getStayLengthOptionsMarkup()}
                 <div class="calendars-wrapper" id="calendars"></div>
+                <div class="minimum-stay-note" id="minimum-stay-note" hidden></div>
             </div>
         `;
         this.updateCalendars();
@@ -363,6 +522,17 @@ class StrDateRangePicker extends HTMLElement {
                 this.updateCalendars();
             }
         };
+        this.shadowRoot.querySelectorAll('input[name="display-stay-nights"]').forEach(input => {
+            input.addEventListener('change', () => {
+                this.displayStayNights = Number(input.value);
+                this.updateCalendars();
+                this.dispatchEvent(new CustomEvent('price-display-mode-changed', {
+                    detail: { nights: this.displayStayNights },
+                    bubbles: true,
+                    composed: true
+                }));
+            });
+        });
     }
 
     updateCalendars() {
@@ -399,6 +569,7 @@ class StrDateRangePicker extends HTMLElement {
         nextMonthTarget.setMonth(nextMonthTarget.getMonth() + this.monthsToShow);
         nextBtn.disabled = nextMonthTarget >= this.maxNavDate;
 
+        this.updateMinimumStayNote();
         this.dispatchSelectionEvent();
     }
 
@@ -441,6 +612,19 @@ class StrDateRangePicker extends HTMLElement {
             if (currentDay < this.minSelectableDate) {
                 classList.push('disabled');
             }
+            if (this.maxSelectableDate && currentDay > this.maxSelectableDate) {
+                classList.push('disabled');
+            }
+            if (this.maxCheckInDate && currentDay > this.maxCheckInDate && !classList.includes('disabled')) {
+                const isActiveCheckout = this.startDate && (!this.endDate || this.isSameDay(currentDay, this.endDate));
+                if (isActiveCheckout) classList.push('checkout-only');
+                else classList.push('disabled');
+            }
+
+            const minimumStay = status === 'none' ? this.getMinimumStayForDate(currentDay) : null;
+            if (minimumStay && minimumStay > 1 && !classList.includes('disabled')) {
+                classList.push('minimum-stay-required');
+            }
 
             // Selection logic
             if (status !== 'full') {
@@ -454,17 +638,29 @@ class StrDateRangePicker extends HTMLElement {
             let priceHtml = '';
             if (this.priceRules && !classList.includes('disabled')) {
                 if (status === 'none' || status === 'end') {
-                    const price = this.getPriceForDate(currentDay);
+                    const price = this.getDisplayPriceForDate(currentDay);
                     if (price !== null) {
-                        priceHtml = `<div class="day-price">$${price}</div>`;
+                        priceHtml = `<div class="day-price">${this.formatPrice(price)}</div>`;
                     }
                 }
             }
 
+            const minimumStayHtml = minimumStay && minimumStay > 1 && !classList.includes('disabled')
+                ? `<span class="minimum-stay-badge" aria-label="${minimumStay} night minimum">${minimumStay}n</span>`
+                : '';
+            const dateKey = this.toLocalISO(currentDay);
+            const accessiblePrice = priceHtml ? `, ${this.formatPrice(this.getDisplayPriceForDate(currentDay))}` : '';
+            const accessibleMinimum = minimumStay && minimumStay > 1 ? `, ${minimumStay} night minimum` : '';
+            const accessibleCheckout = classList.includes('checkout-only') ? ', checkout only' : '';
+            const accessibility = classList.includes('disabled')
+                ? 'role="button" aria-disabled="true"'
+                : `role="button" tabindex="0" aria-label="${currentDay.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}${accessiblePrice}${accessibleMinimum}${accessibleCheckout}"`;
+
             // Data attributes for click handling
-            gridHtml += `<div class="${classList.join(' ')}" data-date="${currentDay.toISOString()}">
+            gridHtml += `<div class="${classList.join(' ')}" data-date="${currentDay.toISOString()}" data-testid="calendar-day-${dateKey}" ${minimumStay ? `data-minimum-stay="${minimumStay}"` : ''} ${accessibility}>
                 <span class="day-number">${d}</span>
                 ${priceHtml}
+                ${minimumStayHtml}
             </div>`;
         }
 
@@ -477,9 +673,16 @@ class StrDateRangePicker extends HTMLElement {
         // Add click events to days
         const days = monthDiv.querySelectorAll('.day:not(.disabled)');
         days.forEach(dayEl => {
-            dayEl.addEventListener('click', () => {
+            const activate = () => {
+                if (dayEl.classList.contains('checkout-only') && (!this.startDate || this.endDate)) return;
                 const dateClicked = new Date(dayEl.dataset.date);
                 this.handleDateClick(dateClicked);
+            };
+            dayEl.addEventListener('click', activate);
+            dayEl.addEventListener('keydown', event => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                activate();
             });
             dayEl.addEventListener('mouseenter', () => {
                 const dateHovered = new Date(dayEl.dataset.date);
@@ -549,6 +752,42 @@ class StrDateRangePicker extends HTMLElement {
             }
         }
         return price;
+    }
+
+    getDisplayPriceForDate(date) {
+        if (this.pricingProvider) {
+            return this.pricingProvider.getPriceForDate(this.toLocalISO(date), this.displayStayNights);
+        }
+        return this.getPriceForDate(date);
+    }
+
+    getMinimumStayForDate(date) {
+        if (!this.pricingProvider || typeof this.pricingProvider.getMinimumStayForDate !== 'function') return null;
+        const value = this.pricingProvider.getMinimumStayForDate(this.toLocalISO(date));
+        return Number.isInteger(value) ? value : null;
+    }
+
+    formatPrice(value) {
+        if (this.pricingProvider && typeof this.pricingProvider.formatPrice === 'function') {
+            return this.pricingProvider.formatPrice(value);
+        }
+        return `$${value}`;
+    }
+
+    updateMinimumStayNote() {
+        const note = this.shadowRoot.getElementById('minimum-stay-note');
+        if (!note) return;
+        const requirements = [...new Set([...this.shadowRoot.querySelectorAll('.minimum-stay-required[data-minimum-stay]')]
+            .map(element => Number(element.dataset.minimumStay))
+            .filter(value => value > 1))].sort((left, right) => left - right);
+        note.hidden = requirements.length === 0;
+        if (requirements.length === 0) {
+            note.textContent = '';
+            return;
+        }
+        const labels = requirements.map(value => `${value} nights`);
+        const readable = labels.length === 1 ? labels[0] : `${labels.slice(0, -1).join(', ')} or ${labels.at(-1)}`;
+        note.textContent = `Highlighted dates require a minimum stay of ${readable}. The badge on each date shows the exact requirement.`;
     }
 
     dispatchSelectionEvent() {
