@@ -10,6 +10,7 @@
   "scripts": {
     "build": "node scripts/build-static.mjs",
     "build:static": "node scripts/build-static.mjs",
+    "package:pricing-api": "node scripts/package-pricing-api.mjs",
     "test": "pnpm --recursive test",
     "test:engine": "pnpm --filter @pmc/price-engine test",
     "test:pricing-spa": "pnpm --filter @pmc/pricing-calendar-spa test",
