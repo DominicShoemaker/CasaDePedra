@@ -1,6 +1,6 @@
 # CasaDePedra GitHub and Azure Deployment Plan
 
-> **Status:** Validated
+> **Status:** Partially Deployed — GitHub publication blocked by local approval quota
 
 Generated: 2026-08-04
 
@@ -252,3 +252,14 @@ The discovery and planning phase is complete. No application or billable Azure r
 - `az policy assignment list`: only the default Microsoft Defender for Cloud assignment; no incompatible location or SKU policy.
 - Static RBAC review: Function UAMI has Storage Blob Data Owner for its Functions host/deployment storage, Monitoring Metrics Publisher for Application Insights, and Key Vault Secrets User. The optional GitHub configuration publisher is narrowed to Storage Blob Data Contributor. All roles are resource-scoped.
 - Application verification: 19 engine tests, 7 pricing-SPA tests, 10 pricing-API tests, deterministic static build, production Function packaging dry run, canonical YAML/JSON parity, secret scan, and local browser interaction all passed.
+
+## 16. Deployment Record
+
+- Subscription deployment `casadepedra-pricing-prod-20260804`: `Succeeded` on 2026-08-04.
+- Created only the isolated `rg-casadepedra-pricing-prod` resources previewed by what-if; existing Casa and reservation resources were not changed.
+- Pricing Static Web App Azure hostname: `https://blue-stone-07f9e6e1e.7.azurestaticapps.net` (application content not yet published).
+- Pricing Function Azure hostname: `https://func-api-y5sks6ly34pja.azurewebsites.net` (production bundle uploaded; Azure trigger synchronization and platform health check completed).
+- Private Blob configuration: `casa-de-pedra.yaml` and `rio-calendar.json` uploaded and listed successfully.
+- Live RBAC verification passed: Function identity has Storage Blob Data Owner on its storage account and Key Vault Secrets User on its vault. The interactive owner has the planned configuration-publisher role.
+- Local repository commit: `7da2abc feat: add shared pricing monorepo and Azure deployment` on branch `codex/casadepedra-monorepo-pricing`.
+- Remaining gate: the execution environment exhausted its approval quota and rejected `git push`. The branch, workflows, GitHub secrets/variables, Static Web App content, custom domain, and independent public endpoint smoke tests remain pending.
