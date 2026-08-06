@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { copyFile, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { createPriceEngine } from "@pmc/price-engine";
@@ -36,12 +36,13 @@ test("loads and hashes the Casa YAML rule file", async () => {
 });
 
 test("resolves command-line files from the original pnpm invocation directory", () => {
+  const invocationDirectory = resolve(tmpdir(), "workspace-root");
   const config = loadConfig(
-    { INIT_CWD: "C:\\workspace-root" },
-    ["--rules", ".\\rules\\house.yaml", "--calendar", ".\\calendars\\rio.json"],
+    { INIT_CWD: invocationDirectory },
+    ["--rules", join("rules", "house.yaml"), "--calendar", join("calendars", "rio.json")],
   );
-  assert.equal(config.rulesFile, "C:\\workspace-root\\rules\\house.yaml");
-  assert.equal(config.calendarFile, "C:\\workspace-root\\calendars\\rio.json");
+  assert.equal(config.rulesFile, join(invocationDirectory, "rules", "house.yaml"));
+  assert.equal(config.calendarFile, join(invocationDirectory, "calendars", "rio.json"));
 });
 
 test("the approved Casa YAML produces the proposed seasonal and event prices", async () => {
