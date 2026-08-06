@@ -107,6 +107,8 @@ test("picker keeps preview pricing separate and options opt-in", async () => {
   assert.match(source, /getDisplayPriceForDate\(date\)/);
   assert.match(source, /return this\.getPriceForDate\(date\)/);
   assert.match(source, /dispatchSelectionEvent\(\)/);
+  assert.match(source, /this\.priceRules \|\| this\.pricingProvider/);
+  assert.match(source, /Number\(this\.getPriceForDate\(current\)\)/);
   assert.match(source, /checkoutBoundary\.setDate\(checkoutBoundary\.getDate\(\) \+ 1\)/);
   assert.match(source, /\.minimum-stay-required\[data-minimum-stay\]/);
 });

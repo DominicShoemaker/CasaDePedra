@@ -800,7 +800,7 @@ class StrDateRangePicker extends HTMLElement {
             isComplete: false
         };
 
-        if (this.startDate && this.endDate && this.priceRules) {
+        if (this.startDate && this.endDate && (this.priceRules || this.pricingProvider)) {
             let total = 0;
             const start = new Date(this.startDate);
             const end = new Date(this.endDate);
@@ -808,7 +808,8 @@ class StrDateRangePicker extends HTMLElement {
 
             let current = new Date(start);
             while (current < end) {
-                total += this.getPriceForDate(current);
+                const nightlyPrice = Number(this.getPriceForDate(current));
+                if (Number.isFinite(nightlyPrice)) total += nightlyPrice;
                 current.setDate(current.getDate() + 1);
             }
 
