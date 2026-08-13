@@ -24,6 +24,10 @@
         <p class="eyebrow">Interactive pricing preview</p>
         <h1 id="page-title">See how stay length changes every night.</h1>
         <p>Explore two calendar years beginning today. Switch between one-, two-, and three-night rates, select an actual date range, and inspect the exact adjustment against the standard three-night calendar rate.</p>
+        <nav class="documentation-links" aria-label="Pricing documentation">
+          <a href="./docs/human-pricing-guide.md">Human pricing guide</a>
+          <a href="./docs/ai-pricing-runbook.md">AI editing runbook</a>
+        </nav>
       </section>
 
       <section class="surface calendar-surface" aria-labelledby="calendar-title">
@@ -107,6 +111,26 @@
           </label>
         </div>
         <div id="input-status" class="input-status" role="status" aria-live="polite">Loading local example documents…</div>
+      </section>
+
+      <section class="surface provider-surface" aria-labelledby="provider-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Marketplace translation</p>
+            <h2 id="provider-title">Apply these prices on booking platforms</h2>
+          </div>
+          <p class="section-note">Generated from the currently applied rules and calendar.</p>
+        </div>
+        <p class="provider-copy">The authoritative YAML is normalized into the rule document shown above. These instructions translate that applied document into the controls each marketplace actually supports. “Same price” means the USD accommodation subtotal before fees, taxes, promotions, and currency conversion. Warnings identify every case where exact parity is not possible.</p>
+
+        <div class="provider-tabs" role="tablist" aria-label="Marketplace instructions">
+          <button id="tab-airbnb" role="tab" aria-selected="true" aria-controls="panel-airbnb" tabindex="0" data-provider="airbnb" type="button">Airbnb</button>
+          <button id="tab-vrbo" role="tab" aria-selected="false" aria-controls="panel-vrbo" tabindex="-1" data-provider="vrbo" type="button">Vrbo</button>
+          <button id="tab-booking" role="tab" aria-selected="false" aria-controls="panel-booking" tabindex="-1" data-provider="booking" type="button">Booking.com</button>
+        </div>
+        <div id="panel-airbnb" class="provider-panel" role="tabpanel" aria-labelledby="tab-airbnb" data-provider-panel="airbnb"></div>
+        <div id="panel-vrbo" class="provider-panel" role="tabpanel" aria-labelledby="tab-vrbo" data-provider-panel="vrbo" hidden></div>
+        <div id="panel-booking" class="provider-panel" role="tabpanel" aria-labelledby="tab-booking" data-provider-panel="booking" hidden></div>
       </section>
     </main>
 

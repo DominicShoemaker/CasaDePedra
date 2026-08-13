@@ -1,7 +1,7 @@
 {
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/vendor/*", "/*.js", "/*.css", "/*.json"]
+    "exclude": ["/vendor/*", "/docs/*", "/*.js", "/*.css", "/*.json"]
   },
   "globalHeaders": {
     "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.azurewebsites.net; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
@@ -11,6 +11,7 @@
     "X-Frame-Options": "DENY"
   },
   "mimeTypes": {
-    ".json": "application/json"
+    ".json": "application/json",
+    ".md": "text/markdown; charset=utf-8"
   }
 }

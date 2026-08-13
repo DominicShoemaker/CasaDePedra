@@ -6,6 +6,11 @@ import {
   formatCalendarMoney,
   formatMoney,
 } from "./pricing-model.js";
+import {
+  createMarketplaceInstructions,
+  formatScheduleNightly,
+  formatScheduleRange,
+} from "./provider-instructions.js";
 
 const SERIES = Object.freeze([
   { nights: 1, label: "1-night rate", color: "#c75b43" },
@@ -22,12 +27,112 @@ const chartCanvas = document.querySelector("#price-chart");
 const chartStage = document.querySelector("#chart-stage");
 const chartViewport = document.querySelector("#chart-viewport");
 const chartTooltip = document.querySelector("#chart-tooltip");
+const providerTabs = [...document.querySelectorAll("[role='tab'][data-provider]")];
+const providerPanels = [...document.querySelectorAll("[data-provider-panel]")];
 
 let pricingModel = null;
 let displayStayNights = 3;
 let selectedRange = { startDate: null, endDate: null };
 let chartGeometry = null;
 let keyboardChartIndex = 0;
+
+function appendTextElement(parent, tagName, text, className = "") {
+  const element = document.createElement(tagName);
+  if (className) element.className = className;
+  element.textContent = text;
+  parent.append(element);
+  return element;
+}
+
+function renderProviderPlan(plan) {
+  const panel = document.querySelector(`[data-provider-panel='${plan.id}']`);
+  panel.replaceChildren();
+
+  const header = document.createElement("div");
+  header.className = "provider-plan-header";
+  const titleGroup = document.createElement("div");
+  appendTextElement(titleGroup, "h3", `${plan.label} setup instructions`);
+  appendTextElement(titleGroup, "p", plan.status, "provider-status");
+  const source = document.createElement("a");
+  source.href = plan.guideUrl;
+  source.target = "_blank";
+  source.rel = "noreferrer";
+  source.textContent = "Official provider guide";
+  header.append(titleGroup, source);
+  panel.append(header);
+  appendTextElement(panel, "p", plan.summary, "provider-summary");
+
+  const metadata = document.createElement("dl");
+  metadata.className = "provider-metadata";
+  for (const [label, value] of [
+    ["Rules", plan.metadata.ruleSet],
+    ["Calendar", plan.metadata.calendar],
+    ["Coverage", `${plan.metadata.from} through ${plan.metadata.through}`],
+    ["Currency", plan.metadata.currency],
+  ]) {
+    const item = document.createElement("div");
+    appendTextElement(item, "dt", label);
+    appendTextElement(item, "dd", value);
+    metadata.append(item);
+  }
+  panel.append(metadata);
+
+  appendTextElement(panel, "h4", "Configuration steps");
+  const steps = document.createElement("ol");
+  steps.className = "provider-steps";
+  for (const step of plan.steps) appendTextElement(steps, "li", step);
+  panel.append(steps);
+
+  const warning = document.createElement("aside");
+  warning.className = "provider-warning";
+  appendTextElement(warning, "strong", "Parity limitations");
+  const warnings = document.createElement("ul");
+  for (const message of plan.warnings) appendTextElement(warnings, "li", message);
+  warning.append(warnings);
+  panel.append(warning);
+
+  const details = document.createElement("details");
+  details.className = "schedule-details";
+  const summary = document.createElement("summary");
+  summary.textContent = `Calendar-entry schedule (${plan.schedule.length} batches)`;
+  details.append(summary);
+  appendTextElement(details, "p", "Enter every batch in order. The end date is inclusive. Reapply the schedule whenever the price rules, calendar description, or two-year horizon changes.", "schedule-note");
+  const viewport = document.createElement("div");
+  viewport.className = "schedule-table-viewport";
+  const table = document.createElement("table");
+  table.className = "schedule-table";
+  const head = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  for (const label of ["Date or inclusive range", "Nightly price", "Minimum stay", "Rule profile"]) appendTextElement(headRow, "th", label);
+  head.append(headRow);
+  const body = document.createElement("tbody");
+  for (const row of plan.schedule) {
+    const tableRow = document.createElement("tr");
+    appendTextElement(tableRow, "td", formatScheduleRange(row));
+    appendTextElement(tableRow, "td", formatScheduleNightly(row, plan.metadata.currency));
+    appendTextElement(tableRow, "td", `${row.minimumStay} ${row.minimumStay === 1 ? "night" : "nights"}`);
+    appendTextElement(tableRow, "td", row.profile);
+    body.append(tableRow);
+  }
+  table.append(head, body);
+  viewport.append(table);
+  details.append(viewport);
+  panel.append(details);
+}
+
+function renderMarketplaceInstructions(ruleDocument, calendarDocument, model) {
+  const plans = createMarketplaceInstructions(ruleDocument, calendarDocument, model);
+  for (const plan of plans) renderProviderPlan(plan);
+}
+
+function selectProvider(provider) {
+  for (const tab of providerTabs) {
+    const active = tab.dataset.provider === provider;
+    tab.setAttribute("aria-selected", String(active));
+    tab.tabIndex = active ? 0 : -1;
+  }
+  for (const panel of providerPanels) panel.hidden = panel.dataset.providerPanel !== provider;
+}
 
 function dateLabel(localDate, options = { month: "short", day: "numeric", year: "numeric" }) {
   return new Intl.DateTimeFormat("en-US", { ...options, timeZone: "UTC" }).format(new Date(`${localDate}T00:00:00Z`));
@@ -261,6 +366,7 @@ function applyInputs() {
     });
     drawChart();
     renderSelectedStay();
+    renderMarketplaceInstructions(ruleDocument, calendarDocument, candidate);
     const expires = calendarDocument.expiresAt ? ` Calendar snapshot expires ${new Date(calendarDocument.expiresAt).toLocaleString("en-US", { dateStyle: "medium", timeZone: "UTC" })}.` : "";
     setStatus(`Applied a ${horizon.years}-calendar-year horizon: ${dateLabel(horizon.from)} through ${dateLabel(horizon.through)} (${candidate.dates.length} nights), with three price series calculated locally.${expires}`);
   } catch (error) {
@@ -282,6 +388,19 @@ picker.addEventListener("selection-changed", event => {
 });
 
 applyButton.addEventListener("click", applyInputs);
+for (const tab of providerTabs) {
+  tab.addEventListener("click", () => selectProvider(tab.dataset.provider));
+  tab.addEventListener("keydown", event => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const current = providerTabs.indexOf(tab);
+    const next = event.key === 'Home' ? 0
+      : event.key === 'End' ? providerTabs.length - 1
+        : (current + (event.key === 'ArrowRight' ? 1 : -1) + providerTabs.length) % providerTabs.length;
+    selectProvider(providerTabs[next].dataset.provider);
+    providerTabs[next].focus();
+  });
+}
 window.addEventListener("resize", () => drawChart());
 
 async function start() {
@@ -292,10 +411,12 @@ async function start() {
   if (apiBase) {
     try {
       const [rulesResponse, calendarResponse] = await Promise.all([
-        fetch(`${apiBase}/api/v1/rule-set`),
-        fetch(`${apiBase}/api/v1/calendar-snapshot`),
+        fetch(`${apiBase}/api/v1/rule-set`, { cache: "no-store" }),
+        fetch(`${apiBase}/api/v1/calendar-snapshot`, { cache: "no-store" }),
       ]);
-      if (!rulesResponse.ok || !calendarResponse.ok) throw new Error("Pricing API defaults are not ready.");
+      if (!rulesResponse.ok || !calendarResponse.ok) {
+        throw new Error(`Pricing API defaults are not ready (rules ${rulesResponse.status}, calendar ${calendarResponse.status}).`);
+      }
       ruleDocument = (await rulesResponse.json()).ruleSet;
       calendarDocument = (await calendarResponse.json()).calendarSnapshot;
     } catch (error) {
