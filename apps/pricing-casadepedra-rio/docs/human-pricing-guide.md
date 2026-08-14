@@ -209,6 +209,8 @@ The Pricing SPA includes Puter.js and uses `openai/gpt-5.6-terra`. After **Activ
 
 The assistant receives a compact, sanitized summary generated from the rule and calendar documents currently shown in the page. The question and this context are processed externally by Puter/OpenAI. The pricing documents remain in the page unless the user separately applies a validated draft.
 
+Questions about configured event dates, absent event records, and event price schedules are answered deterministically in the browser from the currently loaded documents. For example, a key listed in `resolvedKeys` does not prove that an event occurrence exists: Rock in Rio pricing remains inactive until the `events` array contains a matching confirmed record. Puter is used only when the deterministic question handlers do not cover the request, and each explanatory request is independent of earlier model replies.
+
 For an explicit requested change, the assistant must return constrained rule and/or calendar operations rather than unrestricted replacement documents. The page applies proposed operations to clones, increments the rule-set version when pricing rules change, validates the entire candidate with the existing engine, and calculates the two-year impact. The user must then choose **Apply draft locally** before either textarea changes.
 
 Applying a draft changes only the browser editor, calendar preview, chart, and marketplace instructions. It does not save a file, update Blob Storage, commit to Git, call an administrative endpoint, or publish production prices. Follow the full safe editing workflow above before production deployment. A model response can be mistaken; deterministic validation and human commercial review remain mandatory.

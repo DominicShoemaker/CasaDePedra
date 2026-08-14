@@ -45,6 +45,8 @@ The Pricing SPA's embedded assistant is a lower-authority draft tool:
 - It uses Puter.js in the SPA and calls `openai/gpt-5.6-terra` directly from the browser; no request is proxied through the Casa de Pedra or Azure backend.
 - Activation requests Puter's documented temporary-user flow (`attempt_temp_user_creation`). The visitor does not enter credentials, but Puter still authenticates the temporary identity internally.
 - It may answer from compact, sanitized rule/event context generated from the textareas currently shown in the browser. That context and the user's prompt are transmitted to Puter/OpenAI for inference.
+- It must answer configured event-date, missing-event-record, and event-price-schedule questions deterministically from the loaded documents before invoking Puter. A key in `coverage.resolvedKeys` without a matching `events` entry is not an event date and must be reported as missing.
+- Each non-edit Puter call is stateless: do not replay earlier user/model turns. Never substitute a greeting or generic filler for the current pricing question.
 - It may propose constrained rule operations and constrained calendar metadata/event operations.
 - It may not edit listing identity, currency, timezone, jurisdiction, guardrails, rule-set identity, or effective date.
 - Every proposal is applied to cloned documents, pricing rule changes are version-bumped, and the complete candidate is compiled and evaluated across all one-, two-, and three-night prices in the two-year horizon.

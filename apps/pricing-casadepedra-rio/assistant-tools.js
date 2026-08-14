@@ -1,6 +1,14 @@
 const DECIMAL_PATTERN = /^-?(?:0|[1-9]\d*)(?:\.\d+)?$/;
 const RULE_CHANGE_KEYS = Object.freeze(["name", "layer", "group", "priority", "stacking", "when", "apply", "suppresses"]);
 const CALENDAR_EVENT_CHANGE_KEYS = Object.freeze(["date", "localStart", "localEndExclusive", "status"]);
+const EVENT_DEFINITIONS = Object.freeze([
+  Object.freeze({ label: "New Year", matches: /new year|new year's|nye/, ruleMatches: /new.year/, calendarKey: "gregorian.new-year" }),
+  Object.freeze({ label: "Christmas", matches: /christmas|xmas/, ruleMatches: /christmas/, calendarKey: null }),
+  Object.freeze({ label: "Carnival", matches: /carnival|carnaval/, ruleMatches: /carnival/, calendarKey: "br.rj.rio.carnival" }),
+  Object.freeze({ label: "Rock in Rio", matches: /rock in rio/, ruleMatches: /rock.in.rio/, calendarKey: "br.rj.rio.rock-in-rio" }),
+  Object.freeze({ label: "Western Easter", matches: /easter/, ruleMatches: /easter/, calendarKey: "christian.easter.western" }),
+  Object.freeze({ label: "Brazil Independence Day", matches: /independence day/, ruleMatches: /independence.day/, calendarKey: "br.independence-day" }),
+]);
 
 function clone(value) {
   return structuredClone(value);
@@ -81,7 +89,11 @@ export function createAssistantContext(ruleDocument, calendarDocument, instructi
     ...selectedRules.map(compactRule),
     `All rule IDs: ${ruleDocument.rules.map(rule => rule.id).join(", ")}.`,
     `Calendar: ${calendarDocument.id}; ${calendarDocument.coverage?.from} through ${calendarDocument.coverage?.through}; expires ${calendarDocument.expiresAt}.`,
-    events.length ? "Relevant calendar events:" : "No calendar event dates are needed for the selected rules.",
+    events.length
+      ? "Relevant calendar events:"
+      : referencedEventKeys.size
+        ? `No matching calendar event record is present for the selected event key(s): ${[...referencedEventKeys].join(", ")}. Never infer or invent a missing event date.`
+        : "No calendar event dates are needed for the selected rules.",
     ...events,
   ].join("\n");
 }
@@ -90,19 +102,69 @@ export function isRuleChangeRequest(instruction) {
   return /\b(propose|draft|change|set|increase|decrease|adjust|update|add|remove|replace|raise|lower)\b/i.test(String(instruction ?? ""));
 }
 
-export function createDeterministicAnswer(ruleDocument, instruction) {
+function addLocalDays(localDate, days) {
+  const [year, month, day] = localDate.split("-").map(Number);
+  const result = new Date(Date.UTC(year, month - 1, day + days));
+  return result.toISOString().slice(0, 10);
+}
+
+function eventDateAnswer(eventDefinition, calendarDocument) {
+  if (!calendarDocument || !eventDefinition.calendarKey) return null;
+  const events = (calendarDocument.events ?? [])
+    .filter(event => event.key === eventDefinition.calendarKey)
+    .sort((left, right) => String(left.date ?? left.localStart).localeCompare(String(right.date ?? right.localStart)));
+  if (!events.length) {
+    const declared = calendarDocument.coverage?.resolvedKeys?.includes(eventDefinition.calendarKey);
+    return declared
+      ? `The loaded calendar does not contain a ${eventDefinition.label} date. Its pricing key is declared, but the rule cannot apply until a confirmed event record is added; I will not invent a date.`
+      : `${eventDefinition.label} is not configured in the loaded calendar description.`;
+  }
+  const dates = events.map(event => {
+    if (event.date) return `${event.date} (${event.status})`;
+    return `${event.localStart} through ${addLocalDays(event.localEndExclusive, -1)} (${event.status})`;
+  });
+  return `For this Rio listing, the loaded calendar records ${eventDefinition.label} as: ${dates.join("; ")}. Ranged events are shown with the final included night, while localEndExclusive remains the checkout-style boundary in the calendar JSON.`;
+}
+
+function eventPriceAnswer(ruleDocument, calendarDocument, eventDefinition) {
+  const currency = ruleDocument.listing_context.currency;
+  const eventRules = ruleDocument.rules.filter(rule => eventDefinition.ruleMatches.test(`${rule.id} ${rule.name}`.toLowerCase()));
+  if (!eventRules.length) return null;
+  const minimumStay = Math.max(0, ...eventRules.map(rule => Number(rule.apply?.minimum_stay ?? 0)));
+  if (eventDefinition.label === "New Year") {
+    const price = id => eventRules.find(rule => rule.id === id)?.apply?.set_final_nightly;
+    return `New Year requires at least ${minimumStay} nights. The loaded rules set ${currency} ${price("copacabana-new-year") ?? "not configured"} per night on Dec 28–30, ${currency} ${price("copacabana-new-year-prime") ?? "not configured"} on Dec 31 and Jan 1, and ${currency} ${price("copacabana-new-year-tail") ?? "not configured"} on Jan 2. The exact accommodation subtotal depends on the selected dates and excludes fees and taxes.`;
+  }
+  if (eventDefinition.label === "Carnival") {
+    const standard = eventRules.find(rule => rule.id === "rio-carnival")?.apply?.set_final_nightly;
+    const prime = eventRules.find(rule => rule.id === "rio-carnival-prime")?.apply?.set_final_nightly;
+    return `Rio Carnival requires at least ${minimumStay} nights. The loaded rules set ${currency} ${prime ?? "not configured"} per night on Friday–Sunday prime nights and ${currency} ${standard ?? "not configured"} on the other Carnival-window nights. The exact accommodation subtotal depends on the selected dates and excludes fees and taxes.`;
+  }
+  if (eventDefinition.label === "Rock in Rio") {
+    const nightly = eventRules[0].apply?.set_final_nightly ?? "not configured";
+    const hasDate = Boolean(calendarDocument?.events?.some(event => event.key === eventDefinition.calendarKey));
+    return hasDate
+      ? `Rock in Rio is ${currency} ${nightly} per night with a ${minimumStay}-night minimum on confirmed event dates. The exact accommodation subtotal depends on the selected dates and excludes fees and taxes.`
+      : `The Rock in Rio rule is ${currency} ${nightly} per night with a ${minimumStay}-night minimum, but the loaded calendar has no confirmed Rock in Rio event date, so that rule is not currently active.`;
+  }
+  if (eventDefinition.label === "Christmas") {
+    const adjustment = eventRules[0].apply?.adjust_nightly_percent;
+    return `Christmas week requires at least ${minimumStay} nights and adds ${adjustment}% to the applicable nightly rate from Dec 20 through Dec 26. The exact ${currency} accommodation subtotal depends on the year, selected dates, and weekday/weekend mix, and excludes fees and taxes.`;
+  }
+  const absolutePrices = [...new Set(eventRules.map(rule => rule.apply?.set_final_nightly).filter(Boolean))];
+  if (absolutePrices.length) {
+    return `${eventDefinition.label} uses ${currency} ${absolutePrices.join(` or ${currency} `)} per night with a ${minimumStay}-night minimum. The exact accommodation subtotal depends on the selected dates and excludes fees and taxes.`;
+  }
+  return null;
+}
+
+export function createDeterministicAnswer(ruleDocument, instruction, calendarDocument = null) {
   const normalized = String(instruction ?? "").toLowerCase();
   const numberWords = Object.freeze({ one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7 });
   const comparedNights = [...normalized.matchAll(/\b(\d+|one|two|three|four|five|six|seven)[- ]?(?:day|night)s?\b/g)]
     .map(match => numberWords[match[1]] ?? Number(match[1]))
     .filter((value, index, values) => Number.isInteger(value) && value > 0 && values.indexOf(value) === index);
-  const eventDefinitions = [
-    { label: "New Year", matches: /new year|new year's|nye/, ruleMatches: /new.year/ },
-    { label: "Christmas", matches: /christmas|xmas/, ruleMatches: /christmas/ },
-    { label: "Carnival", matches: /carnival|carnaval/, ruleMatches: /carnival/ },
-    { label: "Rock in Rio", matches: /rock in rio/, ruleMatches: /rock.in.rio/ },
-  ];
-  const eventDefinition = eventDefinitions.find(definition => definition.matches.test(normalized));
+  const eventDefinition = EVENT_DEFINITIONS.find(definition => definition.matches.test(normalized));
   if (eventDefinition && comparedNights.length >= 2 && /difference|compare|versus|\bvs\b/.test(normalized)) {
     const eventRules = ruleDocument.rules.filter(rule => eventDefinition.ruleMatches.test(`${rule.id} ${rule.name}`.toLowerCase()));
     const minimumStay = Math.max(0, ...eventRules.map(rule => Number(rule.apply?.minimum_stay ?? 0)));
@@ -115,6 +177,14 @@ export function createDeterministicAnswer(ruleDocument, instruction) {
       return `The requested ${eventDefinition.label} stays are not directly comparable because ${ineligible.map(nights => `${nights} nights`).join(" and ")} is below the ${minimumStay}-night minimum. Provide an eligible stay length and the exact check-in date to calculate the accommodation subtotal.`;
     }
     return `An exact ${eventDefinition.label} price difference requires the year and check-in date because the included weekdays, weekends, and event nights can differ. Both requested stay lengths satisfy the ${minimumStay}-night minimum; select the exact date ranges in the calendar for deterministic subtotals.`;
+  }
+  if (eventDefinition && /\bwhen\b|\bdates?\b/.test(normalized)) {
+    const answer = eventDateAnswer(eventDefinition, calendarDocument);
+    if (answer) return answer;
+  }
+  if (eventDefinition && /\bprice\b|\bprices\b|\brate\b|\brates\b|\bcost\b|how much/.test(normalized)) {
+    const answer = eventPriceAnswer(ruleDocument, calendarDocument, eventDefinition);
+    if (answer) return answer;
   }
   if (/one[- ]night|two[- ]night|short[- ]stay|short stay/.test(normalized)) {
     const oneNight = ruleDocument.rules.find(rule => rule.when?.stay_nights?.exactly === 1)?.apply?.adjust_nightly_percent;
@@ -169,7 +239,7 @@ Allowed calendar_operations:
 4. {"type":"set_calendar_metadata","changes":{"notice":"...","expiresAt":"ISO timestamp","coverage":{...}}}.
 
 Money and percentages must remain strings. Never propose currency, timezone, jurisdiction, guardrail, rule-set ID, or effective-date changes. If the user gives one price for a named event, update every matching event rule unless the user narrows it to prime, shoulder, or another specific sub-rule, and list affected rule IDs in the summary. A proposal is only a local draft: say that deterministic validation and human approval are still required. If the request is ambiguous, return empty operation arrays and explain what is missing.`
-    : "Answer the question in at most four short sentences of plain text. Do not return JSON and do not propose an edit.";
+    : "Answer the current question directly in at most four short sentences of plain text. Do not return JSON and do not propose an edit. Never reply with a greeting or generic filler such as 'How can I help?'. If the supplied context lacks the requested fact, identify the missing fact precisely instead of guessing.";
   return `You are the private, in-browser Casa de Pedra pricing assistant. Answer in concise English using only the supplied pricing context. Never invent a price, event date, marketplace capability, or production status. Explain that checkout excludes its date and that USD accommodation subtotal excludes fees and taxes when relevant.
 
 ${outputContract}

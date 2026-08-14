@@ -53,8 +53,8 @@ test("routes explanations to plain text and explicit edits to structured generat
   assert.equal(isRuleChangeRequest("Lower the low-season adjustment to -12%."), true);
 });
 
-test("answers common numeric questions from deterministic rule data", async () => {
-  const { rules } = await fixture();
+test("answers common numeric questions from deterministic rule and calendar data", async () => {
+  const { rules, calendar } = await fixture();
   assert.match(createDeterministicAnswer(rules, "Explain the one-night and two-night premiums."), /one-night nightly rate is 50%/);
   assert.match(createDeterministicAnswer(rules, "What is the weekday base price?"), /USD 380\.00/);
   assert.equal(createDeterministicAnswer(rules, "Why is Carnival expensive?"), null);
@@ -69,6 +69,18 @@ test("answers common numeric questions from deterministic rule data", async () =
   assert.match(
     createDeterministicAnswer(rules, "Compare a 4-night and 5-night Christmas reservation."),
     /requires the year and check-in date/,
+  );
+  assert.match(
+    createDeterministicAnswer(rules, "When is Carnival in Brazil?", calendar),
+    /2027-02-07 through 2027-02-09 \(calculated\)/,
+  );
+  assert.equal(
+    createDeterministicAnswer(rules, "When is Rock in Rio?", calendar),
+    "The loaded calendar does not contain a Rock in Rio date. Its pricing key is declared, but the rule cannot apply until a confirmed event record is added; I will not invent a date.",
+  );
+  assert.equal(
+    createDeterministicAnswer(rules, "What is the price for New Year reservation?", calendar),
+    "New Year requires at least 6 nights. The loaded rules set USD 920.00 per night on Dec 28–30, USD 1000.00 on Dec 31 and Jan 1, and USD 800.00 on Jan 2. The exact accommodation subtotal depends on the selected dates and excludes fees and taxes.",
   );
 });
 
@@ -184,9 +196,11 @@ test("normalizes Puter tool calls into validated proposal JSON", async () => {
 test("collects Puter streaming answers after temporary-user activation", async () => {
   const originalPuter = globalThis.puter;
   let requestedOptions;
+  let requestedMessages;
   globalThis.puter = {
     auth: { isSignedIn: () => true, signIn: async () => { throw new Error("Already signed in"); } },
-    ai: { chat: async (_messages, options) => {
+    ai: { chat: async (messages, options) => {
+      requestedMessages = messages;
       requestedOptions = options;
       return (async function* () {
         yield { text: "Carnival uses " };
@@ -196,9 +210,13 @@ test("collects Puter streaming answers after temporary-user activation", async (
   };
   try {
     const runtime = await createPuterPricingAssistant();
-    assert.equal(await runtime.respond("system", [], "Explain Carnival", false), "Carnival uses event pricing.");
+    assert.equal(await runtime.respond("system", [{ role: "assistant", content: "How can I help?" }], "Explain Carnival", false), "Carnival uses event pricing.");
     assert.equal(requestedOptions.stream, true);
     assert.equal(requestedOptions.model, PRICING_ASSISTANT_MODEL);
+    assert.deepEqual(requestedMessages, [
+      { role: "system", content: "system" },
+      { role: "user", content: "Explain Carnival" },
+    ]);
   } finally {
     globalThis.puter = originalPuter;
   }

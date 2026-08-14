@@ -4,6 +4,8 @@ This is a static, offline pricing laboratory for the Casa de Pedra calendar. It 
 
 The optional pricing assistant uses Puter.js with `openai/gpt-5.6-terra`. On activation it requests Puter's documented temporary-user flow (`attempt_temp_user_creation`), so the visitor does not enter a username, password, or application API key. Puter still authenticates that temporary identity internally. Requests go directly from the browser to Puter and never through the Casa de Pedra or Azure backend. The assistant reads compact, sanitized context generated from the rule and calendar textareas, then returns constrained local rule/calendar operations. No GPU is required. Every candidate passes deterministic engine validation, and the assistant cannot save or publish it.
 
+Exact questions about configured event dates, missing event records, and event price schedules are answered locally from the current documents before Puter is consulted. Remaining Puter explanations are independent requests with no prior model replies replayed into the prompt, preventing a stale generic answer from replacing the current pricing question.
+
 The calculation horizon is always two calendar years beginning on **today in `America/Sao_Paulo`**, inclusive, and ending the day before the same local date two years later. For example, August 4, 2026 produces August 4, 2026 through August 3, 2028. This contains 731 accommodation dates because it crosses leap day in 2028.
 
 The project contains a copied and extended version of:

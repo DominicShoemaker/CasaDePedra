@@ -69,10 +69,9 @@ export async function createPuterPricingAssistant(onProgress) {
 
   return Object.freeze({
     model: PRICING_ASSISTANT_MODEL,
-    async respond(systemPrompt, history, instruction, structured = false) {
+    async respond(systemPrompt, _history, instruction, structured = false) {
       const messages = [
         { role: "system", content: systemPrompt },
-        ...(structured ? [] : history.slice(-6).map(message => ({ role: message.role, content: String(message.content).slice(0, 1000) }))),
         { role: "user", content: instruction },
       ];
       const options = {

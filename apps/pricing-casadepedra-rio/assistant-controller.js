@@ -170,7 +170,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
       const proposalMode = isRuleChangeRequest(cleanInstruction);
       const deterministicResponse = proposalMode
         ? createDeterministicProposal(ruleDocument, cleanInstruction)
-        : createDeterministicAnswer(ruleDocument, cleanInstruction);
+        : createDeterministicAnswer(ruleDocument, cleanInstruction, calendarDocument);
       let response;
       if (deterministicResponse) {
         response = typeof deterministicResponse === "string"
