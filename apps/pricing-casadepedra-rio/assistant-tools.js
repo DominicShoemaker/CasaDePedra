@@ -119,6 +119,10 @@ export function isDisposedRuntimeError(error) {
   return /object has already been disposed/i.test(String(error?.message ?? error ?? ""));
 }
 
+export function isGpuCompatibilityError(error) {
+  return /compatible gpu|webgpu|graphics adapter|hardware acceleration/i.test(String(error?.message ?? error ?? ""));
+}
+
 export function createDeterministicProposal(ruleDocument, instruction) {
   const source = String(instruction ?? "");
   const weekday = source.match(/weekday\s+(?:base\s+)?(?:price\s+)?(?:to|at|=)\s*\$?([0-9]+(?:\.[0-9]{1,2})?)/i)?.[1];

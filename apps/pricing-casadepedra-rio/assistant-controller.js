@@ -6,6 +6,7 @@ import {
   createAssistantSystemPrompt,
   isRuleChangeRequest,
   isDisposedRuntimeError,
+  isGpuCompatibilityError,
   parseAssistantResponse,
 } from "./assistant-tools.js";
 import {
@@ -66,6 +67,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
   const quickPrompts = [...document.querySelectorAll("[data-assistant-prompt]")];
 
   let runtime = null;
+  let assistantReady = false;
   let activating = false;
   let responding = false;
   let history = [];
@@ -143,7 +145,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
   }
 
   async function activate() {
-    if (runtime || activating) return;
+    if (assistantReady || activating) return;
     activating = true;
     activateButton.disabled = true;
     progress.hidden = false;
@@ -160,6 +162,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
         progress.value = Math.max(0, Math.min(1, report.progress));
         setStatus(report.text, "loading");
       });
+      assistantReady = true;
       progress.value = 1;
       setStatus(`Ready · ${runtime.model} · processing stays on this device`, "ready");
       activationPanel.hidden = true;
@@ -167,25 +170,29 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
       appendMessage("assistant", "I am ready. I can explain the currently loaded rules or prepare a validated local draft. I cannot publish production changes.");
       input.focus();
     } catch (error) {
-      console.error("Local pricing assistant activation failed.", error);
+      console.warn("WebLLM is unavailable; continuing in rules-only mode.", error);
       runtime = null;
+      assistantReady = true;
       progress.hidden = true;
-      activateButton.disabled = false;
-      setStatus(describeError(error, "The local assistant could not start. Retry once; if it fails again, verify WebGPU and network access to the model host."), "error");
+      activationPanel.hidden = true;
+      chatPanel.hidden = false;
+      setStatus("Rules-only mode · deterministic pricing answers remain available · WebLLM unavailable", "ready");
+      appendMessage("assistant", "Your browser could not start the optional WebLLM model. I can still answer supported numeric pricing questions and prepare supported deterministic drafts from the loaded rules. Broader natural-language questions require WebGPU.");
+      input.focus();
     } finally {
       activating = false;
     }
   }
 
   async function respond(instruction) {
-    if (!runtime || responding) return;
+    if (!assistantReady || responding) return;
     const cleanInstruction = instruction.trim();
     if (!cleanInstruction) return;
     hideProposal();
     appendMessage("user", cleanInstruction);
     input.value = "";
     setResponding(true);
-    setStatus("The model is reasoning locally. No prompt is sent to a server.", "loading");
+    setStatus("Checking the currently loaded pricing rules locally…", "loading");
     try {
       const { ruleDocument, calendarDocument } = getDocuments();
       const proposalMode = isRuleChangeRequest(cleanInstruction);
@@ -198,11 +205,19 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
           ? { answer: deterministicResponse, proposal: null }
           : deterministicResponse;
       } else {
-        const systemPrompt = createAssistantSystemPrompt(ruleDocument, calendarDocument, cleanInstruction, proposalMode);
-        const rawResponse = await runLocalModel(systemPrompt, cleanInstruction, proposalMode);
-        response = proposalMode
-          ? parseAssistantResponse(rawResponse)
-          : { answer: String(rawResponse).trim() || "The local model returned an empty response.", proposal: null };
+        if (!runtime) {
+          response = {
+            answer: "This question requires the optional language model, but this browser could not start WebGPU. Rules-only mode can still answer short-stay premiums, base prices, guardrails, and the 2-night versus 3-night New Year comparison, and it can prepare explicit weekday/weekend base-price drafts.",
+            proposal: null,
+          };
+        } else {
+          setStatus("The model is reasoning locally. No prompt is sent to a server.", "loading");
+          const systemPrompt = createAssistantSystemPrompt(ruleDocument, calendarDocument, cleanInstruction, proposalMode);
+          const rawResponse = await runLocalModel(systemPrompt, cleanInstruction, proposalMode);
+          response = proposalMode
+            ? parseAssistantResponse(rawResponse)
+            : { answer: String(rawResponse).trim() || "The local model returned an empty response.", proposal: null };
+        }
       }
       appendMessage("assistant", response.answer);
       history = [...history, { role: "user", content: cleanInstruction }, { role: "assistant", content: response.answer }].slice(-8);
@@ -216,12 +231,18 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
           setStatus("The proposal was rejected; the editor was not changed.", "error");
         }
       } else {
-        setStatus("Ready · local model · no rule changes proposed", "ready");
+        setStatus(runtime ? "Ready · local model · no rule changes proposed" : "Ready · rules-only mode · no rule changes proposed", "ready");
       }
     } catch (error) {
       console.error("Local pricing assistant request failed.", error);
-      appendMessage("assistant", `I could not complete that request: ${describeError(error, "unknown local model error")}`);
-      setStatus("The request failed locally; the editor was not changed.", "error");
+      if (isGpuCompatibilityError(error)) {
+        runtime = null;
+        appendMessage("assistant", "The optional language model is unavailable because this browser could not start WebGPU. I switched to rules-only mode; supported deterministic pricing questions and drafts remain available.");
+        setStatus("Rules-only mode · deterministic pricing answers remain available · WebLLM unavailable", "ready");
+      } else {
+        appendMessage("assistant", `I could not complete that request: ${describeError(error, "unknown local model error")}`);
+        setStatus("The request failed locally; the editor was not changed.", "error");
+      }
     } finally {
       setResponding(false);
       input.focus();
@@ -237,7 +258,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
     history = [];
     hideProposal();
     log.replaceChildren();
-    appendMessage("assistant", "Conversation cleared. The local model remains loaded and the pricing documents are unchanged.");
+    appendMessage("assistant", runtime ? "Conversation cleared. The local model remains loaded and the pricing documents are unchanged." : "Conversation cleared. Rules-only mode remains available and the pricing documents are unchanged.");
     input.focus();
   });
   applyProposalButton.addEventListener("click", () => {

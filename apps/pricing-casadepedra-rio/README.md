@@ -4,6 +4,8 @@ This is a static, offline pricing laboratory for the Casa de Pedra calendar. It 
 
 The optional pricing assistant uses WebLLM locally. Its runtime and model are not part of the initial page request: the browser dynamically loads them only after the user selects **Activate pricing assistant**. The low-resource SmolLM2 360M model runs in a dedicated Web Worker, uses about 376 MB of GPU memory, and is cached in browser-origin private storage. Common numeric questions and explicit base-price edits are grounded directly in the loaded documents; WebLLM handles natural-language questions and other constrained drafts. Every draft still passes deterministic engine validation, and the assistant cannot save or publish it.
 
+If WebGPU or a compatible GPU is unavailable, activation enters rules-only mode instead of failing. Grounded numeric answers and supported deterministic drafts remain usable; only broader language-model questions are unavailable.
+
 The calculation horizon is always two calendar years beginning on **today in `America/Sao_Paulo`**, inclusive, and ending the day before the same local date two years later. For example, August 4, 2026 produces August 4, 2026 through August 3, 2028. This contains 731 accommodation dates because it crosses leap day in 2028.
 
 The project contains a copied and extended version of:

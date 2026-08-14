@@ -10,6 +10,7 @@ import {
   createDeterministicProposal,
   isRuleChangeRequest,
   isDisposedRuntimeError,
+  isGpuCompatibilityError,
   parseAssistantResponse,
 } from "../assistant-tools.js";
 import { createCalendarPricingModel, createCalendarYearHorizon } from "../pricing-model.js";
@@ -67,6 +68,12 @@ test("recognizes a disposed browser model session for one-time recovery", () => 
   assert.equal(isDisposedRuntimeError(new Error("Network request failed")), false);
 });
 
+test("recognizes GPU compatibility failures for rules-only fallback", () => {
+  assert.equal(isGpuCompatibilityError(new Error("Unable to find a compatible GPU")), true);
+  assert.equal(isGpuCompatibilityError(new Error("No compatible graphics adapter is available")), true);
+  assert.equal(isGpuCompatibilityError(new Error("Network request failed")), false);
+});
+
 test("turns explicit base edits into an exact constrained proposal", async () => {
   const { rules } = await fixture();
   const response = createDeterministicProposal(rules, "Set the weekday base to 400 and weekend base to 450.00.");
@@ -122,5 +129,6 @@ test("keeps WebLLM behind the activation-time dynamic import", async () => {
   assert.doesNotMatch(app, /@mlc-ai\/web-llm/);
   assert.match(controller, /await import\("\.\/assistant-runtime\.js"\)/);
   assert.doesNotMatch(controller, /@mlc-ai\/web-llm/);
+  assert.match(controller, /Rules-only mode/);
   assert.match(runtime, /@mlc-ai\/web-llm/);
 });
