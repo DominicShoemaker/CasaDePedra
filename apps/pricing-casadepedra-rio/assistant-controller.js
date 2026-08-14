@@ -5,6 +5,7 @@ import {
   createDeterministicProposal,
   createAssistantSystemPrompt,
   isRuleChangeRequest,
+  isDisposedRuntimeError,
   parseAssistantResponse,
 } from "./assistant-tools.js";
 import {
@@ -121,6 +122,26 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
     };
   }
 
+  async function runLocalModel(systemPrompt, cleanInstruction, proposalMode) {
+    try {
+      return await runtime.respond(systemPrompt, history, cleanInstruction, proposalMode);
+    } catch (error) {
+      if (!isDisposedRuntimeError(error)) throw error;
+      setStatus("The browser model session ended. Restarting it from the local cache…", "loading");
+      try {
+        await runtime?.unload();
+      } catch {
+        // The old engine is already unusable; its worker is terminated by unload().
+      }
+      const { createLocalPricingAssistant } = await import("./assistant-runtime.js");
+      runtime = await createLocalPricingAssistant(report => {
+        progress.value = Math.max(0, Math.min(1, report.progress));
+        setStatus(report.text, "loading");
+      });
+      return runtime.respond(systemPrompt, history, cleanInstruction, proposalMode);
+    }
+  }
+
   async function activate() {
     if (runtime || activating) return;
     activating = true;
@@ -178,7 +199,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
           : deterministicResponse;
       } else {
         const systemPrompt = createAssistantSystemPrompt(ruleDocument, calendarDocument, cleanInstruction, proposalMode);
-        const rawResponse = await runtime.respond(systemPrompt, history, cleanInstruction, proposalMode);
+        const rawResponse = await runLocalModel(systemPrompt, cleanInstruction, proposalMode);
         response = proposalMode
           ? parseAssistantResponse(rawResponse)
           : { answer: String(rawResponse).trim() || "The local model returned an empty response.", proposal: null };

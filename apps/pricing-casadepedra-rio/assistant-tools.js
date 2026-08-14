@@ -91,6 +91,14 @@ export function isRuleChangeRequest(instruction) {
 
 export function createDeterministicAnswer(ruleDocument, instruction) {
   const normalized = String(instruction ?? "").toLowerCase();
+  if (/new year|new year's|nye/.test(normalized) && /(?:\b2\b|two)[- ]?(?:day|night)/.test(normalized) && /(?:\b3\b|three)[- ]?(?:day|night)/.test(normalized)) {
+    const minimumStay = Math.max(0, ...ruleDocument.rules
+      .filter(rule => compactJson(rule.when).includes("gregorian.new-year"))
+      .map(rule => Number(rule.apply?.minimum_stay ?? 0)));
+    if (minimumStay > 3) {
+      return `There is no valid price difference: Casa de Pedra's New Year window requires at least ${minimumStay} nights, so neither a 2-night nor a 3-night reservation is eligible. Reservation length is measured in nights; select an eligible date range of ${minimumStay} nights or more to calculate its exact accommodation subtotal.`;
+    }
+  }
   if (/one[- ]night|two[- ]night|short[- ]stay|short stay/.test(normalized)) {
     const oneNight = ruleDocument.rules.find(rule => rule.when?.stay_nights?.exactly === 1)?.apply?.adjust_nightly_percent;
     const twoNights = ruleDocument.rules.find(rule => rule.when?.stay_nights?.exactly === 2)?.apply?.adjust_nightly_percent;
@@ -105,6 +113,10 @@ export function createDeterministicAnswer(ruleDocument, instruction) {
     return `The hard price floor is ${ruleDocument.listing_context.currency} ${ruleDocument.guardrails.hard_floor}, and the hard ceiling is ${ruleDocument.listing_context.currency} ${ruleDocument.guardrails.hard_ceiling}. These values are read directly from the loaded rule document.`;
   }
   return null;
+}
+
+export function isDisposedRuntimeError(error) {
+  return /object has already been disposed/i.test(String(error?.message ?? error ?? ""));
 }
 
 export function createDeterministicProposal(ruleDocument, instruction) {

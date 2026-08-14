@@ -9,6 +9,7 @@ import {
   createDeterministicAnswer,
   createDeterministicProposal,
   isRuleChangeRequest,
+  isDisposedRuntimeError,
   parseAssistantResponse,
 } from "../assistant-tools.js";
 import { createCalendarPricingModel, createCalendarYearHorizon } from "../pricing-model.js";
@@ -55,6 +56,15 @@ test("answers common numeric questions from deterministic rule data", async () =
   assert.match(createDeterministicAnswer(rules, "Explain the one-night and two-night premiums."), /one-night nightly rate is 50%/);
   assert.match(createDeterministicAnswer(rules, "What is the weekday base price?"), /USD 380\.00/);
   assert.equal(createDeterministicAnswer(rules, "Why is Carnival expensive?"), null);
+  assert.equal(
+    createDeterministicAnswer(rules, "What is a price difference between 3-day and 2-day New Year reservation?"),
+    "There is no valid price difference: Casa de Pedra's New Year window requires at least 6 nights, so neither a 2-night nor a 3-night reservation is eligible. Reservation length is measured in nights; select an eligible date range of 6 nights or more to calculate its exact accommodation subtotal.",
+  );
+});
+
+test("recognizes a disposed browser model session for one-time recovery", () => {
+  assert.equal(isDisposedRuntimeError(new Error("Object has already been disposed")), true);
+  assert.equal(isDisposedRuntimeError(new Error("Network request failed")), false);
 });
 
 test("turns explicit base edits into an exact constrained proposal", async () => {
