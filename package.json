@@ -7,6 +7,10 @@
   "engines": {
     "node": ">=22"
   },
+  "devDependencies": {
+    "@mlc-ai/web-llm": "0.2.84",
+    "esbuild": "0.28.1"
+  },
   "scripts": {
     "build": "node scripts/build-static.mjs",
     "build:static": "node scripts/build-static.mjs",

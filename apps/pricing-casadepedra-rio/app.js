@@ -11,6 +11,7 @@ import {
   formatScheduleNightly,
   formatScheduleRange,
 } from "./provider-instructions.js";
+import { initializePricingAssistant } from "./assistant-controller.js";
 
 const SERIES = Object.freeze([
   { nights: 1, label: "1-night rate", color: "#c75b43" },
@@ -452,6 +453,17 @@ async function start() {
   rulesInput.value = JSON.stringify(ruleDocument, null, 2);
   calendarInput.value = JSON.stringify(calendarDocument, null, 2);
   applyInputs();
+  initializePricingAssistant({
+    getDocuments: () => ({
+      ruleDocument: JSON.parse(rulesInput.value),
+      calendarDocument: JSON.parse(calendarInput.value),
+    }),
+    applyDraft: candidate => {
+      rulesInput.value = JSON.stringify(candidate, null, 2);
+      applyInputs();
+      document.querySelector("#editor-title").scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+  });
 }
 
 start().catch(error => setStatus(error.message, "error"));

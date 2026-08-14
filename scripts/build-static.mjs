@@ -1,5 +1,6 @@
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { build } from "esbuild";
 
 const root = resolve(import.meta.dirname, "..");
 const dist = resolve(root, "dist");
@@ -22,6 +23,22 @@ await cp(pricingSource, resolve(dist, "pricing-casadepedra-rio"), {
 await cp(pickerSource, resolve(dist, "pricing-casadepedra-rio/date-picker.js"));
 await mkdir(resolve(dist, "pricing-casadepedra-rio/vendor/price-engine"), { recursive: true });
 await cp(engineSource, resolve(dist, "pricing-casadepedra-rio/vendor/price-engine"), { recursive: true });
+
+await build({
+  entryPoints: {
+    "assistant-runtime": resolve(pricingSource, "assistant-runtime.js"),
+    "assistant-worker": resolve(pricingSource, "assistant-worker.js"),
+  },
+  outdir: resolve(dist, "pricing-casadepedra-rio"),
+  bundle: true,
+  splitting: true,
+  chunkNames: "assistant-chunks/[name]-[hash]",
+  format: "esm",
+  platform: "browser",
+  target: "es2022",
+  minify: true,
+  legalComments: "none",
+});
 
 const pricingApiBaseUrl = String(process.env.PRICING_API_BASE_URL ?? "").replace(/\/$/, "");
 const runtimeConfig = `globalThis.PMC_CONFIG = Object.freeze(${JSON.stringify({ pricingApiBaseUrl }, null, 2)});\n`;

@@ -2,6 +2,8 @@
 
 This is a static, offline pricing laboratory for the Casa de Pedra calendar. It imports the local `@pmc/price-engine` source directly in the browser; it does not call the pricing HTTP service or any other pricing backend.
 
+The optional pricing assistant uses WebLLM locally. Its runtime and model are not part of the initial page request: the browser dynamically loads them only after the user selects **Activate pricing assistant**. The low-resource SmolLM2 360M model runs in a dedicated Web Worker, uses about 376 MB of GPU memory, and is cached in browser-origin private storage. Common numeric questions and explicit base-price edits are grounded directly in the loaded documents; WebLLM handles natural-language questions and other constrained drafts. Every draft still passes deterministic engine validation, and the assistant cannot save or publish it.
+
 The calculation horizon is always two calendar years beginning on **today in `America/Sao_Paulo`**, inclusive, and ending the day before the same local date two years later. For example, August 4, 2026 produces August 4, 2026 through August 3, 2028. This contains 731 accommodation dates because it crosses leap day in 2028.
 
 The project contains a copied and extended version of:
@@ -52,3 +54,11 @@ Changing a preview option repaints only the displayed prices and emits `price-di
 - `rio-2027.calendar.json` is the extended unverified development event fixture. Its broader 2026–2029 coverage lets the SPA calculate a moving two-year window and contains calculated New Year, Carnival, Easter, and fixed Independence Day facts.
 
 The page loads both into textareas. **Apply inputs** parses and validates them, then atomically replaces the three local preview series. An invalid edit leaves the last valid calendar and chart intact.
+
+## Assistant safety
+
+- The assistant context contains sanitized pricing rules and event facts only.
+- Model output is parsed as untrusted structured input.
+- Allowed operations cannot alter currency, listing identity, guardrails, or calendar facts.
+- A candidate is version-bumped and evaluated by the deterministic engine over the complete two-year horizon before it can enter the editor.
+- **Apply draft locally** affects only the in-memory browser page. Production publication remains a separate authenticated and human-approved workflow.

@@ -30,6 +30,62 @@
         </nav>
       </section>
 
+      <section class="surface assistant-surface" aria-labelledby="assistant-title">
+        <div class="section-heading assistant-heading">
+          <div>
+            <p class="eyebrow">Optional local AI</p>
+            <h2 id="assistant-title">Ask about prices or prepare a rule draft</h2>
+          </div>
+          <span class="privacy-pill">Private · browser only</span>
+        </div>
+        <p class="assistant-copy">The pricing page and calendar load without AI. WebLLM and its low-resource model download only if you activate the assistant; the first download is large and is cached by your browser. Questions and sanitized pricing documents remain on this device.</p>
+
+        <div id="assistant-activation" class="assistant-activation">
+          <div>
+            <strong>Nothing has been downloaded.</strong>
+            <span>Requires WebGPU and a current hardware-accelerated browser. The low-resource model uses about 376 MB of GPU memory.</span>
+          </div>
+          <button id="activate-assistant" class="primary-button" type="button">Activate pricing assistant</button>
+        </div>
+        <progress id="assistant-progress" class="assistant-progress" max="1" value="0" hidden>0%</progress>
+        <p id="assistant-status" class="assistant-status" data-state="idle" role="status" aria-live="polite">Inactive · zero AI download and zero model requests</p>
+
+        <div id="assistant-chat" class="assistant-chat" hidden>
+          <div class="assistant-prompts" aria-label="Example questions">
+            <button type="button" data-assistant-prompt="Explain the current one-night and two-night premiums.">Explain short stays</button>
+            <button type="button" data-assistant-prompt="Which rules determine Carnival and New Year prices?">Explain major events</button>
+            <button type="button" data-assistant-prompt="Propose changing the weekday base to 400.00 and the weekend base to 450.00.">Draft a base change</button>
+          </div>
+          <div id="assistant-log" class="assistant-log" role="log" aria-live="polite" aria-label="Pricing assistant conversation"></div>
+
+          <section id="assistant-proposal" class="assistant-proposal" aria-labelledby="assistant-proposal-title" hidden>
+            <div class="assistant-proposal-heading">
+              <div>
+                <p class="eyebrow">Validated local proposal</p>
+                <h3 id="assistant-proposal-title">Review before changing the editor</h3>
+              </div>
+              <button id="assistant-apply-proposal" class="primary-button" type="button">Apply draft locally</button>
+            </div>
+            <p id="assistant-proposal-summary"></p>
+            <p id="assistant-proposal-impact" class="assistant-impact"></p>
+            <details>
+              <summary>Representative calculated changes</summary>
+              <ul id="assistant-proposal-samples"></ul>
+            </details>
+            <small>This changes only the browser editor and preview. It does not save, upload, commit, or publish production rules.</small>
+          </section>
+
+          <form id="assistant-form" class="assistant-form">
+            <label for="assistant-input">Question or requested rule change</label>
+            <textarea id="assistant-input" rows="3" maxlength="1200" placeholder="For example: Why is New Year more expensive, or propose a 12% low-season discount."></textarea>
+            <div class="assistant-form-actions">
+              <button id="assistant-clear" class="secondary-button" type="button">Clear conversation</button>
+              <button id="assistant-send" class="primary-button" type="submit">Send</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
       <section class="surface calendar-surface" aria-labelledby="calendar-title">
         <div class="section-heading">
           <div>

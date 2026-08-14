@@ -38,6 +38,20 @@ An AI assistant may:
 
 An AI assistant must obtain human approval before deploying rule or calendar changes to production. It must not infer permission to change currency, weaken guardrails, delete event facts, expose secrets, create marketplace promotions, or alter reservation availability.
 
+### Embedded WebLLM assistant boundary
+
+The Pricing SPA's embedded assistant is a lower-authority draft tool:
+
+- It loads only after explicit activation and runs locally in a Web Worker.
+- It may answer from the sanitized rule/event context currently loaded in the browser.
+- It may propose `set_base`, `update_rule`, `add_rule`, and explicitly requested `remove_rule` operations.
+- It may not edit listing identity, currency, timezone, jurisdiction, guardrails, rule-set identity/effective date, or calendar facts.
+- Every proposal is applied to a clone, version-bumped, compiled, and evaluated across all one-, two-, and three-night prices in the two-year horizon.
+- It may place a validated candidate into the browser editor only after a separate user click.
+- It has no credential, repository write, Blob write, administrative API, or production deployment capability.
+
+Treat local model output as untrusted input. Only the deterministic engine's successful result establishes syntactic and calculation validity; it does not replace human commercial approval.
+
 ## Required behavior
 
 1. Read the complete authoritative rule file, calendar file, schema, and relevant tests before editing.

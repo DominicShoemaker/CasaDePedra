@@ -3,6 +3,7 @@ packages:
   - "packages/*"
   - "services/*"
 
-injectWorkspacePackages: true
+allowBuilds:
+  esbuild: true
 
-onlyBuiltDependencies: []
+injectWorkspacePackages: true

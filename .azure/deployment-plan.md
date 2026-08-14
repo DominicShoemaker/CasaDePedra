@@ -274,3 +274,20 @@ The discovery and planning phase is complete. No application or billable Azure r
 - Live RBAC verification passed: Function identity has Storage Blob Data Owner on its storage account and Key Vault Secrets User on its vault. The interactive owner has the planned configuration-publisher role.
 - Local repository commit: `7da2abc feat: add shared pricing monorepo and Azure deployment` on branch `codex/casadepedra-monorepo-pricing`.
 - Remaining gate: the execution environment exhausted its approval quota and rejected `git push`. The branch, workflows, GitHub secrets/variables, Static Web App content, custom domain, and independent public endpoint smoke tests remain pending.
+
+## 17. WebLLM Pricing Assistant Update
+
+> **Status:** Validated and ready for deployment on 2026-08-13
+
+- Add an English-language pricing assistant only to `pricing.casadepedra.rio`; do not change the public reservation website or authoritative pricing API.
+- Keep initial page loading fast by downloading the WebLLM runtime and model only after the user activates the assistant.
+- Use WebLLM 0.2.84 with the low-resource `SmolLM2-360M-Instruct-q4f16_1-MLC` model in a dedicated Web Worker. Cache model artifacts in browser-origin private storage. This model requires about 376 MB of GPU memory; the originally evaluated Llama 3.2 1B model exceeded the target browser's WebAssembly memory limit.
+- Supply sanitized, compact rule and event context from the documents already loaded in the editor. Do not transmit rules, calendar facts, prompts, or responses to a model service.
+- Ground common numeric answers and explicit base-price edits directly in the loaded rule document so the low-resource model cannot reinterpret ordering priorities as prices or percentages.
+- Permit the model to propose only structured rule operations. Apply those operations to a cloned rule document, automatically increment the rule-set version, and validate the complete two-year candidate through the existing price engine.
+- Show the proposed changes and calculated impact before allowing a user to copy the validated candidate into the local editor.
+- Never publish, upload, or persist an AI proposal. Production publication remains an authenticated, separately approved server/repository workflow.
+- Extend the Static Web App content security policy only for WebLLM's documented model/WASM sources and Web Worker execution.
+- Validate unit tests, syntax, deterministic static build, security headers, Azure resource identity, and production UI behavior before completion.
+
+Validation evidence: all 49 workspace tests pass; the deterministic production build succeeds; opt-in loading, cached model initialization, exact 50%/25% short-stay answers, two-year draft validation, and local-only draft application passed browser acceptance testing. Azure target identity was confirmed as `CasaDePedra-Pricing` in `STR-Pricing-West2` (`proud-rock-087e47d1e.7.azurestaticapps.net`, Free, West US 2).
