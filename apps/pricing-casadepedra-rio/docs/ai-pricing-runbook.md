@@ -149,18 +149,19 @@ Parity means equal USD accommodation subtotal before cleaning fees, taxes, provi
 
 ### Airbnb
 
-- Native capability: date prices, nightly rule-set adjustments, trip-length discounts, minimum/maximum stay.
+- Native capability: Base price, Friday/Saturday Custom weekend price, date prices, nightly rule-set adjustments, trip-length discounts, minimum/maximum stay.
 - Missing capability: positive trip-length premium.
 - Translation: use the engine’s one-night amount as the calendar anchor and invert longer-stay targets into discounts.
+- Minimum-work rule: set Base and Custom weekend prices before custom dates, apply the standard LOS rule-set to the full horizon once, and omit ordinary dates whose calculated price and minimum stay are fully covered by those defaults.
 - Event dates whose rules suppress `length-of-stay` use a separate no-LOS profile.
 - Warn when required discount precision is not accepted or when a stay crosses profiles.
 - Disable Smart Pricing and unmodeled discounts/promotions.
 
 ### Vrbo standard Owner Dashboard
 
-- Native capability: absolute date price, date minimum stay, weekly discount, monthly discount.
+- Native capability: Base rate customized by day of week, absolute date price, date minimum stay, weekly discount, monthly discount.
 - Unsupported: one-night premium, two-night premium, independent 14–27-night discount.
-- Translation: use the exact engine three-to-six-night price per date; configure supported weekly/monthly discounts; list unsupported mismatches.
+- Translation: set day-of-week Base rates and supported weekly/monthly discounts once, then list only dates whose exact engine three-to-six-night price or minimum stay differs from those defaults.
 - Disable rate automation and unmodeled promotions.
 
 ### Booking.com standard Extranet
@@ -168,6 +169,7 @@ Parity means equal USD accommodation subtotal before cleaning fees, taxes, provi
 - Native capability: one Standard nightly price per date and length-of-stay restrictions.
 - Unsupported in the standard manual model: exact price by stay length.
 - Translation: use the exact engine three-to-six-night price per date; configure minimum stay; list every unsupported premium/discount.
+- Minimum-work rule: combine only consecutive dates with identical price and restrictions. Do not invent a global weekday/weekend fallback unless current official Extranet documentation verifies one for the property.
 - Exact LOS totals require certified Booking.com Connectivity LOS pricing. Do not instruct a normal Extranet user to call the LOS API.
 - Disable Genius, mobile, country, campaign, and other unmodeled promotions.
 

@@ -209,17 +209,19 @@ The Pricing SPA regenerates three instruction tabs whenever **Apply inputs** suc
 
 ### Airbnb
 
-Airbnb rule-sets support nightly adjustments, trip-length discounts, and minimum stays. Airbnb does not provide a positive trip-length premium. The generated instructions therefore use the one-night price as an anchor and mathematically invert the premium into discounts for longer stays. Event dates that suppress stay pricing use a separate no-LOS profile. Airbnb documents these rule-set capabilities in [How rule-sets work](https://www.airbnb.com/help/article/2061).
+Airbnb rule-sets support nightly adjustments, trip-length discounts, and minimum stays. Airbnb does not provide a positive trip-length premium. The generated instructions therefore use the one-night price as an anchor and mathematically invert the premium into discounts for longer stays.
+
+To minimize manual entry, configure the calculated **Base price** and **Custom weekend price** once, before entering any custom dates. Apply the standard LOS rule-set to the complete horizon in one selection. The generated schedule then omits ordinary dates covered by those defaults and lists only seasonal, event, or restriction exceptions. Event dates that suppress stay pricing use a separate no-LOS profile. Airbnb documents [default and custom price precedence](https://www.airbnb.com/help/article/474), [Friday/Saturday weekend pricing](https://www.airbnb.com/help/article/512), and [rule-set capabilities](https://www.airbnb.com/help/article/2061).
 
 Fractional discount precision and stays crossing unlike rule profiles may prevent exact parity. Verify representative searches in Airbnb before publishing.
 
 ### Vrbo
 
-Vrbo supports date-specific nightly prices, minimum stays, and weekly/monthly discounts. It does not expose native one-night, two-night, or 14–27-night price brackets in the standard Owner Dashboard. The generated fallback uses exact three-to-six-night daily prices and every supported discount. See [Manage your rates and discounts](https://help.vrbo.com/articles/How-do-I-manage-my-rates).
+Vrbo supports a Base rate customized by day of week, date-specific nightly prices, minimum stays, and weekly/monthly discounts. It does not expose native one-night, two-night, or 14–27-night price brackets in the standard Owner Dashboard. The generated fallback sets the Sunday–Thursday and Friday–Saturday Base rates plus weekly/monthly discounts once, omits every ordinary date they cover, and lists only seasonal, event, or restriction exceptions. See [Manage your rates and discounts](https://help.vrbo.com/articles/How-do-I-manage-my-rates).
 
 ### Booking.com
 
-A standard Booking.com rate plan uses one nightly price per date. Exact stay-length totals require its certified LOS connectivity model, which accepts an explicit total by check-in date and stay length. The manual instructions use the Standard rate-plan fallback. See [Booking.com LOS pricing](https://developers.booking.com/connectivity/docs/csv-los_pricing) and [pricing-type certification](https://developers.booking.com/connectivity/docs/configuring-retrieving-pricing-types).
+A standard Booking.com rate plan uses one nightly price per date. Exact stay-length totals require its certified LOS connectivity model, which accepts an explicit total by check-in date and stay length. The manual instructions use the Standard rate-plan fallback and combine consecutive dates only when price and restrictions are identical. They do not claim an unverified global weekday/weekend control. See [Booking.com LOS pricing](https://developers.booking.com/connectivity/docs/csv-los_pricing) and [pricing-type certification](https://developers.booking.com/connectivity/docs/configuring-retrieving-pricing-types).
 
 ## Troubleshooting
 

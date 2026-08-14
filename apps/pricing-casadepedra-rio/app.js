@@ -53,12 +53,17 @@ function renderProviderPlan(plan) {
   const titleGroup = document.createElement("div");
   appendTextElement(titleGroup, "h3", `${plan.label} setup instructions`);
   appendTextElement(titleGroup, "p", plan.status, "provider-status");
-  const source = document.createElement("a");
-  source.href = plan.guideUrl;
-  source.target = "_blank";
-  source.rel = "noreferrer";
-  source.textContent = "Official provider guide";
-  header.append(titleGroup, source);
+  const sources = document.createElement("div");
+  sources.className = "provider-guides";
+  for (const guide of plan.guides) {
+    const source = document.createElement("a");
+    source.href = guide.url;
+    source.target = "_blank";
+    source.rel = "noreferrer";
+    source.textContent = guide.label;
+    sources.append(source);
+  }
+  header.append(titleGroup, sources);
   panel.append(header);
   appendTextElement(panel, "p", plan.summary, "provider-summary");
 
@@ -77,6 +82,18 @@ function renderProviderPlan(plan) {
   }
   panel.append(metadata);
 
+  appendTextElement(panel, "h4", "Set once");
+  const defaults = document.createElement("div");
+  defaults.className = "provider-defaults";
+  for (const setting of plan.defaults) {
+    const item = document.createElement("div");
+    appendTextElement(item, "span", setting.label);
+    appendTextElement(item, "strong", setting.value);
+    appendTextElement(item, "small", setting.detail);
+    defaults.append(item);
+  }
+  panel.append(defaults);
+
   appendTextElement(panel, "h4", "Configuration steps");
   const steps = document.createElement("ol");
   steps.className = "provider-steps";
@@ -94,9 +111,9 @@ function renderProviderPlan(plan) {
   const details = document.createElement("details");
   details.className = "schedule-details";
   const summary = document.createElement("summary");
-  summary.textContent = `Calendar-entry schedule (${plan.schedule.length} batches)`;
+  summary.textContent = `${plan.scheduleTitle} (${plan.schedule.length} batches)`;
   details.append(summary);
-  appendTextElement(details, "p", "Enter every batch in order. The end date is inclusive. Reapply the schedule whenever the price rules, calendar description, or two-year horizon changes.", "schedule-note");
+  appendTextElement(details, "p", `${plan.scheduleNote} Reapply these instructions whenever the price rules, calendar description, or two-year horizon changes.`, "schedule-note");
   const viewport = document.createElement("div");
   viewport.className = "schedule-table-viewport";
   const table = document.createElement("table");
