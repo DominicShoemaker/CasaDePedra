@@ -177,7 +177,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
       activationPanel.hidden = true;
       chatPanel.hidden = false;
       setStatus("Rules-only mode · deterministic pricing answers remain available · WebLLM unavailable", "ready");
-      appendMessage("assistant", "Your browser could not start the optional WebLLM model. I can still answer supported numeric pricing questions and prepare supported deterministic drafts from the loaded rules. Broader natural-language questions require WebGPU.");
+      appendMessage("assistant", "Your browser could not start the optional WebLLM model. I can still answer supported numeric pricing questions and prepare supported deterministic drafts from the loaded rules. Broader natural-language questions require WebGPU. To troubleshoot Chrome or Edge, enable graphics acceleration, restart the browser, and confirm that WebGPU is hardware accelerated on chrome://gpu or edge://gpu.");
       input.focus();
     } finally {
       activating = false;
@@ -207,7 +207,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
       } else {
         if (!runtime) {
           response = {
-            answer: "This question requires the optional language model, but this browser could not start WebGPU. Rules-only mode can still answer short-stay premiums, base prices, guardrails, and the 2-night versus 3-night New Year comparison, and it can prepare explicit weekday/weekend base-price drafts.",
+            answer: "This question requires the optional language model, but this browser could not start WebGPU. Rules-only mode can still answer short-stay premiums, base prices, guardrails, and supported event minimum-stay comparisons, and it can prepare explicit weekday/weekend base-price drafts.",
             proposal: null,
           };
         } else {

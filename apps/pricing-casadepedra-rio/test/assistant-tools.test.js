@@ -61,6 +61,14 @@ test("answers common numeric questions from deterministic rule data", async () =
     createDeterministicAnswer(rules, "What is a price difference between 3-day and 2-day New Year reservation?"),
     "There is no valid price difference: Casa de Pedra's New Year window requires at least 6 nights, so neither a 2-night nor a 3-night reservation is eligible. Reservation length is measured in nights; select an eligible date range of 6 nights or more to calculate its exact accommodation subtotal.",
   );
+  assert.equal(
+    createDeterministicAnswer(rules, "What is a price difference between 3-day and 2-day Christmas reservation?"),
+    "There is no valid price difference: Casa de Pedra's Christmas window requires at least 4 nights, so neither a 2-night nor a 3-night reservation is eligible. Reservation length is measured in nights; select an eligible date range of 4 nights or more to calculate its exact accommodation subtotal.",
+  );
+  assert.match(
+    createDeterministicAnswer(rules, "Compare a 4-night and 5-night Christmas reservation."),
+    /requires the year and check-in date/,
+  );
 });
 
 test("recognizes a disposed browser model session for one-time recovery", () => {

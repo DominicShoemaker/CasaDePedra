@@ -91,13 +91,29 @@ export function isRuleChangeRequest(instruction) {
 
 export function createDeterministicAnswer(ruleDocument, instruction) {
   const normalized = String(instruction ?? "").toLowerCase();
-  if (/new year|new year's|nye/.test(normalized) && /(?:\b2\b|two)[- ]?(?:day|night)/.test(normalized) && /(?:\b3\b|three)[- ]?(?:day|night)/.test(normalized)) {
-    const minimumStay = Math.max(0, ...ruleDocument.rules
-      .filter(rule => compactJson(rule.when).includes("gregorian.new-year"))
-      .map(rule => Number(rule.apply?.minimum_stay ?? 0)));
-    if (minimumStay > 3) {
-      return `There is no valid price difference: Casa de Pedra's New Year window requires at least ${minimumStay} nights, so neither a 2-night nor a 3-night reservation is eligible. Reservation length is measured in nights; select an eligible date range of ${minimumStay} nights or more to calculate its exact accommodation subtotal.`;
+  const numberWords = Object.freeze({ one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7 });
+  const comparedNights = [...normalized.matchAll(/\b(\d+|one|two|three|four|five|six|seven)[- ]?(?:day|night)s?\b/g)]
+    .map(match => numberWords[match[1]] ?? Number(match[1]))
+    .filter((value, index, values) => Number.isInteger(value) && value > 0 && values.indexOf(value) === index);
+  const eventDefinitions = [
+    { label: "New Year", matches: /new year|new year's|nye/, ruleMatches: /new.year/ },
+    { label: "Christmas", matches: /christmas|xmas/, ruleMatches: /christmas/ },
+    { label: "Carnival", matches: /carnival|carnaval/, ruleMatches: /carnival/ },
+    { label: "Rock in Rio", matches: /rock in rio/, ruleMatches: /rock.in.rio/ },
+  ];
+  const eventDefinition = eventDefinitions.find(definition => definition.matches.test(normalized));
+  if (eventDefinition && comparedNights.length >= 2 && /difference|compare|versus|\bvs\b/.test(normalized)) {
+    const eventRules = ruleDocument.rules.filter(rule => eventDefinition.ruleMatches.test(`${rule.id} ${rule.name}`.toLowerCase()));
+    const minimumStay = Math.max(0, ...eventRules.map(rule => Number(rule.apply?.minimum_stay ?? 0)));
+    const ineligible = comparedNights.filter(nights => nights < minimumStay).sort((left, right) => left - right);
+    if (ineligible.length === comparedNights.length && minimumStay > 0) {
+      const compared = [...comparedNights].sort((left, right) => left - right).map(nights => `${nights}-night`).join(" nor a ");
+      return `There is no valid price difference: Casa de Pedra's ${eventDefinition.label} window requires at least ${minimumStay} nights, so neither a ${compared} reservation is eligible. Reservation length is measured in nights; select an eligible date range of ${minimumStay} nights or more to calculate its exact accommodation subtotal.`;
     }
+    if (ineligible.length > 0) {
+      return `The requested ${eventDefinition.label} stays are not directly comparable because ${ineligible.map(nights => `${nights} nights`).join(" and ")} is below the ${minimumStay}-night minimum. Provide an eligible stay length and the exact check-in date to calculate the accommodation subtotal.`;
+    }
+    return `An exact ${eventDefinition.label} price difference requires the year and check-in date because the included weekdays, weekends, and event nights can differ. Both requested stay lengths satisfy the ${minimumStay}-night minimum; select the exact date ranges in the calendar for deterministic subtotals.`;
   }
   if (/one[- ]night|two[- ]night|short[- ]stay|short stay/.test(normalized)) {
     const oneNight = ruleDocument.rules.find(rule => rule.when?.stay_nights?.exactly === 1)?.apply?.adjust_nightly_percent;
