@@ -145,7 +145,7 @@ test("uses Puter Terra directly from the SPA and never calls the pricing backend
   assert.doesNotMatch(app, /\/api\/v1\/rule-set|\/api\/v1\/calendar-snapshot/);
   assert.match(controller, /from "\.\/assistant-runtime\.js"/);
   assert.match(runtime, /globalThis\.puter\.ai\.chat/);
-  assert.doesNotMatch(runtime, /auth\.signIn|attempt_temp_user_creation/);
+  assert.match(runtime, /attempt_temp_user_creation: true/);
   assert.match(runtime, /openai\/gpt-5\.6-terra/);
   assert.match(page, /https:\/\/js\.puter\.com\/v2\//);
   assert.doesNotMatch(runtime, /WebLLM|WebGPU|@mlc-ai/);
@@ -153,7 +153,12 @@ test("uses Puter Terra directly from the SPA and never calls the pricing backend
 
 test("normalizes Puter tool calls into validated proposal JSON", async () => {
   const originalPuter = globalThis.puter;
+  let temporarySessionOptions;
   globalThis.puter = {
+    auth: {
+      isSignedIn: () => false,
+      signIn: async options => { temporarySessionOptions = options; },
+    },
     ai: { chat: async (_messages, options) => {
     assert.equal(options.model, "openai/gpt-5.6-terra");
     assert.equal(options.tools[0].function.name, "propose_pricing_changes");
@@ -167,6 +172,7 @@ test("normalizes Puter tool calls into validated proposal JSON", async () => {
   } } };
   try {
     const runtime = await createPuterPricingAssistant();
+    assert.deepEqual(temporarySessionOptions, { attempt_temp_user_creation: true });
     assert.equal(runtime.model, PRICING_ASSISTANT_MODEL);
     const response = parseAssistantResponse(await runtime.respond("system", [], "Set New Year to 1200", true));
     assert.equal(response.proposal.ruleOperations[0].changes.apply.set_final_nightly, "1200.00");
@@ -175,16 +181,19 @@ test("normalizes Puter tool calls into validated proposal JSON", async () => {
   }
 });
 
-test("collects anonymous Puter streaming answers without an auth flow", async () => {
+test("collects Puter streaming answers after temporary-user activation", async () => {
   const originalPuter = globalThis.puter;
   let requestedOptions;
-  globalThis.puter = { ai: { chat: async (_messages, options) => {
-    requestedOptions = options;
-    return (async function* () {
-      yield { text: "Carnival uses " };
-      yield { text: "event pricing." };
-    })();
-  } } };
+  globalThis.puter = {
+    auth: { isSignedIn: () => true, signIn: async () => { throw new Error("Already signed in"); } },
+    ai: { chat: async (_messages, options) => {
+      requestedOptions = options;
+      return (async function* () {
+        yield { text: "Carnival uses " };
+        yield { text: "event pricing." };
+      })();
+    } },
+  };
   try {
     const runtime = await createPuterPricingAssistant();
     assert.equal(await runtime.respond("system", [], "Explain Carnival", false), "Carnival uses event pricing.");

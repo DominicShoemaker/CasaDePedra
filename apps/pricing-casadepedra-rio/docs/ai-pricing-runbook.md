@@ -43,7 +43,7 @@ An AI assistant must obtain human approval before deploying rule or calendar cha
 The Pricing SPA's embedded assistant is a lower-authority draft tool:
 
 - It uses Puter.js in the SPA and calls `openai/gpt-5.6-terra` directly from the browser; no request is proxied through the Casa de Pedra or Azure backend.
-- Activation does not invoke `puter.auth.signIn()` or request user credentials; the SPA calls `puter.ai.chat()` directly.
+- Activation requests Puter's documented temporary-user flow (`attempt_temp_user_creation`). The visitor does not enter credentials, but Puter still authenticates the temporary identity internally.
 - It may answer from compact, sanitized rule/event context generated from the textareas currently shown in the browser. That context and the user's prompt are transmitted to Puter/OpenAI for inference.
 - It may propose constrained rule operations and constrained calendar metadata/event operations.
 - It may not edit listing identity, currency, timezone, jurisdiction, guardrails, rule-set identity, or effective date.

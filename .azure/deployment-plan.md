@@ -294,11 +294,11 @@ Validation evidence: all 49 workspace tests pass; the deterministic production b
 
 ## 18. Puter Pricing Assistant Replacement
 
-> **Status:** Validated for deployment on 2026-08-14
+> **Status:** Deployed and accepted on 2026-08-14
 
 - Remove WebLLM, its model bundle, worker, GPU dependency, and Hugging Face network permissions.
 - Use Puter.js directly in the SPA with `openai/gpt-5.6-terra`; do not proxy AI requests through the Casa de Pedra/Azure backend.
-- Use the direct anonymous `puter.ai.chat()` browser flow without invoking `puter.auth.signIn()` or asking the visitor for credentials.
+- Use Puter's documented temporary-user creation during the activation click, avoiding username/password entry while preserving Puter's internal user-pays authentication boundary.
 - Load the rule and calendar defaults exclusively from bundled static files. Puter receives compact sanitized context generated from the two currently visible textareas.
 - Permit constrained rule and calendar operations, validate cloned candidate documents over the full two-year horizon, show calculated impact, and require a separate **Apply draft locally** click.
 - Applying a draft changes only the two browser textareas and their local previews; it does not save, upload, publish, or call an administrative endpoint.
@@ -332,6 +332,7 @@ Validation evidence: all 49 workspace tests pass; the deterministic production b
 
 ### Puter release deployment record
 
-- Static content deployment to `CasaDePedra-Pricing` succeeded on 2026-08-14. Both `https://proud-rock-087e47d1e.7.azurestaticapps.net/` and `https://pricing.casadepedra.rio/` returned HTTP 200 with the intended Puter CSP, Terra model identifier, no explicit sign-in call, and no pricing-backend reference.
-- Production browser activation passed with no console or CSP error. A first anonymous Terra request remained pending for more than 120 seconds until the page was reloaded. The equivalent direct anonymous flow completed on localhost, but localhost had an origin-scoped Puter session from the earlier test attempts.
-- Production acceptance is therefore incomplete: reliable first-visit behavior requires either Puter's documented temporary-user creation during the activation click or confirmation from a normal user browser that Puter's implicit anonymous onboarding completes outside the in-app automation environment.
+- The initial direct implicit-onboarding build returned HTTP 200 but its first Terra request remained pending on a fresh production origin. The owner then approved Puter's documented temporary-user creation on 2026-08-14.
+- The temporary-user build passed all 52 workspace tests and was deployed to the existing `CasaDePedra-Pricing` production environment. Both `https://proud-rock-087e47d1e.7.azurestaticapps.net/` and `https://pricing.casadepedra.rio/` returned HTTP 200 with the intended Puter CSP, Terra model identifier, `attempt_temp_user_creation: true`, and no executable pricing-backend or WebLLM reference.
+- Fresh production activation completed without an account form or credential prompt. The first anonymous question returned the correct Carnival comparison: ordinary summer uses a 15% seasonal adjustment, while Carnival uses $820/$950 event rates, a six-night minimum, and suppression of season and length-of-stay rules.
+- The production New Year edit test produced exact operations for `copacabana-new-year-prime`, `copacabana-new-year-tail`, and `copacabana-new-year`, setting all three to `1200.00`. The candidate incremented to rule-set version 3 and passed deterministic two-year validation with 12 dates and 36 displayed stay-length prices affected. The draft was not applied, saved, or published.

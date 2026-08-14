@@ -57,10 +57,14 @@ async function collectStream(response) {
 }
 
 export async function createPuterPricingAssistant(onProgress) {
-  onProgress?.({ progress: 0.5, text: "Connecting the browser directly to Puter AI…" });
-  if (!globalThis.puter?.ai?.chat) {
+  onProgress?.({ progress: 0.25, text: "Creating an anonymous temporary Puter session…" });
+  if (!globalThis.puter?.ai?.chat || !globalThis.puter?.auth?.isSignedIn || !globalThis.puter?.auth?.signIn) {
     throw new Error("Puter.js did not load. Check the network connection and content-blocking extensions, then retry.");
   }
+  if (!globalThis.puter.auth.isSignedIn()) {
+    await globalThis.puter.auth.signIn({ attempt_temp_user_creation: true });
+  }
+  onProgress?.({ progress: 0.75, text: "Connecting the temporary session directly to Puter AI…" });
   onProgress?.({ progress: 1, text: "Puter AI is ready." });
 
   return Object.freeze({

@@ -205,7 +205,7 @@ An invalid candidate must never replace the last known good production rules.
 
 ## Optional Puter pricing assistant
 
-The Pricing SPA includes Puter.js and uses `openai/gpt-5.6-terra`. After **Activate Puter pricing assistant** is selected, the SPA calls `puter.ai.chat()` directly and does not invoke a sign-in flow or request a username, password, application API key, or Casa de Pedra account. AI requests travel directly from the browser to Puter; they do not pass through the Casa de Pedra or Azure backend. No GPU is required.
+The Pricing SPA includes Puter.js and uses `openai/gpt-5.6-terra`. After **Activate Puter pricing assistant** is selected, the SPA requests Puter's temporary-user flow, so the visitor does not enter a username, password, application API key, or Casa de Pedra account. Puter still authenticates the temporary identity internally for its user-pays service. AI requests travel directly from the browser to Puter; they do not pass through the Casa de Pedra or Azure backend. No GPU is required.
 
 The assistant receives a compact, sanitized summary generated from the rule and calendar documents currently shown in the page. The question and this context are processed externally by Puter/OpenAI. The pricing documents remain in the page unless the user separately applies a validated draft.
 

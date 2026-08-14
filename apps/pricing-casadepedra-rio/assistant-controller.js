@@ -142,7 +142,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
       setStatus(`Ready · ${runtime.model} · direct browser-to-Puter connection`, "ready");
       activationPanel.hidden = true;
       chatPanel.hidden = false;
-      appendMessage("assistant", "I am ready in an anonymous Puter browser session. I can read the rules and calendar currently shown on this page, answer pricing questions, and prepare a validated local draft. I cannot save or publish production changes.");
+      appendMessage("assistant", "I am ready in an anonymous temporary Puter session. I can read the rules and calendar currently shown on this page, answer pricing questions, and prepare a validated local draft. I cannot save or publish production changes.");
       input.focus();
     } catch (error) {
       console.error("Puter pricing assistant activation failed.", error);
