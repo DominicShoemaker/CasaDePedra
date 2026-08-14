@@ -38,19 +38,20 @@ An AI assistant may:
 
 An AI assistant must obtain human approval before deploying rule or calendar changes to production. It must not infer permission to change currency, weaken guardrails, delete event facts, expose secrets, create marketplace promotions, or alter reservation availability.
 
-### Embedded WebLLM assistant boundary
+### Embedded Puter AI assistant boundary
 
 The Pricing SPA's embedded assistant is a lower-authority draft tool:
 
-- It loads only after explicit activation and runs locally in a Web Worker.
-- It may answer from the sanitized rule/event context currently loaded in the browser.
-- It may propose `set_base`, `update_rule`, `add_rule`, and explicitly requested `remove_rule` operations.
-- It may not edit listing identity, currency, timezone, jurisdiction, guardrails, rule-set identity/effective date, or calendar facts.
-- Every proposal is applied to a clone, version-bumped, compiled, and evaluated across all one-, two-, and three-night prices in the two-year horizon.
+- It uses Puter.js in the SPA and calls `openai/gpt-5.6-terra` directly from the browser; no request is proxied through the Casa de Pedra or Azure backend.
+- Activation does not invoke `puter.auth.signIn()` or request user credentials; the SPA calls `puter.ai.chat()` directly.
+- It may answer from compact, sanitized rule/event context generated from the textareas currently shown in the browser. That context and the user's prompt are transmitted to Puter/OpenAI for inference.
+- It may propose constrained rule operations and constrained calendar metadata/event operations.
+- It may not edit listing identity, currency, timezone, jurisdiction, guardrails, rule-set identity, or effective date.
+- Every proposal is applied to cloned documents, pricing rule changes are version-bumped, and the complete candidate is compiled and evaluated across all one-, two-, and three-night prices in the two-year horizon.
 - It may place a validated candidate into the browser editor only after a separate user click.
-- It has no credential, repository write, Blob write, administrative API, or production deployment capability.
+- It has no application API key, repository write, Blob write, administrative API, or production deployment capability.
 
-Treat local model output as untrusted input. Only the deterministic engine's successful result establishes syntactic and calculation validity; it does not replace human commercial approval.
+Treat Puter model output as untrusted input. Only the deterministic engine's successful result establishes syntactic and calculation validity; it does not replace human commercial approval.
 
 ## Required behavior
 

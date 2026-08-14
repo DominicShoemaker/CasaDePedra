@@ -423,33 +423,13 @@ window.addEventListener("resize", () => drawChart());
 
 async function start() {
   await customElements.whenDefined("str-date-range-picker");
-  const apiBase = String(globalThis.PMC_CONFIG?.pricingApiBaseUrl ?? "").replace(/\/$/, "");
-  let ruleDocument;
-  let calendarDocument;
-  if (apiBase) {
-    try {
-      const [rulesResponse, calendarResponse] = await Promise.all([
-        fetch(`${apiBase}/api/v1/rule-set`, { cache: "no-store" }),
-        fetch(`${apiBase}/api/v1/calendar-snapshot`, { cache: "no-store" }),
-      ]);
-      if (!rulesResponse.ok || !calendarResponse.ok) {
-        throw new Error(`Pricing API defaults are not ready (rules ${rulesResponse.status}, calendar ${calendarResponse.status}).`);
-      }
-      ruleDocument = (await rulesResponse.json()).ruleSet;
-      calendarDocument = (await calendarResponse.json()).calendarSnapshot;
-    } catch (error) {
-      console.warn("Using bundled pricing defaults because the API defaults could not be loaded.", error);
-    }
-  }
-  if (!ruleDocument || !calendarDocument) {
-    const [rulesResponse, calendarResponse] = await Promise.all([
-      fetch(new URL("./casa-de-pedra.rules.json", import.meta.url)),
-      fetch(new URL("./rio-2027.calendar.json", import.meta.url)),
-    ]);
-    if (!rulesResponse.ok || !calendarResponse.ok) throw new Error("Pricing defaults could not be loaded.");
-    ruleDocument = await rulesResponse.json();
-    calendarDocument = await calendarResponse.json();
-  }
+  const [rulesResponse, calendarResponse] = await Promise.all([
+    fetch(new URL("./casa-de-pedra.rules.json", import.meta.url)),
+    fetch(new URL("./rio-2027.calendar.json", import.meta.url)),
+  ]);
+  if (!rulesResponse.ok || !calendarResponse.ok) throw new Error("Bundled pricing defaults could not be loaded.");
+  const ruleDocument = await rulesResponse.json();
+  const calendarDocument = await calendarResponse.json();
   rulesInput.value = JSON.stringify(ruleDocument, null, 2);
   calendarInput.value = JSON.stringify(calendarDocument, null, 2);
   applyInputs();
@@ -459,7 +439,8 @@ async function start() {
       calendarDocument: JSON.parse(calendarInput.value),
     }),
     applyDraft: candidate => {
-      rulesInput.value = JSON.stringify(candidate, null, 2);
+      rulesInput.value = JSON.stringify(candidate.ruleDocument, null, 2);
+      calendarInput.value = JSON.stringify(candidate.calendarDocument, null, 2);
       applyInputs();
       document.querySelector("#editor-title").scrollIntoView({ behavior: "smooth", block: "start" });
     },

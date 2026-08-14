@@ -291,3 +291,47 @@ The discovery and planning phase is complete. No application or billable Azure r
 - Validate unit tests, syntax, deterministic static build, security headers, Azure resource identity, and production UI behavior before completion.
 
 Validation evidence: all 49 workspace tests pass; the deterministic production build succeeds; opt-in loading, cached model initialization, exact 50%/25% short-stay answers, two-year draft validation, and local-only draft application passed browser acceptance testing. Azure target identity was confirmed as `CasaDePedra-Pricing` in `STR-Pricing-West2` (`proud-rock-087e47d1e.7.azurestaticapps.net`, Free, West US 2).
+
+## 18. Puter Pricing Assistant Replacement
+
+> **Status:** Validated for deployment on 2026-08-14
+
+- Remove WebLLM, its model bundle, worker, GPU dependency, and Hugging Face network permissions.
+- Use Puter.js directly in the SPA with `openai/gpt-5.6-terra`; do not proxy AI requests through the Casa de Pedra/Azure backend.
+- Use the direct anonymous `puter.ai.chat()` browser flow without invoking `puter.auth.signIn()` or asking the visitor for credentials.
+- Load the rule and calendar defaults exclusively from bundled static files. Puter receives compact sanitized context generated from the two currently visible textareas.
+- Permit constrained rule and calendar operations, validate cloned candidate documents over the full two-year horizon, show calculated impact, and require a separate **Apply draft locally** click.
+- Applying a draft changes only the two browser textareas and their local previews; it does not save, upload, publish, or call an administrative endpoint.
+- Update CSP for Puter only, validate the complete workspace, exercise a real browser-to-Puter response and a New Year price proposal, then deploy only the Pricing Static Web App.
+
+### Puter release validation
+
+- [x] All validation checks pass
+  - [x] Full workspace tests: 52 passed (19 engine, 23 Pricing SPA, 10 pricing API)
+  - [x] JavaScript syntax checks and deterministic static build
+  - [x] Built Pricing SPA has an empty browser-only runtime config and no pricing API URL
+  - [x] Anonymous direct `puter.ai.chat()` browser response with `openai/gpt-5.6-terra`
+  - [x] New Year rule proposal, deterministic two-year validation, and local application
+  - [x] Calendar-only event-status proposal and deterministic validation
+  - [x] Azure CLI authentication, target resource identity, Bicep build/lint, template validation, policy review, and what-if preview
+  - [x] Static managed-identity and RBAC review (unchanged infrastructure)
+
+### Puter release validation proof
+
+- `pnpm test`: passed all 52 tests.
+- `node --check` passed for the assistant, SPA, and build modules; `git diff --check` passed.
+- `PRICING_API_BASE_URL=... node scripts/build-static.mjs`: passed; `dist/pricing-casadepedra-rio/config.js` contains only `globalThis.PMC_CONFIG = Object.freeze({});`.
+- Local browser acceptance: the anonymous flow invoked no explicit sign-in and returned an accurate Carnival explanation. The first response took about 100 seconds; subsequent structured operations took about 30 seconds.
+- Local browser acceptance: “Change every New Year nightly price to 1200.00” proposed all three matching rule IDs, incremented the candidate rule-set to version 3, passed the deterministic two-year comparison, and applied only to the local editor.
+- Local browser acceptance: “Change the 2027 New Year calendar event status to confirmed” proposed the exact `gregorian.new-year` / `2027-01-01` calendar operation, passed deterministic validation, and correctly reported zero price changes.
+- `az account show`: confirmed enabled `Azure subscription 1` (`9c76be28-01ff-41da-80e6-9c66568b4f6c`) in the previously owner-approved tenant.
+- `az staticwebapp show`: confirmed the existing Free `CasaDePedra-Pricing` target in `STR-Pricing-West2`, West US 2, with hostname `proud-rock-087e47d1e.7.azurestaticapps.net`.
+- `az bicep build`, `az bicep lint`, and subscription-scope template validation: passed. Policy review again found only the default Microsoft Defender assignment.
+- Subscription what-if completed successfully. Its eight `Create` results describe the separate historical Bicep stack and are not part of this release; this deployment uploads static content only and performs no infrastructure, RBAC, Function App, Blob, secret, or application-setting changes.
+- Static RBAC review remains valid: the pricing Function identity is assigned resource-scoped Blob, monitoring, and Key Vault data-plane roles matching the server code. This static-only release does not modify those declarations or live assignments.
+
+### Puter release deployment record
+
+- Static content deployment to `CasaDePedra-Pricing` succeeded on 2026-08-14. Both `https://proud-rock-087e47d1e.7.azurestaticapps.net/` and `https://pricing.casadepedra.rio/` returned HTTP 200 with the intended Puter CSP, Terra model identifier, no explicit sign-in call, and no pricing-backend reference.
+- Production browser activation passed with no console or CSP error. A first anonymous Terra request remained pending for more than 120 seconds until the page was reloaded. The equivalent direct anonymous flow completed on localhost, but localhost had an origin-scoped Puter session from the earlier test attempts.
+- Production acceptance is therefore incomplete: reliable first-visit behavior requires either Puter's documented temporary-user creation during the activation click or confirmation from a normal user browser that Puter's implicit anonymous onboarding completes outside the in-app automation environment.

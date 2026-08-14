@@ -2,9 +2,7 @@
 
 This is a static, offline pricing laboratory for the Casa de Pedra calendar. It imports the local `@pmc/price-engine` source directly in the browser; it does not call the pricing HTTP service or any other pricing backend.
 
-The optional pricing assistant uses WebLLM locally. Its runtime and model are not part of the initial page request: the browser dynamically loads them only after the user selects **Activate pricing assistant**. The low-resource SmolLM2 360M model runs in a dedicated Web Worker, uses about 376 MB of GPU memory, and is cached in browser-origin private storage. Common numeric questions and explicit base-price edits are grounded directly in the loaded documents; WebLLM handles natural-language questions and other constrained drafts. Every draft still passes deterministic engine validation, and the assistant cannot save or publish it.
-
-If WebGPU or a compatible GPU is unavailable, activation enters rules-only mode instead of failing. Grounded numeric answers and supported deterministic drafts remain usable; only broader language-model questions are unavailable.
+The optional pricing assistant uses Puter.js with `openai/gpt-5.6-terra`. The SPA calls `puter.ai.chat()` directly without invoking `puter.auth.signIn()` or requesting a username, password, or application API key. Requests go directly from the browser to Puter and never through the Casa de Pedra or Azure backend. The assistant reads compact, sanitized context generated from the rule and calendar textareas, then returns constrained local rule/calendar operations. No GPU is required. Every candidate passes deterministic engine validation, and the assistant cannot save or publish it.
 
 The calculation horizon is always two calendar years beginning on **today in `America/Sao_Paulo`**, inclusive, and ending the day before the same local date two years later. For example, August 4, 2026 produces August 4, 2026 through August 3, 2028. This contains 731 accommodation dates because it crosses leap day in 2028.
 
@@ -61,6 +59,6 @@ The page loads both into textareas. **Apply inputs** parses and validates them, 
 
 - The assistant context contains sanitized pricing rules and event facts only.
 - Model output is parsed as untrusted structured input.
-- Allowed operations cannot alter currency, listing identity, guardrails, or calendar facts.
+- Allowed operations cannot alter currency, listing identity, or guardrails. Calendar edits are limited to explicit event/metadata operations.
 - A candidate is version-bumped and evaluated by the deterministic engine over the complete two-year horizon before it can enter the editor.
 - **Apply draft locally** affects only the in-memory browser page. Production publication remains a separate authenticated and human-approved workflow.

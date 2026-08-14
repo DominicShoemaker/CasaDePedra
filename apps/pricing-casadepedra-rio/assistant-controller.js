@@ -1,12 +1,11 @@
 import {
+  applyCalendarOperations,
   applyRuleOperations,
   comparePricingModels,
   createDeterministicAnswer,
   createDeterministicProposal,
   createAssistantSystemPrompt,
   isRuleChangeRequest,
-  isDisposedRuntimeError,
-  isGpuCompatibilityError,
   parseAssistantResponse,
 } from "./assistant-tools.js";
 import {
@@ -14,12 +13,13 @@ import {
   createCalendarYearHorizon,
   formatCalendarMoney,
 } from "./pricing-model.js";
+import { createPuterPricingAssistant } from "./assistant-runtime.js";
 
 function messageElement(role, content) {
   const article = document.createElement("article");
   article.className = `assistant-message ${role}`;
   const label = document.createElement("strong");
-  label.textContent = role === "user" ? "You" : "Local assistant";
+  label.textContent = role === "user" ? "You" : "Pricing assistant";
   const body = document.createElement("p");
   body.textContent = content;
   article.append(label, body);
@@ -87,7 +87,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
     responding = value;
     input.disabled = value;
     sendButton.disabled = value;
-    sendButton.textContent = value ? "Thinking locally…" : "Send";
+    sendButton.textContent = value ? "Thinking with Puter…" : "Send";
   }
 
   function hideProposal() {
@@ -98,7 +98,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
 
   function renderProposal(summary, candidate, impact, currency) {
     pendingCandidate = candidate;
-    proposalSummary.textContent = `${summary} Candidate rule-set version: ${candidate.rule_set.version}.`;
+    proposalSummary.textContent = `${summary} Candidate rule-set version: ${candidate.ruleDocument.rule_set.version}.`;
     const increase = impactLine(impact.largestIncrease, currency);
     const decrease = impactLine(impact.largestDecrease, currency);
     proposalImpact.textContent = `${impact.changedDates} dates and ${impact.changedValues} displayed stay-length prices change. Largest increase: ${increase}. Largest decrease: ${decrease}.`;
@@ -115,33 +115,14 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
     const { ruleDocument, calendarDocument } = getDocuments();
     const horizon = createCalendarYearHorizon(ruleDocument.listing_context.timezone, 2);
     const currentModel = createCalendarPricingModel(ruleDocument, calendarDocument, horizon);
-    const candidate = applyRuleOperations(ruleDocument, proposal.operations);
-    const candidateModel = createCalendarPricingModel(candidate, calendarDocument, horizon);
+    const candidateRuleDocument = proposal.ruleOperations.length ? applyRuleOperations(ruleDocument, proposal.ruleOperations) : structuredClone(ruleDocument);
+    const candidateCalendarDocument = proposal.calendarOperations.length ? applyCalendarOperations(calendarDocument, proposal.calendarOperations) : structuredClone(calendarDocument);
+    const candidateModel = createCalendarPricingModel(candidateRuleDocument, candidateCalendarDocument, horizon);
     return {
-      candidate,
+      candidate: Object.freeze({ ruleDocument: candidateRuleDocument, calendarDocument: candidateCalendarDocument }),
       impact: comparePricingModels(currentModel, candidateModel),
       currency: candidateModel.currency,
     };
-  }
-
-  async function runLocalModel(systemPrompt, cleanInstruction, proposalMode) {
-    try {
-      return await runtime.respond(systemPrompt, history, cleanInstruction, proposalMode);
-    } catch (error) {
-      if (!isDisposedRuntimeError(error)) throw error;
-      setStatus("The browser model session ended. Restarting it from the local cache…", "loading");
-      try {
-        await runtime?.unload();
-      } catch {
-        // The old engine is already unusable; its worker is terminated by unload().
-      }
-      const { createLocalPricingAssistant } = await import("./assistant-runtime.js");
-      runtime = await createLocalPricingAssistant(report => {
-        progress.value = Math.max(0, Math.min(1, report.progress));
-        setStatus(report.text, "loading");
-      });
-      return runtime.respond(systemPrompt, history, cleanInstruction, proposalMode);
-    }
   }
 
   async function activate() {
@@ -151,34 +132,25 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
     progress.hidden = false;
     progress.value = 0;
     try {
-      if (!globalThis.navigator?.gpu) {
-        throw new Error("This browser does not provide WebGPU. Use a current desktop version of Chrome or Edge with hardware acceleration enabled.");
-      }
-      const adapter = await navigator.gpu.requestAdapter();
-      if (!adapter) throw new Error("WebGPU is present, but no compatible graphics adapter is available. Check browser hardware-acceleration settings.");
-      setStatus("Loading the WebLLM runtime only now, after activation…", "loading");
-      const { createLocalPricingAssistant } = await import("./assistant-runtime.js");
-      runtime = await createLocalPricingAssistant(report => {
+      setStatus("Activating Puter AI in this browser…", "loading");
+      runtime = await createPuterPricingAssistant(report => {
         progress.value = Math.max(0, Math.min(1, report.progress));
         setStatus(report.text, "loading");
       });
       assistantReady = true;
       progress.value = 1;
-      setStatus(`Ready · ${runtime.model} · processing stays on this device`, "ready");
+      setStatus(`Ready · ${runtime.model} · direct browser-to-Puter connection`, "ready");
       activationPanel.hidden = true;
       chatPanel.hidden = false;
-      appendMessage("assistant", "I am ready. I can explain the currently loaded rules or prepare a validated local draft. I cannot publish production changes.");
+      appendMessage("assistant", "I am ready in an anonymous Puter browser session. I can read the rules and calendar currently shown on this page, answer pricing questions, and prepare a validated local draft. I cannot save or publish production changes.");
       input.focus();
     } catch (error) {
-      console.warn("WebLLM is unavailable; continuing in rules-only mode.", error);
+      console.error("Puter pricing assistant activation failed.", error);
       runtime = null;
-      assistantReady = true;
+      assistantReady = false;
       progress.hidden = true;
-      activationPanel.hidden = true;
-      chatPanel.hidden = false;
-      setStatus("Rules-only mode · deterministic pricing answers remain available · WebLLM unavailable", "ready");
-      appendMessage("assistant", "Your browser could not start the optional WebLLM model. I can still answer supported numeric pricing questions and prepare supported deterministic drafts from the loaded rules. Broader natural-language questions require WebGPU. To troubleshoot Chrome or Edge, enable graphics acceleration, restart the browser, and confirm that WebGPU is hardware accelerated on chrome://gpu or edge://gpu.");
-      input.focus();
+      activateButton.disabled = false;
+      setStatus(describeError(error, "Puter AI could not be activated. Check the network connection and retry."), "error");
     } finally {
       activating = false;
     }
@@ -205,19 +177,12 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
           ? { answer: deterministicResponse, proposal: null }
           : deterministicResponse;
       } else {
-        if (!runtime) {
-          response = {
-            answer: "This question requires the optional language model, but this browser could not start WebGPU. Rules-only mode can still answer short-stay premiums, base prices, guardrails, and supported event minimum-stay comparisons, and it can prepare explicit weekday/weekend base-price drafts.",
-            proposal: null,
-          };
-        } else {
-          setStatus("The model is reasoning locally. No prompt is sent to a server.", "loading");
-          const systemPrompt = createAssistantSystemPrompt(ruleDocument, calendarDocument, cleanInstruction, proposalMode);
-          const rawResponse = await runLocalModel(systemPrompt, cleanInstruction, proposalMode);
-          response = proposalMode
-            ? parseAssistantResponse(rawResponse)
-            : { answer: String(rawResponse).trim() || "The local model returned an empty response.", proposal: null };
-        }
+        setStatus("Sending sanitized pricing context directly from this browser to Puter AI…", "loading");
+        const systemPrompt = createAssistantSystemPrompt(ruleDocument, calendarDocument, cleanInstruction, proposalMode);
+        const rawResponse = await runtime.respond(systemPrompt, history, cleanInstruction, proposalMode);
+        response = proposalMode
+          ? parseAssistantResponse(rawResponse)
+          : { answer: String(rawResponse).trim() || "The AI model returned an empty response.", proposal: null };
       }
       appendMessage("assistant", response.answer);
       history = [...history, { role: "user", content: cleanInstruction }, { role: "assistant", content: response.answer }].slice(-8);
@@ -231,18 +196,12 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
           setStatus("The proposal was rejected; the editor was not changed.", "error");
         }
       } else {
-        setStatus(runtime ? "Ready · local model · no rule changes proposed" : "Ready · rules-only mode · no rule changes proposed", "ready");
+        setStatus(`Ready · ${runtime.model} · no document changes proposed`, "ready");
       }
     } catch (error) {
-      console.error("Local pricing assistant request failed.", error);
-      if (isGpuCompatibilityError(error)) {
-        runtime = null;
-        appendMessage("assistant", "The optional language model is unavailable because this browser could not start WebGPU. I switched to rules-only mode; supported deterministic pricing questions and drafts remain available.");
-        setStatus("Rules-only mode · deterministic pricing answers remain available · WebLLM unavailable", "ready");
-      } else {
-        appendMessage("assistant", `I could not complete that request: ${describeError(error, "unknown local model error")}`);
-        setStatus("The request failed locally; the editor was not changed.", "error");
-      }
+      console.error("Puter pricing assistant request failed.", error);
+      appendMessage("assistant", `I could not complete that request: ${describeError(error, "unknown Puter AI error")}`);
+      setStatus("The request failed; the local editors were not changed.", "error");
     } finally {
       setResponding(false);
       input.focus();
@@ -258,7 +217,7 @@ export function initializePricingAssistant({ getDocuments, applyDraft }) {
     history = [];
     hideProposal();
     log.replaceChildren();
-    appendMessage("assistant", runtime ? "Conversation cleared. The local model remains loaded and the pricing documents are unchanged." : "Conversation cleared. Rules-only mode remains available and the pricing documents are unchanged.");
+    appendMessage("assistant", "Conversation cleared. Puter AI remains ready and the local pricing documents are unchanged.");
     input.focus();
   });
   applyProposalButton.addEventListener("click", () => {

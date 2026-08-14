@@ -1,10 +1,10 @@
 {
   "navigationFallback": {
     "rewrite": "/index.html",
-      "exclude": ["/vendor/*", "/assistant-chunks/*", "/docs/*", "/*.js", "/*.css", "/*.json"]
+      "exclude": ["/vendor/*", "/docs/*", "/*.js", "/*.css", "/*.json"]
   },
   "globalHeaders": {
-    "Content-Security-Policy": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.azurewebsites.net https://huggingface.co https://*.huggingface.co https://*.hf.co https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+    "Content-Security-Policy": "default-src 'self'; script-src 'self' https://js.puter.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.puter.com; connect-src 'self' https://puter.com https://*.puter.com wss://*.puter.com; frame-src https://puter.com https://*.puter.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
     "Referrer-Policy": "no-referrer",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
     "X-Content-Type-Options": "nosniff",

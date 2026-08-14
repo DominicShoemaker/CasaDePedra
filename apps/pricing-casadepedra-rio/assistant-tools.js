@@ -1,5 +1,6 @@
 const DECIMAL_PATTERN = /^-?(?:0|[1-9]\d*)(?:\.\d+)?$/;
-const RULE_CHANGE_KEYS = Object.freeze(["name", "priority", "when", "apply", "suppresses"]);
+const RULE_CHANGE_KEYS = Object.freeze(["name", "layer", "group", "priority", "stacking", "when", "apply", "suppresses"]);
+const CALENDAR_EVENT_CHANGE_KEYS = Object.freeze(["date", "localStart", "localEndExclusive", "status"]);
 
 function clone(value) {
   return structuredClone(value);
@@ -131,14 +132,6 @@ export function createDeterministicAnswer(ruleDocument, instruction) {
   return null;
 }
 
-export function isDisposedRuntimeError(error) {
-  return /object has already been disposed/i.test(String(error?.message ?? error ?? ""));
-}
-
-export function isGpuCompatibilityError(error) {
-  return /compatible gpu|webgpu|graphics adapter|hardware acceleration/i.test(String(error?.message ?? error ?? ""));
-}
-
 export function createDeterministicProposal(ruleDocument, instruction) {
   const source = String(instruction ?? "");
   const weekday = source.match(/weekday\s+(?:base\s+)?(?:price\s+)?(?:to|at|=)\s*\$?([0-9]+(?:\.[0-9]{1,2})?)/i)?.[1];
@@ -150,22 +143,32 @@ export function createDeterministicProposal(ruleDocument, instruction) {
   const values = [weekday ? `weekday ${ruleDocument.listing_context.currency} ${operation.weekday}` : null, weekend ? `weekend ${ruleDocument.listing_context.currency} ${operation.weekend}` : null].filter(Boolean).join(" and ");
   return Object.freeze({
     answer: `I prepared a local draft setting the ${values}. Deterministic two-year validation and your approval are still required.`,
-    proposal: Object.freeze({ summary: `Set the ${values}.`, operations: Object.freeze([Object.freeze(operation)]) }),
+    proposal: Object.freeze({
+      summary: `Set the ${values}.`,
+      ruleOperations: Object.freeze([Object.freeze(operation)]),
+      calendarOperations: Object.freeze([]),
+    }),
   });
 }
 
 export function createAssistantSystemPrompt(ruleDocument, calendarDocument, instruction = "", proposalMode = false) {
   const context = createAssistantContext(ruleDocument, calendarDocument, instruction);
   const outputContract = proposalMode
-    ? `The user explicitly requested an edit. Return JSON with a short answer and a proposal: {"answer":"...","proposal":{"summary":"...","operations":[...]}}.
+    ? `The user explicitly requested an edit. Call the propose_pricing_changes function exactly once with a short answer, summary, rule_operations, and calendar_operations. Use an empty array for the document that is unchanged.
 
-Allowed operations:
+Allowed rule_operations:
 1. {"type":"set_base","weekday":"380.00","weekend":"420.00"}; weekday or weekend may be omitted.
 2. {"type":"update_rule","rule_id":"existing-id","changes":{"name":"optional","priority":100,"when":{...},"apply":{...},"suppresses":[...]}}. Only include changed fields. In apply, a null value removes that action.
 3. {"type":"add_rule","rule":{complete pmc.price-rules/v1 rule}}.
 4. {"type":"remove_rule","rule_id":"existing-id"} only when explicitly requested.
 
-Money and percentages must remain strings. Never propose currency, timezone, jurisdiction, guardrail, rule-set ID, effective-date, or calendar changes. Do not include Markdown fences. A proposal is only a local draft: say that deterministic validation and human approval are still required. If the request is ambiguous, explain the ambiguity and return proposal:null.`
+Allowed calendar_operations:
+1. {"type":"update_event","selector":{"key":"event-key","date":"YYYY-MM-DD"},"changes":{"date":"YYYY-MM-DD","status":"confirmed"}}. For ranged events use localStart in the selector and localStart/localEndExclusive in changes.
+2. {"type":"add_event","event":{complete calendar event}}.
+3. {"type":"remove_event","selector":{"key":"event-key","date":"YYYY-MM-DD"}}.
+4. {"type":"set_calendar_metadata","changes":{"notice":"...","expiresAt":"ISO timestamp","coverage":{...}}}.
+
+Money and percentages must remain strings. Never propose currency, timezone, jurisdiction, guardrail, rule-set ID, or effective-date changes. If the user gives one price for a named event, update every matching event rule unless the user narrows it to prime, shoulder, or another specific sub-rule, and list affected rule IDs in the summary. A proposal is only a local draft: say that deterministic validation and human approval are still required. If the request is ambiguous, return empty operation arrays and explain what is missing.`
     : "Answer the question in at most four short sentences of plain text. Do not return JSON and do not propose an edit.";
   return `You are the private, in-browser Casa de Pedra pricing assistant. Answer in concise English using only the supplied pricing context. Never invent a price, event date, marketplace capability, or production status. Explain that checkout excludes its date and that USD accommodation subtotal excludes fees and taxes when relevant.
 
@@ -182,7 +185,7 @@ export function parseAssistantResponse(rawResponse) {
   try {
     parsed = JSON.parse(withoutFence);
   } catch {
-    return Object.freeze({ answer: raw || "The local model returned an empty response.", proposal: null });
+    return Object.freeze({ answer: raw || "The AI model returned an empty response.", proposal: null });
   }
   assertObject(parsed, "Assistant response");
   if (typeof parsed.answer !== "string" || parsed.answer.trim() === "") {
@@ -195,14 +198,17 @@ export function parseAssistantResponse(rawResponse) {
   if (typeof parsed.proposal.summary !== "string" || parsed.proposal.summary.trim() === "") {
     throw new TypeError("The assistant proposal must include a summary.");
   }
-  if (!Array.isArray(parsed.proposal.operations) || parsed.proposal.operations.length === 0 || parsed.proposal.operations.length > 20) {
-    throw new TypeError("The assistant proposal must contain between 1 and 20 operations.");
-  }
+  const ruleOperations = parsed.proposal.rule_operations ?? parsed.proposal.operations ?? [];
+  const calendarOperations = parsed.proposal.calendar_operations ?? [];
+  if (!Array.isArray(ruleOperations) || !Array.isArray(calendarOperations)) throw new TypeError("Assistant proposal operations must be arrays.");
+  if (ruleOperations.length + calendarOperations.length === 0) return Object.freeze({ answer: parsed.answer.trim(), proposal: null });
+  if (ruleOperations.length + calendarOperations.length > 20) throw new TypeError("The assistant proposal must contain no more than 20 operations.");
   return Object.freeze({
     answer: parsed.answer.trim(),
     proposal: Object.freeze({
       summary: parsed.proposal.summary.trim(),
-      operations: Object.freeze(clone(parsed.proposal.operations)),
+      ruleOperations: Object.freeze(clone(ruleOperations)),
+      calendarOperations: Object.freeze(clone(calendarOperations)),
     }),
   });
 }
@@ -271,6 +277,52 @@ export function applyRuleOperations(ruleDocument, operations) {
     else throw new TypeError(`Operation ${index + 1} uses unsupported type ${operation.type}.`);
   }
   candidate.rule_set.version += 1;
+  return candidate;
+}
+
+function calendarEventMatches(event, selector) {
+  return Object.entries(selector).every(([key, value]) => event[key] === value);
+}
+
+export function applyCalendarOperations(calendarDocument, operations) {
+  assertObject(calendarDocument, "Calendar description");
+  if (!Array.isArray(operations) || operations.length === 0 || operations.length > 20) {
+    throw new TypeError("Calendar operations must contain between 1 and 20 entries.");
+  }
+  const candidate = clone(calendarDocument);
+  for (const [index, operation] of operations.entries()) {
+    assertObject(operation, `Calendar operation ${index + 1}`);
+    if (operation.type === "set_calendar_metadata") {
+      assertOnlyKeys(operation, ["type", "changes"], "set_calendar_metadata");
+      assertObject(operation.changes, "set_calendar_metadata.changes");
+      assertOnlyKeys(operation.changes, ["notice", "expiresAt", "coverage"], "set_calendar_metadata.changes");
+      Object.assign(candidate, clone(operation.changes));
+      continue;
+    }
+    if (operation.type === "add_event") {
+      assertOnlyKeys(operation, ["type", "event"], "add_event");
+      assertObject(operation.event, "add_event.event");
+      candidate.events.push(clone(operation.event));
+      continue;
+    }
+    if (!["update_event", "remove_event"].includes(operation.type)) {
+      throw new TypeError(`Calendar operation ${index + 1} uses unsupported type ${operation.type}.`);
+    }
+    assertOnlyKeys(operation, operation.type === "update_event" ? ["type", "selector", "changes"] : ["type", "selector"], operation.type);
+    assertObject(operation.selector, `${operation.type}.selector`);
+    assertOnlyKeys(operation.selector, ["key", "date", "localStart", "localEndExclusive"], `${operation.type}.selector`);
+    if (Object.keys(operation.selector).length === 0) throw new TypeError(`${operation.type}.selector cannot be empty.`);
+    const matches = candidate.events.map((event, eventIndex) => ({ event, eventIndex })).filter(item => calendarEventMatches(item.event, operation.selector));
+    if (matches.length !== 1) throw new TypeError(`${operation.type}.selector must match exactly one event; matched ${matches.length}.`);
+    const eventIndex = matches[0].eventIndex;
+    if (operation.type === "remove_event") {
+      candidate.events.splice(eventIndex, 1);
+    } else {
+      assertObject(operation.changes, "update_event.changes");
+      assertOnlyKeys(operation.changes, CALENDAR_EVENT_CHANGE_KEYS, "update_event.changes");
+      Object.assign(candidate.events[eventIndex], clone(operation.changes));
+    }
+  }
   return candidate;
 }
 

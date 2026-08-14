@@ -203,15 +203,15 @@ Availability and reservations are outside this calendar document.
 
 An invalid candidate must never replace the last known good production rules.
 
-## Optional browser pricing assistant
+## Optional Puter pricing assistant
 
-The Pricing SPA includes an optional WebLLM assistant. The calendar, chart, editors, and marketplace instructions load before any AI code or model. The WebLLM runtime and the low-resource `SmolLM2-360M-Instruct-q4f16_1-MLC` model download only after **Activate pricing assistant** is selected. The model runs in a dedicated Web Worker, uses about 376 MB of GPU memory, and is cached in browser-origin private storage after its first large download.
+The Pricing SPA includes Puter.js and uses `openai/gpt-5.6-terra`. After **Activate Puter pricing assistant** is selected, the SPA calls `puter.ai.chat()` directly and does not invoke a sign-in flow or request a username, password, application API key, or Casa de Pedra account. AI requests travel directly from the browser to Puter; they do not pass through the Casa de Pedra or Azure backend. No GPU is required.
 
-The assistant receives only a compact, sanitized summary of the rule and calendar documents currently shown in the page. Questions, document context, and model responses stay on the user's device; there is no model API key and no hosted inference request.
+The assistant receives a compact, sanitized summary generated from the rule and calendar documents currently shown in the page. The question and this context are processed externally by Puter/OpenAI. The pricing documents remain in the page unless the user separately applies a validated draft.
 
-For an explicit requested change, the assistant must return constrained operations rather than an unrestricted replacement document. Ordinary questions use a shorter plain-text generation path. The page applies proposed operations to a clone, increments the rule-set version, validates the entire candidate with the existing engine, and calculates the two-year impact. The user must then choose **Apply draft locally** before the editor changes.
+For an explicit requested change, the assistant must return constrained rule and/or calendar operations rather than unrestricted replacement documents. The page applies proposed operations to clones, increments the rule-set version when pricing rules change, validates the entire candidate with the existing engine, and calculates the two-year impact. The user must then choose **Apply draft locally** before either textarea changes.
 
-Applying a draft changes only the browser editor, calendar preview, chart, and marketplace instructions. It does not save a file, update Blob Storage, commit to Git, call an administrative endpoint, or publish production prices. Follow the full safe editing workflow above before production deployment. A local model response can be mistaken; deterministic validation and human commercial review remain mandatory.
+Applying a draft changes only the browser editor, calendar preview, chart, and marketplace instructions. It does not save a file, update Blob Storage, commit to Git, call an administrative endpoint, or publish production prices. Follow the full safe editing workflow above before production deployment. A model response can be mistaken; deterministic validation and human commercial review remain mandatory.
 
 ## Marketplace instructions
 
