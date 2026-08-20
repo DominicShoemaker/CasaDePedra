@@ -1,0 +1,14 @@
+{
+  "name": "@pmc/pricing-calendar-spa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offline browser price-engine lab using the Casa de Pedra date-range picker.",
+  "type": "module",
+  "scripts": {
+    "start": "node serve.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

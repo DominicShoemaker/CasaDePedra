@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Casa de Pedra - Luxury rental in Copacabana - Rio de Janeiro</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Historic 4-bedroom luxury villa in Copacabana, Rio de Janeiro. Steps from the beach. Features a hot tub, dedicated workspace, and accommodates up to 10 guests.">
+    <meta property="og:title" content="Luxury Rental in Copacabana - Casa de Pedra">
+    <meta property="og:description"
+        content="Historic 4-bedroom luxury villa. Steps away from the beach, featuring a hot tub, BBQ, and workspace. Sleeps 10.">
+    <meta property="og:image" content="https://casadepedra.rio/images/collage house wide.png">
+    <meta property="og:url" content="https://casadepedra.rio">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" type="image/png" href="images/favicon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Styles and Scripts -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="rio-chic">
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-overlay">
+            <div class="hero-content">
+                <h1>Luxury rental in Copacabana</h1>
+                <h1>Rio • Brazil</h1>
+                <p>Historic 4BR/4.5BA Villa • Steps from the Beach • Hot Tub • Sleeps 10</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container section confirmation-container" id="content-container">
+        <!-- Content will be injected by JavaScript -->
+        <p>Loading your reservation details...</p>
+    </main>
+
+    <!---------------------- FOOTER ---------------------->
+    <footer>
+        <p>© 2026 Casa de Pedra, Copacabana — All Rights Reserved</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            localStorage.removeItem('booking_pending');
+            const container = document.getElementById('content-container');
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Check status: 'success' or 'failed' (default to failed if missing parameters for security)
+            const status = urlParams.get('status');
+
+            if (status === 'success') {
+                const reservationID = urlParams.get('reservationid') || 'N/A';
+                const fromDate = urlParams.get('from') || 'N/A';
+                const toDate = urlParams.get('to') || 'N/A';
+                const amount = urlParams.get('amount') || '0.00';
+
+                // Calculate nights if both dates are valid
+                let nightsCount = 'N/A';
+                if (fromDate !== 'N/A' && toDate !== 'N/A') {
+                    const start = new Date(fromDate);
+                    const end = new Date(toDate);
+                    if (!isNaN(start) && !isNaN(end)) {
+                        const diffTime = Math.abs(end - start);
+                        nightsCount = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    }
+                }
+
+                container.innerHTML = `
+                    <h2>🎉 Reservation Confirmed!</h2>
+                    <p class="confirmation-message">Thank you for booking with us. We look forward to hosting you at Casa de Pedra.</p>
+                    
+                    <div class="details-box">
+                        <p><span>Reservation ID:</span> <strong>${reservationID}</strong></p>
+                        <p><span>Check-in:</span> <strong>${fromDate}</strong></p>
+                        <p><span>Check-out:</span> <strong>${toDate}</strong></p>
+                        <p><span>Total Nights:</span> <strong>${nightsCount}</strong></p>
+                        <p><span>Total Paid:</span> <strong>$${amount}</strong></p>
+                    </div>
+
+                    <div class="confirmation-actions">
+                        <button class="btn-primary" onclick="window.print()">Print Details</button>
+                        <a href="index.html" class="btn-outline">Return to Homepage</a>
+                    </div>
+                `;
+            } else {
+                // Failed state or fallback
+                container.innerHTML = `
+                    <h2 class="error-heading">Reservation Incomplete</h2>
+                    <p class="error-message">We're sorry, but your reservation did not go through or the payment was unsuccessful.</p>
+                    <p class="support-info">
+                        Please try booking again later. If the issue persists, we can process your reservation manually.<br><br>
+                        <strong>Contact Support:</strong><br>
+                        Email: <a href="mailto:support@casadepedra.rio" class="support-link">support@casadepedra.rio</a><br>
+                        Phone/WhatsApp: <strong>+1 (669) 268-7875</strong>
+                    </p>
+                    
+                    <div class="confirmation-actions">
+                        <a href="index.html" class="btn-primary">Return to Homepage</a>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>

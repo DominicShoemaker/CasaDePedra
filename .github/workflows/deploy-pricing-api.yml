@@ -1,0 +1,66 @@
+name: Deploy pricing API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "services/pricing-api/**"
+      - "packages/price-engine/**"
+      - "config/pricing/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/deploy-pricing-api.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  NODE_VERSION: 24
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --no-frozen-lockfile
+      - name: Test price engine
+        run: pnpm test:engine
+      - name: Test pricing SPA
+        run: pnpm test:pricing-spa
+      - name: Test pricing API
+        run: pnpm test:pricing-api
+      - run: pnpm package:pricing-api
+        env:
+          DEBUG: "*"
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Publish approved pricing configuration
+        run: |
+          az storage blob upload --auth-mode login --overwrite --account-name "${{ vars.PRICING_STORAGE_ACCOUNT_NAME }}" --container-name pricing-config --name casa-de-pedra.yaml --file config/pricing/casa-de-pedra.yaml
+          az storage blob upload --auth-mode login --overwrite --account-name "${{ vars.PRICING_STORAGE_ACCOUNT_NAME }}" --container-name pricing-config --name rio-calendar.json --file services/pricing-api/examples/rio-2027.calendar.json
+      - name: Configure file-backed production rules
+        run: |
+          app_name="${{ vars.PRICING_FUNCTION_APP_NAME }}"
+          if [ -z "$app_name" ]; then app_name="str-price-engine"; fi
+          app_rg="STR-Pricing-West2"
+          az functionapp config appsettings delete --resource-group "$app_rg" --name "$app_name" --setting-names PRICING_STORAGE_ACCOUNT_URL || true
+          az functionapp config appsettings set --resource-group "$app_rg" --name "$app_name" --settings RULES_FILE=examples/casa-de-pedra.yaml CALENDAR_FILE=examples/rio-2027.calendar.json
+      - uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ vars.PRICING_FUNCTION_APP_NAME }}
+          package: .deploy/pricing-api
+          respect-funcignore: true

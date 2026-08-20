@@ -1,0 +1,11 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": { "value": "casadepedra-pricing-prod" },
+    "location": { "value": "westus2" },
+    "vnetEnabled": { "value": false },
+    "resourceGroupName": { "value": "STR-Pricing-West2" },
+    "pricingStaticWebAppName": { "value": "CasaDePedra-Pricing" }
+  }
+}

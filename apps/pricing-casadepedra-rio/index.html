@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Offline Casa de Pedra calendar pricing laboratory powered entirely by the browser price engine.">
+    <title>Casa de Pedra · Calendar Pricing Lab</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">CP</span>
+        <span>
+          <strong>Casa de Pedra</strong>
+          <small>Calendar pricing lab</small>
+        </span>
+      </div>
+      <span class="offline-badge"><span aria-hidden="true">●</span> Browser calculation only</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Interactive pricing preview</p>
+        <h1 id="page-title">See how stay length changes every night.</h1>
+        <p>Explore two calendar years beginning today. Switch between one-, two-, and three-night rates, select an actual date range, and inspect the exact adjustment against the standard three-night calendar rate.</p>
+        <nav class="documentation-links" aria-label="Pricing documentation">
+          <a href="./docs/human-pricing-guide.md">Human pricing guide</a>
+          <a href="./docs/ai-pricing-runbook.md">AI editing runbook</a>
+        </nav>
+      </section>
+
+      <section class="surface assistant-surface" aria-labelledby="assistant-title">
+        <div class="section-heading assistant-heading">
+          <div>
+            <p class="eyebrow">Optional browser AI</p>
+            <h2 id="assistant-title">Ask about prices or prepare a rule draft</h2>
+          </div>
+          <span class="privacy-pill">Puter AI · direct browser connection</span>
+        </div>
+        <p class="assistant-copy">The deterministic pricing page loads independently. After activation, Puter.js creates an anonymous temporary user without asking for account credentials, then sends your question and sanitized copies of the rule and calendar text shown below directly from this browser to <code>openai/gpt-5.6-terra</code>. No request goes through the Casa de Pedra or Azure backend, and accepted drafts change only this page.</p>
+
+        <div id="assistant-activation" class="assistant-activation">
+          <div>
+            <strong>No AI request has been made.</strong>
+            <span>No account form, GPU, application API key, or Casa de Pedra backend is required. Puter internally authenticates the temporary identity used for the browser AI request.</span>
+          </div>
+          <button id="activate-assistant" class="primary-button" type="button">Activate Puter pricing assistant</button>
+        </div>
+        <progress id="assistant-progress" class="assistant-progress" max="1" value="0" hidden>0%</progress>
+        <p id="assistant-status" class="assistant-status" data-state="idle" role="status" aria-live="polite">Inactive · zero external AI requests</p>
+
+        <div id="assistant-chat" class="assistant-chat" hidden>
+          <div class="assistant-prompts" aria-label="Example questions">
+            <button type="button" data-assistant-prompt="Explain the current one-night and two-night premiums.">Explain short stays</button>
+            <button type="button" data-assistant-prompt="Which rules determine Carnival and New Year prices?">Explain major events</button>
+            <button type="button" data-assistant-prompt="Propose changing the weekday base to 400.00 and the weekend base to 450.00.">Draft a base change</button>
+          </div>
+          <div id="assistant-log" class="assistant-log" role="log" aria-live="polite" aria-label="Pricing assistant conversation"></div>
+
+          <section id="assistant-proposal" class="assistant-proposal" aria-labelledby="assistant-proposal-title" hidden>
+            <div class="assistant-proposal-heading">
+              <div>
+                <p class="eyebrow">Validated local proposal</p>
+                <h3 id="assistant-proposal-title">Review before changing the editor</h3>
+              </div>
+              <button id="assistant-apply-proposal" class="primary-button" type="button">Apply draft locally</button>
+            </div>
+            <p id="assistant-proposal-summary"></p>
+            <p id="assistant-proposal-impact" class="assistant-impact"></p>
+            <details>
+              <summary>Representative calculated changes</summary>
+              <ul id="assistant-proposal-samples"></ul>
+            </details>
+            <small>This changes only the browser editor and preview. It does not save, upload, commit, or publish production rules.</small>
+          </section>
+
+          <form id="assistant-form" class="assistant-form">
+            <label for="assistant-input">Question or requested rule change</label>
+            <textarea id="assistant-input" rows="3" maxlength="1200" placeholder="For example: Why is New Year more expensive, or propose a 12% low-season discount."></textarea>
+            <div class="assistant-form-actions">
+              <button id="assistant-clear" class="secondary-button" type="button">Clear conversation</button>
+              <button id="assistant-send" class="primary-button" type="submit">Send</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="surface calendar-surface" aria-labelledby="calendar-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Availability and nightly rates</p>
+            <h2 id="calendar-title">Select your stay</h2>
+          </div>
+          <p id="calendar-mode-copy" class="section-note">Calendar showing the 3-night rate.</p>
+        </div>
+
+        <div class="picker-frame">
+          <str-date-range-picker
+            id="price-calendar"
+            show-stay-length-options
+            display-stay-nights="3"
+            min-stay-days="1"
+            max-stay-days="28"
+            style="--primary-color: #0b7285; --hover-bg: #f4efe6; --text-color: #17323d; --muted-color: #68777d; --disabled-color: #d9d5cc;">
+          </str-date-range-picker>
+        </div>
+
+        <section id="quote-panel" class="quote-panel empty" aria-labelledby="quote-title" aria-live="polite" data-testid="quote-panel">
+          <div>
+            <p class="quote-kicker" id="quote-dates">No dates selected</p>
+            <h3 id="quote-title">Choose check-in and checkout</h3>
+            <p id="quote-comment">The exact stay subtotal and adjustment will appear here.</p>
+          </div>
+          <div class="quote-total">
+            <span>Stay subtotal before fees and taxes</span>
+            <strong id="quote-total">—</strong>
+            <small id="quote-average">—</small>
+          </div>
+          <dl class="quote-breakdown" id="quote-breakdown" hidden>
+            <div><dt>Standard 3-night-rate subtotal</dt><dd id="quote-baseline">—</dd></div>
+            <div><dt id="adjustment-label">Length-of-stay adjustment</dt><dd id="quote-adjustment">—</dd></div>
+          </dl>
+          <div id="quote-restriction" class="restriction" hidden></div>
+          <div id="quote-rules" class="rule-chips" hidden></div>
+        </section>
+      </section>
+
+      <section class="surface chart-surface" aria-labelledby="chart-title">
+        <div class="section-heading chart-heading">
+          <div>
+            <p class="eyebrow">Calculated nightly previews</p>
+            <h2 id="chart-title">One-, two-, and three-night rate chart</h2>
+          </div>
+          <div id="chart-legend" class="chart-legend" aria-label="Price series legend"></div>
+        </div>
+        <p class="chart-copy">The three connected lines cover two calendar years beginning today and use the same browser-engine results shown inside the calendar. Gold bands mark dates with a multi-night minimum.</p>
+        <div id="chart-viewport" class="chart-viewport" tabindex="0" aria-label="Horizontally scrollable price chart">
+          <div id="chart-stage" class="chart-stage">
+            <canvas id="price-chart" height="380" tabindex="0" role="img" aria-label="Nightly prices for one, two, and three-night bookings over the calendar coverage"></canvas>
+            <div id="chart-tooltip" class="chart-tooltip" hidden></div>
+          </div>
+        </div>
+        <div class="chart-foot">
+          <span>Scroll horizontally to inspect the full calendar period.</span>
+          <span id="chart-summary" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section class="surface editor-surface" aria-labelledby="editor-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Local inputs</p>
+            <h2 id="editor-title">Edit the calculation documents</h2>
+          </div>
+          <button id="apply-inputs" class="primary-button" type="button" data-testid="apply-inputs">Apply inputs</button>
+        </div>
+        <p class="editor-copy">Both documents remain in this page. Applying them rebuilds the three calendar series locally; no pricing request is sent to a backend service.</p>
+        <div class="editor-grid">
+          <label class="editor-field" for="rules-input">
+            <span>Price rules <small>pmc.price-rules/v1 JSON</small></span>
+            <textarea id="rules-input" spellcheck="false" data-testid="rules-input"></textarea>
+          </label>
+          <label class="editor-field" for="calendar-input">
+            <span>Calendar description <small>event snapshot JSON</small></span>
+            <textarea id="calendar-input" spellcheck="false" data-testid="calendar-input"></textarea>
+          </label>
+        </div>
+        <div id="input-status" class="input-status" role="status" aria-live="polite">Loading local example documents…</div>
+      </section>
+
+      <section class="surface provider-surface" aria-labelledby="provider-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Marketplace translation</p>
+            <h2 id="provider-title">Apply these prices on booking platforms</h2>
+          </div>
+          <p class="section-note">Generated from the currently applied rules and calendar.</p>
+        </div>
+        <p class="provider-copy">The authoritative YAML is normalized into the rule document shown above. These instructions minimize manual work by setting reusable marketplace defaults once and listing only the remaining exceptions when the provider supports that approach. “Same price” means the USD accommodation subtotal before fees, taxes, promotions, and currency conversion. Warnings identify every case where exact parity is not possible.</p>
+
+        <div class="provider-tabs" role="tablist" aria-label="Marketplace instructions">
+          <button id="tab-airbnb" role="tab" aria-selected="true" aria-controls="panel-airbnb" tabindex="0" data-provider="airbnb" type="button">Airbnb</button>
+          <button id="tab-vrbo" role="tab" aria-selected="false" aria-controls="panel-vrbo" tabindex="-1" data-provider="vrbo" type="button">Vrbo</button>
+          <button id="tab-booking" role="tab" aria-selected="false" aria-controls="panel-booking" tabindex="-1" data-provider="booking" type="button">Booking.com</button>
+        </div>
+        <div id="panel-airbnb" class="provider-panel" role="tabpanel" aria-labelledby="tab-airbnb" data-provider-panel="airbnb"></div>
+        <div id="panel-vrbo" class="provider-panel" role="tabpanel" aria-labelledby="tab-vrbo" data-provider-panel="vrbo" hidden></div>
+        <div id="panel-booking" class="provider-panel" role="tabpanel" aria-labelledby="tab-booking" data-provider-panel="booking" hidden></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Casa de Pedra · Copacabana, Rio de Janeiro</span>
+      <span>Local deterministic price-engine laboratory</span>
+    </footer>
+
+    <script src="./config.js"></script>
+    <script defer src="./date-picker.js"></script>
+    <script defer src="https://js.puter.com/v2/"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

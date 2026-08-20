@@ -1,0 +1,24 @@
+name: Provision pricing infrastructure
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Validate Bicep
+        run: az deployment sub validate --location westus2 --template-file infra/main.bicep --parameters infra/main.parameters.json principalId="${{ secrets.AZURE_PRINCIPAL_ID }}" principalType=ServicePrincipal
+      - name: Provision
+        run: az deployment sub create --name casadepedra-pricing-${{ github.run_number }} --location westus2 --template-file infra/main.bicep --parameters infra/main.parameters.json principalId="${{ secrets.AZURE_PRINCIPAL_ID }}" principalType=ServicePrincipal

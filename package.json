@@ -1,0 +1,19 @@
+{
+  "name": "casadepedra-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node scripts/build-static.mjs",
+    "build:static": "node scripts/build-static.mjs",
+    "package:pricing-api": "node scripts/package-pricing-api.mjs",
+    "test": "pnpm --recursive test",
+    "test:engine": "pnpm --filter @pmc/price-engine test",
+    "test:pricing-spa": "pnpm --filter @pmc/pricing-calendar-spa test",
+    "test:pricing-api": "pnpm --filter @pmc/pricing-api test"
+  }
+}
