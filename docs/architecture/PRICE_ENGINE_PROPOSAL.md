@@ -2,7 +2,7 @@
 
 ## Status
 
-**Recommended design for the Price Update Service. The provider-neutral JavaScript engine and local rule-file HTTP service are now implemented; see [IMPLEMENTATION.md](./IMPLEMENTATION.md).**
+**Implemented design. See the [price-engine package README](../../packages/price-engine/README.md) and [pricing API README](../../services/pricing-api/README.md) for the current browser and local-service entry points.**
 
 The engine should accept human-readable, declarative rules; resolve holidays and events from the listing's jurisdiction; calculate an explainable price for every accommodation night; calculate stay-dependent discounts for a complete date range; and compile only provider-supported changes for the Airbnb and Vrbo adapters.
 

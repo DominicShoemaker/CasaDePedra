@@ -425,8 +425,4 @@ export function compileRuleSet(document) {
   return deepFreeze(normalized);
 }
 
-export function isCompiledRuleSet(value) {
-  return Boolean(value?.[COMPILED]);
-}
-
 export const RULE_LAYERS = Object.freeze([...LAYERS]);

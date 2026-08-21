@@ -10,8 +10,6 @@ class StrDateRangePicker extends HTMLElement {
         this.hoverDate = null;
         this.busyDates = [];
         this.apiUrl = null;
-        this.priceRulesUrl = null;
-        this.priceRules = { default: 380, days: { 5: 420, 6: 420 }, dates: { "2026-12-25": 1000 } }
         this.minStayDays = 3;
         this.maxStayDays = 28;
         this.monthsToShow = 2;
@@ -35,7 +33,6 @@ class StrDateRangePicker extends HTMLElement {
 
     connectedCallback() {
         this.apiUrl = this.getAttribute('api-url');
-        this.priceRulesUrl = this.getAttribute('price-rules-url');
         this.showStayLengthOptions = this.hasAttribute('show-stay-length-options');
         this.displayStayNights = this.readIntegerAttribute('display-stay-nights', 3, 1, 3);
         this.minStayDays = this.readIntegerAttribute('min-stay-days', this.minStayDays, 1, 3660);
@@ -73,17 +70,14 @@ class StrDateRangePicker extends HTMLElement {
     }
 
     async loadData() {
-        if (!this.apiUrl && !this.priceRulesUrl) {
+        if (!this.apiUrl) {
             this.hideOverlay();
             this.updateCalendars();
             return;
         }
         this.showOverlay("Loading calendar...", false);
         try {
-            const requests = [];
-            if (this.apiUrl) requests.push(this.fetchBusyDates());
-            if (this.priceRulesUrl) requests.push(this.fetchPriceRules());
-            await Promise.all(requests);
+            await this.fetchBusyDates();
             this.hideOverlay();
         } catch (e) {
             this.showOverlay(`Calendar is not available.<br><br>Please reload the page after 1-2 minutes or request booking by email or WhatsApp.`, true);
@@ -177,11 +171,6 @@ class StrDateRangePicker extends HTMLElement {
             startDate: range.From ? range.From.split('T')[0] : range.startDate,
             endDate: range.To ? range.To.split('T')[0] : range.endDate
         }));
-        this.updateCalendars();
-    }
-
-    async fetchPriceRules() {
-        this.priceRules = await this.fetchWithRetry(this.priceRulesUrl);
         this.updateCalendars();
     }
 
@@ -636,7 +625,7 @@ class StrDateRangePicker extends HTMLElement {
             }
 
             let priceHtml = '';
-            if (this.priceRules && !classList.includes('disabled')) {
+            if (this.pricingProvider && !classList.includes('disabled')) {
                 if (status === 'none' || status === 'end') {
                     const price = this.getDisplayPriceForDate(currentDay);
                     if (price !== null) {
@@ -735,30 +724,9 @@ class StrDateRangePicker extends HTMLElement {
         this.updateCalendars();
     }
 
-    getPriceForDate(date) {
-        if (!this.priceRules) return null;
-        let price = this.priceRules.default;
-
-        // Check specific dates (YYYY-MM-DD)
-        const dateKey = this.toLocalISO(date);
-
-        if (this.priceRules.dates && this.priceRules.dates[dateKey]) {
-            price = this.priceRules.dates[dateKey];
-        } else {
-            // Check day of week
-            const day = date.getDay(); // 0-6
-            if (this.priceRules.days && this.priceRules.days[String(day)]) {
-                price = this.priceRules.days[String(day)];
-            }
-        }
-        return price;
-    }
-
     getDisplayPriceForDate(date) {
-        if (this.pricingProvider) {
-            return this.pricingProvider.getPriceForDate(this.toLocalISO(date), this.displayStayNights);
-        }
-        return this.getPriceForDate(date);
+        if (!this.pricingProvider) return null;
+        return this.pricingProvider.getPriceForDate(this.toLocalISO(date), this.displayStayNights);
     }
 
     getMinimumStayForDate(date) {
@@ -800,31 +768,21 @@ class StrDateRangePicker extends HTMLElement {
             isComplete: false
         };
 
-        if (this.startDate && this.endDate && (this.priceRules || this.pricingProvider)) {
+        if (this.startDate && this.endDate) {
+            const nights = Math.round((this.endDate - this.startDate) / (24 * 60 * 60 * 1000));
             let total = 0;
-            const start = new Date(this.startDate);
-            const end = new Date(this.endDate);
-            const oneDay = 24 * 60 * 60 * 1000;
-
-            let current = new Date(start);
-            while (current < end) {
-                const nightlyPrice = Number(this.getPriceForDate(current));
-                if (Number.isFinite(nightlyPrice)) total += nightlyPrice;
-                current.setDate(current.getDate() + 1);
-            }
-
-            const nights = Math.round((end - start) / oneDay);
-            let finalTotal = total;
-
-            if (nights >= 28 && this.priceRules.discount_month) {
-                finalTotal = total * (1 - this.priceRules.discount_month);
-            } else if (nights >= 7 && this.priceRules.discount_week) {
-                finalTotal = total * (1 - this.priceRules.discount_week);
+            if (this.pricingProvider) {
+                let current = new Date(this.startDate);
+                while (current < this.endDate) {
+                    const nightlyPrice = Number(this.pricingProvider.getPriceForDate(this.toLocalISO(current), nights));
+                    if (Number.isFinite(nightlyPrice)) total += nightlyPrice;
+                    current.setDate(current.getDate() + 1);
+                }
             }
 
             selectionData.nights = nights;
             selectionData.fullPrice = total;
-            selectionData.discountedPrice = Math.round(finalTotal);
+            selectionData.discountedPrice = total;
             selectionData.isComplete = true;
         }
 

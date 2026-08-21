@@ -1,18 +1,11 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { createCalendarPricingModel, createCalendarYearHorizon } from "../pricing-model.js";
 import { createMarketplaceInstructions } from "../provider-instructions.js";
-
-const rulesPath = fileURLToPath(new URL("../casa-de-pedra.rules.json", import.meta.url));
-const calendarPath = fileURLToPath(new URL("../rio-2027.calendar.json", import.meta.url));
+import { loadPricingFixtures } from "./fixtures.js";
 
 async function plans() {
-  const [rules, calendar] = await Promise.all([
-    readFile(rulesPath, "utf8").then(JSON.parse),
-    readFile(calendarPath, "utf8").then(JSON.parse),
-  ]);
+  const { rules, calendar } = await loadPricingFixtures();
   const horizon = createCalendarYearHorizon("America/Sao_Paulo", 2, new Date("2026-08-04T12:00:00Z"));
   const model = createCalendarPricingModel(rules, calendar, horizon);
   return { rules, calendar, model, plans: createMarketplaceInstructions(rules, calendar, model) };
