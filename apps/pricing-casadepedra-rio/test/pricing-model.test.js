@@ -9,16 +9,12 @@ import {
   describeSelectedStay,
   localDateInTimeZone,
 } from "../pricing-model.js";
+import { loadPricingFixtures } from "./fixtures.js";
 
-const rulesPath = fileURLToPath(new URL("../casa-de-pedra.rules.json", import.meta.url));
-const calendarPath = fileURLToPath(new URL("../rio-2027.calendar.json", import.meta.url));
 const pickerPath = fileURLToPath(new URL("../../../packages/date-range-picker/date-picker.js", import.meta.url));
 
 async function fixture() {
-  const [rules, calendar] = await Promise.all([
-    readFile(rulesPath, "utf8").then(JSON.parse),
-    readFile(calendarPath, "utf8").then(JSON.parse),
-  ]);
+  const { rules, calendar } = await loadPricingFixtures();
   const horizon = createCalendarYearHorizon("America/Sao_Paulo", 2, new Date("2026-08-04T12:00:00Z"));
   return { rules, calendar, horizon, model: createCalendarPricingModel(rules, calendar, horizon) };
 }
@@ -105,10 +101,10 @@ test("picker keeps preview pricing separate and options opt-in", async () => {
   const source = await readFile(pickerPath, "utf8");
   assert.match(source, /hasAttribute\('show-stay-length-options'\)/);
   assert.match(source, /getDisplayPriceForDate\(date\)/);
-  assert.match(source, /return this\.getPriceForDate\(date\)/);
+  assert.match(source, /this\.pricingProvider\.getPriceForDate\(this\.toLocalISO\(date\), this\.displayStayNights\)/);
   assert.match(source, /dispatchSelectionEvent\(\)/);
-  assert.match(source, /this\.priceRules \|\| this\.pricingProvider/);
-  assert.match(source, /Number\(this\.getPriceForDate\(current\)\)/);
+  assert.match(source, /this\.pricingProvider\.getPriceForDate\(this\.toLocalISO\(current\), nights\)/);
+  assert.doesNotMatch(source, /price-rules-url|fetchPriceRules|discount_week|discount_month|this\.priceRules/);
   assert.match(source, /checkoutBoundary\.setDate\(checkoutBoundary\.getDate\(\) \+ 1\)/);
   assert.match(source, /\.minimum-stay-required\[data-minimum-stay\]/);
 });

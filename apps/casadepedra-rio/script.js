@@ -1,21 +1,3 @@
-// -------------------- NAVIGATION --------------------
-function scrollToSection(id) {
-    const el = document.getElementById(id);
-    if (el) {
-        // Offset for the sticky header
-        const offset = 60;
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = el.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-        });
-    }
-}
-
 // -------------------- MODALS --------------------
 function openModal(id) {
     const modal = document.getElementById(id);

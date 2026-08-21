@@ -5,7 +5,7 @@
   "description": "Offline browser price-engine lab using the Casa de Pedra date-range picker.",
   "type": "module",
   "scripts": {
-    "start": "node serve.js",
+    "start": "pnpm --workspace-root build:static && node serve.js",
     "test": "node --test test/*.test.js"
   },
   "engines": {

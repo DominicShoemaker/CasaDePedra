@@ -14,16 +14,10 @@ import {
 } from "../assistant-tools.js";
 import { createPuterPricingAssistant, PRICING_ASSISTANT_MODEL } from "../assistant-runtime.js";
 import { createCalendarPricingModel, createCalendarYearHorizon } from "../pricing-model.js";
-
-const rulesPath = fileURLToPath(new URL("../casa-de-pedra.rules.json", import.meta.url));
-const calendarPath = fileURLToPath(new URL("../rio-2027.calendar.json", import.meta.url));
+import { loadPricingFixtures } from "./fixtures.js";
 
 async function fixture() {
-  const [rules, calendar] = await Promise.all([
-    readFile(rulesPath, "utf8").then(JSON.parse),
-    readFile(calendarPath, "utf8").then(JSON.parse),
-  ]);
-  return { rules, calendar };
+  return loadPricingFixtures();
 }
 
 test("creates compact sanitized context from the currently loaded documents", async () => {

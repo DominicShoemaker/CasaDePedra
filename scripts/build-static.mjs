@@ -1,5 +1,6 @@
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { compileRuleText } from "../services/pricing-api/src/rule-file-store.js";
 
 const root = resolve(import.meta.dirname, "..");
 const dist = resolve(root, "dist");
@@ -7,6 +8,8 @@ const casaSource = resolve(root, "apps/casadepedra-rio");
 const pricingSource = resolve(root, "apps/pricing-casadepedra-rio");
 const pickerSource = resolve(root, "packages/date-range-picker/date-picker.js");
 const engineSource = resolve(root, "packages/price-engine/src");
+const rulesSource = resolve(root, "config/pricing/casa-de-pedra.yaml");
+const calendarSource = resolve(root, "services/pricing-api/examples/rio-2027.calendar.json");
 
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
@@ -22,6 +25,15 @@ await cp(pricingSource, resolve(dist, "pricing-casadepedra-rio"), {
 await cp(pickerSource, resolve(dist, "pricing-casadepedra-rio/date-picker.js"));
 await mkdir(resolve(dist, "pricing-casadepedra-rio/vendor/price-engine"), { recursive: true });
 await cp(engineSource, resolve(dist, "pricing-casadepedra-rio/vendor/price-engine"), { recursive: true });
+
+const rulesText = await readFile(rulesSource, "utf8");
+const compiledRules = compileRuleText(rulesText, rulesSource).ruleSet;
+await writeFile(
+  resolve(dist, "pricing-casadepedra-rio/casa-de-pedra.rules.json"),
+  `${JSON.stringify(compiledRules, null, 2)}\n`,
+  "utf8",
+);
+await cp(calendarSource, resolve(dist, "pricing-casadepedra-rio/rio-2027.calendar.json"));
 
 const pricingApiBaseUrl = String(process.env.PRICING_API_BASE_URL ?? "").replace(/\/$/, "");
 const runtimeConfig = `globalThis.PMC_CONFIG = Object.freeze(${JSON.stringify({ pricingApiBaseUrl }, null, 2)});\n`;

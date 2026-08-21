@@ -1,4 +1,4 @@
-# @pmc/pricing-service
+# @pmc/pricing-api
 
 This is the file and HTTP boundary around the independent `@pmc/price-engine` package. The service reads an approved YAML or JSON rule file, validates and normalizes it, calculates a canonical SHA-256 hash, and atomically gives the immutable object to the engine.
 
@@ -8,17 +8,17 @@ Provider credentials, cookies, browser profiles, and adapter code do not belong 
 
 Prerequisites are Node.js 20 or newer and pnpm.
 
-From `Price Update Service`:
+From the repository root:
 
 ```powershell
 pnpm install
 pnpm test
-pnpm start:dev
+pnpm --filter @pmc/pricing-api start:legacy
 ```
 
-`start:dev` selects the included development calendar. The equivalent explicit command from the workspace root is `pnpm start -- --calendar ".\services\pricing-service\examples\rio-2027.calendar.json"`; relative command-line paths are resolved from the directory where pnpm was invoked.
+`start:legacy` keeps `src/server.js` as the local Node HTTP entry point. The equivalent explicit command is `pnpm --filter @pmc/pricing-api start:legacy -- --calendar ".\services\pricing-api\examples\rio-2027.calendar.json"`; relative command-line paths are resolved from the directory where pnpm was invoked.
 
-The default address is `http://127.0.0.1:7072`. It opens the Casa de Pedra price-calculator SPA. API discovery remains available at `http://127.0.0.1:7072/api`. The default rules source is `rules/casa-de-pedra.yaml`.
+The default address is `http://127.0.0.1:7072`. `GET /` returns API discovery. The default sources are `config/pricing/casa-de-pedra.yaml` and `services/pricing-api/examples/rio-2027.calendar.json`.
 
 The included calendar JSON is an unverified development fixture. Do not deploy it as an approved production event source.
 
@@ -64,14 +64,15 @@ An event calendar snapshot uses this server-owned shape:
 
 ## API
 
-- `GET /` — JavaScript stay-price calculator
-- `GET /api` — API discovery document
+- `GET /` — API discovery document
 - `GET /health/live`
 - `GET /health/ready`
 - `GET /v1/rule-set` — normalized rules for an optional browser preview; supports `ETag`
 - `GET /v1/calendar-snapshot` — server-approved event facts for the same optional preview; supports `ETag`
 - `POST /v1/pricing/evaluate-calendar`
 - `POST /v1/pricing/evaluate-stay`
+
+The standalone `start:legacy` server uses the paths above. Azure Functions adds the normal `/api` prefix.
 
 Stay request:
 
