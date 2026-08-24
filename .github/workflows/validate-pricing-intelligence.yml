@@ -43,6 +43,7 @@ jobs:
           node --check services/pricing-intelligence/src/airbnb-earnings.js
           node --check services/pricing-intelligence/src/inside-airbnb.js
           node --check services/pricing-intelligence/src/shadow-pricing.js
+          node --check services/pricing-intelligence/src/intelligence-snapshot.js
           node --check services/pricing-intelligence/src/fx.js
           node --check services/pricing-intelligence/src/secrets.js
           node --check services/pricing-intelligence/src/storage.js
