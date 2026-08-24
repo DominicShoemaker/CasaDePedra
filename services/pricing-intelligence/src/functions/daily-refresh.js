@@ -1,6 +1,7 @@
 import { app } from "@azure/functions";
 import { parseProviderCalendar } from "../ical.js";
 import { buildAvailabilitySnapshot } from "../availability.js";
+import { getProviderCalendarUrls } from "../secrets.js";
 import { writeImmutableJson, writeLatestJson } from "../storage.js";
 
 function addDays(date, days) {
@@ -22,10 +23,11 @@ export async function refreshAvailability(context = console) {
   const asOf = new Date().toISOString();
   const today = asOf.slice(0, 10);
   const through = addDays(today, Number(process.env.AVAILABILITY_HORIZON_DAYS ?? 550));
+  const urls = await getProviderCalendarUrls();
 
   const [airbnbText, vrboText] = await Promise.all([
-    fetchText(process.env.AIRBNB_ICAL_URL, "Airbnb"),
-    fetchText(process.env.VRBO_ICAL_URL, "Vrbo"),
+    fetchText(urls.airbnb, "Airbnb"),
+    fetchText(urls.vrbo, "Vrbo"),
   ]);
 
   const calendars = [
