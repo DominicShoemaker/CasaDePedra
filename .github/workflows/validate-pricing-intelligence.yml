@@ -44,6 +44,7 @@ jobs:
           node --check services/pricing-intelligence/src/inside-airbnb.js
           node --check services/pricing-intelligence/src/shadow-pricing.js
           node --check services/pricing-intelligence/src/fx.js
+          node --check services/pricing-intelligence/src/secrets.js
           node --check services/pricing-intelligence/src/storage.js
           node --check services/pricing-intelligence/src/functions/daily-refresh.js
       - name: Package service
