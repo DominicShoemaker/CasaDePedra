@@ -4,6 +4,7 @@ import { parseProviderCalendar } from "../src/ical.js";
 import { buildAvailabilitySnapshot } from "../src/availability.js";
 import { sanitizeAirbnbEarningsCsv } from "../src/airbnb-earnings.js";
 import { buildShadowRecommendation } from "../src/shadow-pricing.js";
+import { buildIntelligenceSnapshot } from "../src/intelligence-snapshot.js";
 
 const airbnb = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;VALUE=DATE:20270101\nDTEND;VALUE=DATE:20270105\nSUMMARY:Reserved\nUID:a\nDESCRIPTION:Phone Number: 1234\nEND:VEVENT\nEND:VCALENDAR`;
 const vrbo = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;VALUE=DATE:20270101\nDTEND;VALUE=DATE:20270105\nSUMMARY:Blocked\nUID:b\nEND:VEVENT\nEND:VCALENDAR`;
@@ -47,4 +48,27 @@ test("shadow pricing never publishes", () => {
   assert.equal(result.mode, "shadow");
   assert.equal(result.publish, false);
   assert.ok(Number(result.recommendedNightlyUsd) > 800);
+});
+
+test("intelligence snapshot is deterministic and shadow-only", () => {
+  const input = {
+    asOf: "2026-08-23T00:00:00Z",
+    marketSnapshot: {
+      schema: "pmc.market-intelligence-snapshot/v1",
+      dates: {
+        "2027-02-06": {
+          marketCompressionIndex: 0.65,
+          weightedAvailabilityRate: 0.35,
+          effectiveSampleSize: 100,
+        },
+      },
+    },
+    policyAnchorsByDate: { "2027-02-06": "800.00" },
+    eventDemandByDate: { "2027-02-06": 1.2 },
+  };
+  const first = buildIntelligenceSnapshot(input);
+  const second = buildIntelligenceSnapshot(input);
+  assert.equal(first.id, second.id);
+  assert.equal(first.model.publishingEnabled, false);
+  assert.equal(first.recommendations["2027-02-06"].publish, false);
 });
