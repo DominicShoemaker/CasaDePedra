@@ -1,0 +1,35 @@
+{
+  "schema": "pmc.market-intelligence-bootstrap/v1",
+  "source": "Inside Airbnb Rio de Janeiro release supplied by owner",
+  "comparableSet": {
+    "count": 524,
+    "effectiveSampleSize": 487.18,
+    "countsByNeighborhood": {"Copacabana":392,"Ipanema":92,"Leblon":40},
+    "weightByNeighborhood": {"Copacabana":222.403075,"Ipanema":44.650763,"Leblon":17.901791},
+    "neighborhoodBaseWeights": {"Copacabana":"1.00","Ipanema":"0.85","Leblon":"0.75"}
+  },
+  "monthlyBenchmarks": {
+    "2026-07":{"medianAvailabilityRate":0.5591,"medianCompressionIndex":0.4409,"medianMinimumStay":3},
+    "2026-08":{"medianAvailabilityRate":0.6315,"medianCompressionIndex":0.3685,"medianMinimumStay":3},
+    "2026-09":{"medianAvailabilityRate":0.6285,"medianCompressionIndex":0.3715,"medianMinimumStay":3},
+    "2026-10":{"medianAvailabilityRate":0.6126,"medianCompressionIndex":0.3874,"medianMinimumStay":3},
+    "2026-11":{"medianAvailabilityRate":0.6106,"medianCompressionIndex":0.3894,"medianMinimumStay":3},
+    "2026-12":{"medianAvailabilityRate":0.6185,"medianCompressionIndex":0.3815,"medianMinimumStay":3},
+    "2027-01":{"medianAvailabilityRate":0.5264,"medianCompressionIndex":0.4736,"medianMinimumStay":3},
+    "2027-02":{"medianAvailabilityRate":0.5054,"medianCompressionIndex":0.4946,"medianMinimumStay":3}
+  },
+  "eventSamples": {
+    "2026-12-29":{"weightedAvailabilityRate":0.385263,"marketCompressionIndex":0.614737,"availableComparableCount":204,"marketMedianMinimumStay":5,"marketP75MinimumStay":7},
+    "2026-12-30":{"weightedAvailabilityRate":0.344595,"marketCompressionIndex":0.655405,"availableComparableCount":182,"marketMedianMinimumStay":5,"marketP75MinimumStay":7},
+    "2026-12-31":{"weightedAvailabilityRate":0.338214,"marketCompressionIndex":0.661786,"availableComparableCount":178,"marketMedianMinimumStay":5,"marketP75MinimumStay":7},
+    "2027-01-01":{"weightedAvailabilityRate":0.352104,"marketCompressionIndex":0.647896,"availableComparableCount":185,"marketMedianMinimumStay":5,"marketP75MinimumStay":7},
+    "2027-02-05":{"weightedAvailabilityRate":0.36461,"marketCompressionIndex":0.63539,"availableComparableCount":193,"marketMedianMinimumStay":5,"marketP75MinimumStay":7},
+    "2027-02-06":{"weightedAvailabilityRate":0.346918,"marketCompressionIndex":0.653082,"availableComparableCount":184,"marketMedianMinimumStay":5,"marketP75MinimumStay":7},
+    "2027-02-07":{"weightedAvailabilityRate":0.348978,"marketCompressionIndex":0.651022,"availableComparableCount":186,"marketMedianMinimumStay":5,"marketP75MinimumStay":7},
+    "2027-02-08":{"weightedAvailabilityRate":0.355063,"marketCompressionIndex":0.644937,"availableComparableCount":189,"marketMedianMinimumStay":5,"marketP75MinimumStay":7}
+  },
+  "limitations": [
+    "Inside Airbnb unavailable dates mean booked or host-blocked, not proven occupancy.",
+    "Competitor price percentiles require matched quote dates before they can be used safely."
+  ]
+}
