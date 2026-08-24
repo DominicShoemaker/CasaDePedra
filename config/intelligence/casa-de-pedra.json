@@ -1,0 +1,68 @@
+{
+  "schema": "pmc.pricing-intelligence-config/v1",
+  "listing": {
+    "name": "Casa de Pedra",
+    "airbnbListingId": "1557623945127773122",
+    "airbnbHostId": "729631893",
+    "timezone": "America/Sao_Paulo",
+    "pricingCurrency": "USD",
+    "marketCurrency": "BRL",
+    "bedrooms": 4,
+    "bathrooms": 4.5,
+    "accommodates": 10
+  },
+  "collection": {
+    "calendarRefresh": "daily",
+    "airbnbCalendarSecret": "airbnb-ical-url",
+    "vrboCalendarSecret": "vrbo-ical-url",
+    "insideAirbnbRawContainer": "pricing-intelligence-raw",
+    "derivedContainer": "pricing-intelligence",
+    "retainSanitizedHistoryIndefinitely": true
+  },
+  "market": {
+    "neighborhoodWeights": {
+      "Copacabana": "1.00",
+      "Ipanema": "0.85",
+      "Leblon": "0.75"
+    },
+    "comparable": {
+      "roomType": "Entire home/apt",
+      "minimumBedrooms": 3,
+      "maximumBedrooms": 5,
+      "minimumAccommodates": 8,
+      "maximumAccommodates": 12,
+      "minimumBathrooms": 2.5
+    }
+  },
+  "airbnbPerformance": {
+    "capturedAt": "2026-08-23",
+    "reportedWindow": "last_month",
+    "windowInterpretation": "Airbnb dashboard preset; treated as approximately one month, not assigned invented exact start/end dates",
+    "bookingConversionPercent": "0.23",
+    "firstPageSearchImpressionRatePercent": "59.7",
+    "searchToListingConversionPercent": "21.41",
+    "listingToBookingConversionPercent": "1.07",
+    "occupancyRatePercent": "34.5",
+    "averageNightsBooked": 10,
+    "averageNightsBlocked": 0,
+    "averageUnbookedNights": 19,
+    "averageCheckIns": 2,
+    "qualityAccuracyPercent": "100"
+  },
+  "history": {
+    "directBookings": 0,
+    "bookingComBookings": 0,
+    "ownerOrFamilyBlocks": 0,
+    "offlineBookings": 0,
+    "manualMaintenanceBlocks": 0,
+    "vrboReservationsLast6Months": 4,
+    "vrboCancellationsLast6Months": 2
+  },
+  "shadowPricing": {
+    "enabled": true,
+    "publishingEnabled": false,
+    "roundingIncrementUsd": "5.00",
+    "maximumShadowIncreasePercent": "35",
+    "maximumShadowDecreasePercent": "25"
+  }
+}
