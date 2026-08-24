@@ -64,8 +64,9 @@ module intelligence './app/api.bicep' = {
       PRICING_STORAGE_ACCOUNT_URL: 'https://${storageAccountName}.blob.${environment().suffixes.storage}'
       INTELLIGENCE_CONTAINER: intelligenceContainer.name
       INTELLIGENCE_RAW_CONTAINER: rawContainer.name
-      AIRBNB_ICAL_URL: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=airbnb-ical-url)'
-      VRBO_ICAL_URL: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=vrbo-ical-url)'
+      KEY_VAULT_URL: 'https://${keyVaultName}.vault.azure.net'
+      AIRBNB_ICAL_SECRET_NAME: 'airbnb-ical-url'
+      VRBO_ICAL_SECRET_NAME: 'vrbo-ical-url'
       AVAILABILITY_HORIZON_DAYS: '550'
     }
   }
