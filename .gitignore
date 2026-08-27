@@ -8,3 +8,6 @@ local.settings.json
 .env
 .env.*
 !.env.example
+
+# Temporary Airbnb download/contact-sheet workspace. Selected mapped photos remain trackable.
+apps/casadepedra-rio/images/gallery/airbnb-raw/

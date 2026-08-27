@@ -109,6 +109,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const priceAdjustmentInfo = document.getElementById('priceAdjustmentInfo');
     const statusText = document.getElementById('statusText');
 
+    const configuredMinStay = Number.parseInt(picker?.getAttribute('min-stay-days'), 10);
+    const configuredMaxStay = Number.parseInt(picker?.getAttribute('max-stay-days'), 10);
+    const minStayDays = Number.isInteger(configuredMinStay) ? configuredMinStay : (picker?.minStayDays ?? 3);
+    const maxStayDays = Number.isInteger(configuredMaxStay) ? configuredMaxStay : (picker?.maxStayDays ?? 28);
+    const stayRangePrompt = `Select from ${minStayDays} to ${maxStayDays} nights`;
+    if (statusText) statusText.textContent = stayRangePrompt;
+
     const nameInput = document.getElementById('guest-name');
     const emailInput = document.getElementById('guest-email');
     const phoneInput = document.getElementById('guest-phone');
@@ -221,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             } else {
                 data = selection;
-                statusText.textContent = selection && selection.startDate ? 'Select end date' : 'Select from 1 to 28 nights';
+                statusText.textContent = selection && selection.startDate ? 'Select end date' : stayRangePrompt;
                 priceInfo.textContent = '';
             }
             validateForm();

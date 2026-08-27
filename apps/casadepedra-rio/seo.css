@@ -1,0 +1,306 @@
+/* SEO landing pages and homepage content blocks */
+.seo-intro,
+.seo-copy {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.seo-intro {
+    font-size: 18px;
+    color: var(--text-main);
+    text-align: center;
+}
+
+.seo-links-grid,
+.local-facts,
+.seo-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+.seo-link-card,
+.local-fact,
+.seo-feature-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+}
+
+.seo-link-card h3,
+.seo-feature-card h2,
+.seo-feature-card h3,
+.local-fact strong {
+    color: var(--primary-color);
+}
+
+.seo-link-card a,
+.seo-copy a,
+.language-links a {
+    color: var(--accent-color);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.seo-link-card a:hover,
+.seo-copy a:hover,
+.language-links a:hover {
+    text-decoration: underline;
+}
+
+.location-copy {
+    margin-top: 28px;
+    font-size: 17px;
+}
+
+.seo-page {
+    background: var(--bg-light);
+}
+
+.seo-topbar {
+    background: white;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.seo-topbar-inner {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 14px 20px;
+}
+
+.seo-brand {
+    color: var(--primary-color);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.seo-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.seo-nav a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.seo-nav a:hover {
+    color: var(--accent-color);
+}
+
+.seo-hero {
+    min-height: 390px;
+    display: flex;
+    align-items: center;
+    color: white;
+    background:
+        linear-gradient(rgba(0, 0, 0, .35), rgba(0, 0, 0, .65)),
+        url('images/collage house wide.png') center/cover no-repeat;
+}
+
+.seo-hero-inner {
+    width: min(100% - 40px, 1000px);
+    margin: auto;
+}
+
+.seo-hero h1 {
+    max-width: 850px;
+    margin: 0 0 18px;
+    font-size: clamp(38px, 6vw, 64px);
+    line-height: 1.05;
+}
+
+.seo-hero p {
+    max-width: 760px;
+    font-size: 20px;
+    margin-bottom: 28px;
+}
+
+.seo-main {
+    max-width: 1000px;
+    margin: auto;
+    padding: 60px 20px;
+}
+
+.seo-main section {
+    margin-bottom: 64px;
+}
+
+.seo-main h2 {
+    color: var(--primary-color);
+    font-size: 32px;
+    line-height: 1.2;
+}
+
+.seo-main h3 {
+    color: var(--primary-color);
+}
+
+.seo-main p,
+.seo-main li {
+    font-size: 17px;
+}
+
+.seo-photo {
+    width: 100%;
+    max-height: 520px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+}
+
+.seo-cta {
+    padding: 36px;
+    border-radius: var(--border-radius);
+    background: white;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+
+.seo-cta .btn-primary {
+    margin: 8px;
+}
+
+.breadcrumbs {
+    font-size: 14px;
+    margin-bottom: 28px;
+    color: var(--text-muted);
+}
+
+.breadcrumbs a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.language-links {
+    margin-top: 14px;
+    font-size: 14px;
+}
+
+.seo-footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.seo-footer-links a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+@media (max-width: 760px) {
+    .seo-topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .seo-hero {
+        min-height: 340px;
+    }
+
+    .seo-main {
+        padding-top: 40px;
+    }
+}
+
+/* Mobile homepage and landing-page typography.
+   The desktop hero is intentionally unchanged. */
+@media (max-width: 480px) {
+    .hero {
+        height: 500px;
+        min-height: 500px;
+        max-height: none;
+    }
+
+    .hero-content {
+        box-sizing: border-box;
+        padding: 0 18px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+        line-height: 1.08;
+        letter-spacing: -1px;
+    }
+
+    .hero p {
+        font-size: 16px;
+        line-height: 1.45;
+        margin: 18px 0 22px;
+    }
+
+    .hero-actions {
+        width: 100%;
+        gap: 12px;
+        margin-top: 0;
+    }
+
+    .hero-actions .btn-primary,
+    .hero-actions .btn-secondary {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 13px 20px;
+        font-size: 16px;
+        line-height: 1.2;
+    }
+
+    .section-header h2 {
+        font-size: 30px;
+        line-height: 1.15;
+    }
+
+    .seo-intro,
+    .location-copy {
+        font-size: 16px;
+    }
+
+    .seo-hero {
+        min-height: 360px;
+    }
+
+    .seo-hero-inner {
+        width: calc(100% - 32px);
+    }
+
+    .seo-hero h1 {
+        font-size: 30px;
+        line-height: 1.1;
+        margin-bottom: 14px;
+    }
+
+    .seo-hero p {
+        font-size: 16px;
+        line-height: 1.45;
+        margin-bottom: 20px;
+    }
+
+    .seo-main {
+        padding: 36px 16px;
+    }
+
+    .seo-main h2 {
+        font-size: 27px;
+    }
+
+    .seo-main p,
+    .seo-main li {
+        font-size: 16px;
+    }
+
+    .seo-cta {
+        padding: 26px 18px;
+    }
+}
