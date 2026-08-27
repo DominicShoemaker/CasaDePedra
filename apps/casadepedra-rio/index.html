@@ -1,316 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Casa de Pedra - Luxury rental in Copacabana - Rio de Janeiro</title>
-
-    <!-- SEO Meta Tags -->
-    <meta name="description"
-        content="Historic 4-bedroom luxury villa in Copacabana, Rio de Janeiro. Steps from the beach. Features a hot tub, dedicated workspace, and accommodates up to 10 guests.">
-    <meta property="og:title" content="Luxury Rental in Copacabana - Casa de Pedra">
-    <meta property="og:description"
-        content="Historic 4-bedroom luxury villa. Steps away from the beach, featuring a hot tub, BBQ, and workspace. Sleeps 10.">
-    <meta property="og:image" content="https://casadepedra.rio/images/collage house wide.png">
-    <meta property="og:url" content="https://casadepedra.rio">
+    <title>Copacabana Vacation Rental & Luxury Villa in Rio | Casa de Pedra</title>
+    <meta name="description" content="Private 4-bedroom vacation rental villa in Copacabana, Rio de Janeiro for up to 10 guests. 4.5 bathrooms, hot tub, BBQ, kitchen, laundry and workspace.">
+    <link rel="canonical" href="https://casadepedra.rio/">
+    <meta property="og:title" content="Copacabana Vacation Rental & Luxury Villa | Casa de Pedra">
+    <meta property="og:description" content="Private 4-bedroom house in Copacabana for up to 10 guests, close to the beach and Cantagalo Metro.">
+    <meta property="og:image" content="https://casadepedra.rio/images/collage%20house%20wide.png">
+    <meta property="og:url" content="https://casadepedra.rio/">
     <meta property="og:type" content="website">
-
     <link rel="icon" type="image/png" href="images/favicon.png">
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- Styles and Scripts -->
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="seo.css">
+    <link rel="stylesheet" href="gallery.css">
+    <link rel="stylesheet" href="experience.css">
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@graph":[
+        {
+          "@type":"WebSite",
+          "@id":"https://casadepedra.rio/#website",
+          "url":"https://casadepedra.rio/",
+          "name":"Casa de Pedra",
+          "inLanguage":"en"
+        },
+        {
+          "@type":"VacationRental",
+          "@id":"https://casadepedra.rio/#vacation-rental",
+          "identifier":"casa-de-pedra-copacabana-001",
+          "name":"Casa de Pedra - Copacabana",
+          "description":"Private four-bedroom vacation rental villa in Copacabana, Rio de Janeiro, accommodating up to 10 guests.",
+          "url":"https://casadepedra.rio/",
+          "additionalType":"Villa",
+          "latitude":-22.97365,
+          "longitude":-43.19266,
+          "image":[
+            "https://casadepedra.rio/images/house.jpg",
+            "https://casadepedra.rio/images/living-room.png",
+            "https://casadepedra.rio/images/master-bedroom-1.png",
+            "https://casadepedra.rio/images/kitchen.png",
+            "https://casadepedra.rio/images/backyard.jpg",
+            "https://casadepedra.rio/images/jacuzzi.png",
+            "https://casadepedra.rio/images/office.jpg",
+            "https://casadepedra.rio/images/activities.png"
+          ],
+          "containsPlace":{
+            "@type":"Accommodation",
+            "occupancy":{"@type":"QuantitativeValue","value":10},
+            "numberOfBedrooms":4,
+            "numberOfBathroomsTotal":4.5,
+            "amenityFeature":[
+              {"@type":"LocationFeatureSpecification","name":"Air conditioning","value":true},
+              {"@type":"LocationFeatureSpecification","name":"Hot tub","value":true},
+              {"@type":"LocationFeatureSpecification","name":"BBQ area","value":true},
+              {"@type":"LocationFeatureSpecification","name":"Dedicated workspace","value":true},
+              {"@type":"LocationFeatureSpecification","name":"Kitchen","value":true},
+              {"@type":"LocationFeatureSpecification","name":"Laundry","value":true}
+            ]
+          },
+          "sameAs":["https://airbnb.com/h/copacabana-rio","https://www.vrbo.com/4972525"]
+        }
+      ]
+    }
+    </script>
     <script src="config.js"></script>
     <script src="pricing-client.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="gallery.js" defer></script>
+    <script src="experience.js" defer></script>
     <script src="date-range-picker/date-picker.js"></script>
 </head>
-
 <body class="rio-chic">
-
-    <!-- HERO SECTION -->
     <header class="hero">
         <div class="hero-overlay">
             <div class="hero-content">
-                <h1>Luxury rental in Copacabana</h1>
-                <h1>Rio • Brazil</h1>
-                <p>Historic 4BR/4.5BA Villa • Steps from the Beach • Hot Tub • Sleeps 10</p>
+                <h1>Luxury Villa & Vacation Rental in Copacabana, Rio de Janeiro</h1>
+                <p>Private 4BR / 4.5BA House • Walk to Copacabana Beach • Hot Tub • BBQ • Sleeps 10</p>
                 <div class="hero-actions">
-                    <a href="#booking" class="btn-primary">Book Your Escape</a>
+                    <a href="#booking" class="btn-primary">Check Availability</a>
                     <a href="#gallery" class="btn-secondary">View Gallery</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- NAVIGATION -->
-    <nav class="main-nav">
+    <nav class="main-nav" aria-label="Main navigation">
         <div class="nav-container">
             <a href="#experience">Experience</a>
+            <a href="copacabana-vacation-rental/">Vacation Rental</a>
+            <a href="luxury-villa-rio-de-janeiro/">Rio Villa</a>
+            <a href="copacabana-guide/">Area Guide</a>
             <a href="#gallery">Gallery</a>
-            <a href="#amenities">Amenities</a>
             <a href="#booking">Book Now</a>
-            <a href="#contact">Contact</a>
         </div>
     </nav>
 
     <main class="container">
+        <section class="section fade-in">
+            <div class="section-header">
+                <h2>A Private House for Your Copacabana Stay</h2>
+                <p>More space than a hotel room, with the group together under one roof.</p>
+            </div>
+            <div class="seo-copy seo-intro">
+                <p>Casa de Pedra is a private four-bedroom vacation rental villa in Copacabana, Rio de Janeiro, accommodating up to 10 guests. The house combines generous shared spaces with four separate bedrooms, 4.5 bathrooms, a full kitchen, laundry, air conditioning, Wi-Fi, a dedicated workspace, a private hot tub and BBQ area.</p>
+                <p>It is a practical base for families and groups who want an entire house rather than several hotel rooms. The property is in a quieter residential pocket of Copacabana near Rua Pompeu Loureiro and Rua Barão de Ipanema, with Cantagalo Metro approximately 500 meters away, Copacabana Beach approximately 800 meters away and Forte de Copacabana approximately 2 kilometers away.</p>
+            </div>
+        </section>
 
-        <!-- EXPERIENCE SECTION -->
         <section id="experience" class="section fade-in">
             <div class="section-header">
                 <h2>The Experience</h2>
-                <p>A sun-drenched sanctuary in the heart of Rio.</p>
+                <p>A spacious private residence in one of Rio's best-known beach neighborhoods.</p>
             </div>
             <div class="experience-grid">
                 <div class="experience-card">
-                    <img src="images/Map with house.png" alt="House Location">
-                    <div class="card-content">
-                        <h3>Prime Location</h3>
-                        <p>Just an 8-minute stroll to the iconic sands of Copacabana.</p>
-                    </div>
+                    <img src="images/Map with house.png" alt="Map showing Casa de Pedra in Copacabana near Cantagalo Metro and Copacabana Beach">
+                    <div class="card-content"><h3>Prime Copacabana Location</h3><p>Walk to the beach, metro, cafés, bakeries, markets and neighborhood services.</p></div>
                 </div>
                 <div class="experience-card">
-                    <img src="images/venue.png" alt="Living Room Setup">
-                    <div class="card-content">
-                        <h3>Sophisticated Living</h3>
-                        <p>Spacious, historic architecture meets modern luxury.</p>
-                    </div>
+                    <img src="images/venue.png" alt="Spacious living area inside Casa de Pedra in Copacabana">
+                    <div class="card-content"><h3>Space to Stay Together</h3><p>Four bedrooms plus generous common areas for families, friends and multi-room groups.</p></div>
                 </div>
                 <div class="experience-card">
-                    <img src="images/activities.png" alt="Local Activities">
-                    <div class="card-content">
-                        <h3>Rio Lifestyle</h3>
-                        <p>Explore the best cafes, clubs, and culture at your doorstep.</p>
-                    </div>
+                    <img src="images/activities.png" alt="Rio de Janeiro activities accessible from Copacabana">
+                    <div class="card-content"><h3>Rio at Your Doorstep</h3><p>Use the metro or local transport to explore Ipanema, Botafogo, downtown Rio and beyond.</p></div>
                 </div>
             </div>
         </section>
 
-        <!-- GALLERY SECTION -->
+        <section class="section fade-in">
+            <div class="section-header">
+                <h2>Plan the Right Kind of Stay</h2>
+                <p>Detailed pages help you compare the property, the neighborhood and the type of accommodation.</p>
+            </div>
+            <div class="seo-links-grid">
+                <article class="seo-link-card"><h3>Copacabana Vacation Rental</h3><p>Bedrooms, bathrooms, group capacity, amenities and why a private house can work better than multiple hotel rooms.</p><a href="copacabana-vacation-rental/">Explore the vacation rental →</a></article>
+                <article class="seo-link-card"><h3>Private Luxury Villa in Rio</h3><p>Learn about Casa de Pedra as a villa-style private residence for family and group stays in Rio de Janeiro.</p><a href="luxury-villa-rio-de-janeiro/">Explore the Rio villa →</a></article>
+                <article class="seo-link-card"><h3>Copacabana Neighborhood Guide</h3><p>Beach access, Cantagalo Metro, Forte de Copacabana, nearby Ipanema and practical services around the house.</p><a href="copacabana-guide/">Read the area guide →</a></article>
+            </div>
+        </section>
+
         <section id="gallery" class="section fade-in">
             <div class="section-header">
                 <h2>Photo Gallery</h2>
-                <p>A glimpse into your next getaway.</p>
+                <p>Select a category to explore detailed room photos, descriptions and bathroom relationships.</p>
             </div>
             <div class="gallery-grid">
-                <div class="gallery-item"><img src="images/house.jpg" alt="House"></div>
-                <div class="gallery-item"><img src="images/living-room.png" alt="Living Room"></div>
-                <div class="gallery-item"><img src="images/master-bedroom-1.png" alt="Master Bedroom"></div>
-                <div class="gallery-item"><img src="images/kitchen.png" alt="Kitchen"></div>
-                <div class="gallery-item"><img src="images/backyard.jpg" alt="Backyard"></div>
-                <div class="gallery-item"><img src="images/jacuzzi.png" alt="Hot Tub"></div>
+                <button type="button" class="gallery-item gallery-category-card" data-gallery-category="exterior" aria-label="Open Exterior and Entrance gallery">
+                    <img src="images/house.jpg" alt="Exterior of Casa de Pedra vacation rental in Copacabana">
+                    <span class="gallery-tile-label"><strong>Exterior & Entrance</strong><small>Architecture and arrival</small></span>
+                </button>
+                <button type="button" class="gallery-item gallery-category-card" data-gallery-category="living-office" aria-label="Open Living Room and Office gallery">
+                    <img src="images/living-room.png" alt="Living room at the four-bedroom Copacabana vacation rental">
+                    <span class="gallery-tile-label"><strong>Living Room & Office</strong><small>Shared space and private workspace</small></span>
+                </button>
+                <button type="button" class="gallery-item gallery-category-card" data-gallery-category="bedrooms" aria-label="Open Bedrooms gallery">
+                    <img src="images/master-bedroom-1.png" alt="Master bedroom at Casa de Pedra in Rio de Janeiro">
+                    <span class="gallery-tile-label"><strong>Bedrooms</strong><small>2 master suites + 2 queen bedrooms</small></span>
+                </button>
+                <button type="button" class="gallery-item gallery-category-card" data-gallery-category="kitchen" aria-label="Open Kitchen gallery">
+                    <img src="images/kitchen.png" alt="Full kitchen for guests at Casa de Pedra">
+                    <span class="gallery-tile-label"><strong>Kitchen</strong><small>Full kitchen for your stay</small></span>
+                </button>
+                <button type="button" class="gallery-item gallery-category-card" data-gallery-category="outdoor" aria-label="Open Outdoor and BBQ gallery">
+                    <img src="images/backyard.jpg" alt="Private outdoor area at Casa de Pedra">
+                    <span class="gallery-tile-label"><strong>Outdoor & BBQ</strong><small>Backyard, BBQ and balcony</small></span>
+                </button>
+                <button type="button" class="gallery-item gallery-category-card" data-gallery-category="bathrooms" aria-label="Open Bathrooms and Jacuzzi gallery">
+                    <img src="images/jacuzzi.png" alt="Private hot tub at the Copacabana villa">
+                    <span class="gallery-tile-label"><strong>Bathrooms & Jacuzzi</strong><small>4 full baths + BBQ-area half bath</small></span>
+                </button>
             </div>
         </section>
 
-        <!-- AMENITIES SECTION -->
         <section id="amenities" class="section fade-in">
+            <div class="section-header"><h2>Property Details & Amenities</h2><p>Included with your stay for a comfortable, practical visit to Rio.</p></div>
+            <div class="feature-grid">
+                <div class="feature-item"><i class="fas fa-bed"></i><div><h4>4 Bedrooms • Sleeps 10</h4><p>1 King • 3 Queen beds • Sofa bed • Space for families and groups.</p></div></div>
+                <div class="feature-item"><i class="fas fa-bath"></i><div><h4>4.5 Bathrooms</h4><p>Bathroom capacity designed for larger groups staying under one roof.</p></div></div>
+                <div class="feature-item"><i class="fas fa-utensils"></i><div><h4>Full Kitchen</h4><p>Prepare meals, breakfast and snacks at the house during your stay.</p></div></div>
+                <div class="feature-item"><i class="fas fa-shirt"></i><div><h4>Private Laundry</h4><p>Laundry facilities for beach days, families and longer stays.</p></div></div>
+                <div class="feature-item"><i class="fas fa-briefcase"></i><div><h4>Private Office & Wi-Fi</h4><p>Dedicated workspace with high-speed Wi-Fi for remote work.</p></div></div>
+                <div class="feature-item"><i class="fas fa-tv"></i><div><h4>TVs & Air Conditioning</h4><p>TVs and air conditioning throughout the house for everyday comfort.</p></div></div>
+                <div class="feature-item"><i class="fas fa-hot-tub"></i><div><h4>Private Hot Tub & BBQ</h4><p>Relax at home and enjoy the private outdoor BBQ area.</p></div></div>
+                <div class="feature-item"><i class="fas fa-umbrella-beach"></i><div><h4>Balcony & Outdoor Space</h4><p>Private outdoor areas for relaxing between days around Rio.</p></div></div>
+                <div class="feature-item"><i class="fas fa-house"></i><div><h4>Entire Private House</h4><p>A residential setting with the privacy and shared space of a full home.</p></div></div>
+                <div class="feature-item"><i class="fas fa-location-dot"></i><div><h4>Walkable Copacabana Location</h4><p>Approximately 800 m to Copacabana Beach and 500 m to Cantagalo Metro.</p></div></div>
+            </div>
+        </section>
+
+        <section id="enhance-your-stay" class="section fade-in">
             <div class="section-header">
-                <h2>Property Details & Amenities</h2>
-                <p>Everything you need for a seamless stay.</p>
+                <h2>Enhance Your Stay</h2>
+                <p><strong>Optional services are available on request for an additional charge.</strong> Availability and pricing depend on your dates, timing and service requirements.</p>
             </div>
             <div class="feature-grid">
-                <div class="feature-item">
-                    <i class="fas fa-bed"></i>
-                    <div>
-                        <h4>Accommodations</h4>
-                        <p>4 Bedrooms • 5 Beds • Sleeps 10</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-bath"></i>
-                    <div>
-                        <h4>Bathrooms</h4>
-                        <p>4.5 Luxury Bathrooms</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-wifi"></i>
-                    <div>
-                        <h4>Connectivity</h4>
-                        <p>High-speed Wi-Fi & Workspace</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-hot-tub"></i>
-                    <div>
-                        <h4>Relaxation</h4>
-                        <p>Private Hot Tub & BBQ Area</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-snowflake"></i>
-                    <div>
-                        <h4>Comfort</h4>
-                        <p>Full A/C & Smart TVs</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-walking"></i>
-                    <div>
-                        <h4>Access</h4>
-                        <p>8 min walk to the beach</p>
-                    </div>
-                </div>
+                <div class="feature-item"><i class="fas fa-car-side"></i><div><h4>Airport Transfer</h4><p>Private pickup or drop-off can be arranged for GIG or SDU airport.</p></div></div>
+                <div class="feature-item"><i class="fas fa-broom"></i><div><h4>Additional Housekeeping</h4><p>Mid-stay or additional cleaning can be arranged on request.</p></div></div>
+                <div class="feature-item"><i class="fas fa-mug-hot"></i><div><h4>Breakfast Service</h4><p>Breakfast preparation or service can be arranged for your group.</p></div></div>
+                <div class="feature-item"><i class="fas fa-basket-shopping"></i><div><h4>Grocery Pre-Stocking</h4><p>Arrange for requested groceries and essentials to be at the house for your arrival.</p></div></div>
+                <div class="feature-item"><i class="fas fa-clock"></i><div><h4>Early Check-In / Late Checkout</h4><p>Available when the reservation schedule allows; request in advance.</p></div></div>
+            </div>
+            <div class="seo-copy location-copy">
+                <p>To request an optional service, contact the hosts before arrival. We will confirm availability and the additional price before anything is arranged.</p>
             </div>
         </section>
 
-        <!-- BOOKING SECTION -->
-        <section id="booking" class="section fade-in">
-            <div class="section-header">
-                <h2>Check Availability & Book</h2>
-                <p>Secure your dates for an unforgettable Rio experience.</p>
+        <section class="section fade-in">
+            <div class="section-header"><h2>Location in Copacabana</h2><p>Beach, metro and everyday services are all close to the house.</p></div>
+            <div class="local-facts">
+                <div class="local-fact"><strong>Copacabana Beach</strong><br>Approximately 800 m away.</div>
+                <div class="local-fact"><strong>Cantagalo Metro</strong><br>Approximately 500 m away.</div>
+                <div class="local-fact"><strong>Forte de Copacabana</strong><br>Approximately 2 km away.</div>
+                <div class="local-fact"><strong>Neighborhood services</strong><br>Markets, pharmacies, cafés and bakeries nearby.</div>
             </div>
+            <div class="seo-copy location-copy"><p>The house gives guests a residential base between central Copacabana and the Ipanema/Arpoador side of the neighborhood. Read our <a href="copacabana-guide/">Copacabana guide</a> for more information about getting around, or view the property in <a href="pt-br/aluguel-temporada-copacabana/" lang="pt-BR">Português</a>.</p></div>
+        </section>
 
+        <section id="booking" class="section fade-in">
+            <div class="section-header"><h2>Check Availability & Book</h2><p>Choose your dates to see the current direct rate.</p></div>
             <div id="booking-widget">
-                <str-date-range-picker api-url="https://shorttermreservation.azurewebsites.net/api/Reservation"
-                    min-stay-days="1" max-stay-days="28" display-stay-nights="3"></str-date-range-picker>
-
+                <str-date-range-picker api-url="https://shorttermreservation.azurewebsites.net/api/Reservation" min-stay-days="1" max-stay-days="28" display-stay-nights="3"></str-date-range-picker>
                 <div class="booking-form">
                     <div class="input-row">
-                        <div class="form-group">
-                            <label for="guest-name">Full legal name</label>
-                            <input type="text" id="guest-name" placeholder="John Doe">
-                        </div>
-                        <div class="form-group">
-                            <label for="guest-email">Email address</label>
-                            <input type="email" id="guest-email" placeholder="john@example.com" maxlength="255">
-                        </div>
-                        <div class="form-group">
-                            <label for="guest-phone">Phone number</label>
-                            <input type="tel" id="guest-phone" placeholder="+1 234 567 8900" maxlength="20">
-                        </div>
+                        <div class="form-group"><label for="guest-name">Full legal name</label><input type="text" id="guest-name" placeholder="John Doe"></div>
+                        <div class="form-group"><label for="guest-email">Email address</label><input type="email" id="guest-email" placeholder="john@example.com" maxlength="255"></div>
+                        <div class="form-group"><label for="guest-phone">Phone number</label><input type="tel" id="guest-phone" placeholder="+1 234 567 8900" maxlength="20"></div>
                     </div>
-
                     <label class="checkbox-label" for="agree-rules">
                         <input type="checkbox" id="agree-rules">
-                        <span>I have read and agree to the <a href="javascript:void(0)"
-                                onclick="openModal('rules-modal')" class="link-accent">House Rules</a>, <a
-                                href="javascript:void(0)" onclick="openModal('privacy-modal')"
-                                class="link-accent">Privacy Policy</a>, and <a href="javascript:void(0)"
-                                onclick="openModal('cancellation-modal')" class="link-accent">Cancellation Policy</a>.
-                            Maximum number of guests is 10. Check-in is anytime after 3:00 PM. Check-out is before 11:00
-                            AM.</span>
+                        <span>I have read and agree to the <a href="javascript:void(0)" onclick="openModal('rules-modal')" class="link-accent">House Rules</a>, <a href="javascript:void(0)" onclick="openModal('privacy-modal')" class="link-accent">Privacy Policy</a>, and <a href="javascript:void(0)" onclick="openModal('cancellation-modal')" class="link-accent">Cancellation Policy</a>. Maximum number of guests is 10. Check-in is anytime after 3:00 PM. Check-out is before 11:00 AM.</span>
                     </label>
-
-                    <div class="action-bar" id="actionBar">
-                        <span id="priceInfo" class="price-display"></span>
-                        <div class="right-actions">
-                            <span id="statusText">Select from 3 to 28 nights</span>
-                            <button id="submit-booking" disabled>Book Now</button>
-                        </div>
-                    </div>
+                    <div class="action-bar" id="actionBar"><span id="priceInfo" class="price-display"></span><div class="right-actions"><span id="statusText">Select from 1 to 28 nights</span><button id="submit-booking" disabled>Book Now</button></div></div>
                     <div id="priceAdjustmentInfo" class="price-adjustment-info" aria-live="polite"></div>
                     <div id="booking-error"></div>
                 </div>
             </div>
-
             <div class="partner-booking">
                 <h3>Prefer to book through a platform?</h3>
                 <div class="partner-buttons">
-                    <a href="https://airbnb.com/h/copacabana-rio" target="_blank" class="partner-btn btn-airbnb">
-                        <i class="fab fa-airbnb"></i> Book on Airbnb
-                    </a>
-                    <a href="https://www.vrbo.com/4972525?dateless=true" target="_blank" class="partner-btn btn-vrbo">
-                        <i class="fas fa-home"></i> Book on Vrbo
-                    </a>
+                    <a href="https://airbnb.com/h/copacabana-rio" target="_blank" rel="noopener" class="partner-btn btn-airbnb"><i class="fab fa-airbnb"></i> Book on Airbnb</a>
+                    <a href="https://www.vrbo.com/4972525?dateless=true" target="_blank" rel="noopener" class="partner-btn btn-vrbo"><i class="fas fa-home"></i> Book on Vrbo</a>
                 </div>
             </div>
         </section>
 
-        <!-- CONTACT SECTION -->
         <section id="contact" class="section fade-in">
-            <div class="section-header">
-                <h2>Contact Our Hosts</h2>
-                <p>Have questions? We're here to help.</p>
-            </div>
-            <div class="contact-container">
-                <div class="contact-card">
-                    <p>Email: <strong>support@casadepedra.rio</strong></p>
-                    <p class="instruction-text">Chat with us on WhatsApp:</p>
-                    <div class="contact-links">
-                        <a href="https://wa.me/5521983169242?text=Hi%20Luan,%20I%20would%20like%20to%20ask%20about%20the%20rental%20in%20Copacabana."
-                            class="whatsapp-link" target="_blank">
-                            <i class="fab fa-whatsapp"></i> Chat with Luan
-                        </a>
-                        <a href="https://wa.me/14084559026?text=Hi%20Silvia,%20I%20would%20like%20to%20ask%20about%20the%20rental%20in%20Copacabana."
-                            class="whatsapp-link" target="_blank">
-                            <i class="fab fa-whatsapp"></i> Chat with Silvia
-                        </a>
-                    </div>
+            <div class="section-header"><h2>Contact Our Hosts</h2><p>Have questions? We're here to help.</p></div>
+            <div class="contact-container"><div class="contact-card">
+                <p>Email: <strong>support@casadepedra.rio</strong></p>
+                <p class="instruction-text">Chat with us on WhatsApp:</p>
+                <div class="contact-links">
+                    <a href="https://wa.me/5521983169242?text=Hi%20Luan,%20I%20would%20like%20to%20ask%20about%20the%20rental%20in%20Copacabana." class="whatsapp-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> Chat with Luan</a>
+                    <a href="https://wa.me/14084559026?text=Hi%20Silvia,%20I%20would%20like%20to%20ask%20about%20the%20rental%20in%20Copacabana." class="whatsapp-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> Chat with Silvia</a>
                 </div>
-            </div>
+            </div></div>
         </section>
-
     </main>
 
-    <!-- MODALS (Kept identical for functionality) -->
-    <div id="rules-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('rules-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>House Rules</h2>
-            </div>
-            <div class="modal-body">
-                <p>Welcome to our home! To ensure everyone has a great stay, please follow these rules:</p>
-                <ul>
-                    <li><strong>Check-in & Check-out:</strong> Check-in after 3:00 PM. Check-out before 11:00 AM.</li>
-                    <li><strong>Occupancy:</strong> Max 10 guests. No unauthorized visitors.</li>
-                    <li><strong>No Parties:</strong> Strict no-party policy.</li>
-                    <li><strong>Quiet Hours:</strong> 10:00 PM - 8:00 AM.</li>
-                    <li><strong>Smoking:</strong> 100% smoke-free property.</li>
-                    <li><strong>Pets:</strong> No pets allowed.</li>
-                </ul>
-                <a href="docs/house-rules.pdf" class="download-pdf" target="_blank" download>Download PDF version</a>
-            </div>
-        </div>
-    </div>
-
-    <div id="privacy-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('privacy-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>Privacy Policy</h2>
-            </div>
-            <div class="modal-body">
-                <p>Effective Date: March 19, 2026</p>
-                <p>We collect information only to process your reservation and improve your stay. Your data is never
-                    sold.</p>
-                <a href="docs/privacy-policy.pdf" class="download-pdf" target="_blank" download>Download PDF version</a>
-            </div>
-        </div>
-    </div>
-
-    <div id="cancellation-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('cancellation-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>Cancellation Policy</h2>
-            </div>
-            <div class="modal-body">
-                <ul>
-                    <li><strong>Full Refund (minus 3% processing fees):</strong> 30+ days before check-in.</li>
-                    <li><strong>50% Refund:</strong> 7-14 days before check-in.</li>
-                    <li><strong>No Refund:</strong> Less than 7 days before check-in.</li>
-                </ul>
-                <a href="docs/cancellation-policy.pdf" class="download-pdf" target="_blank" download>Download PDF
-                    version</a>
-            </div>
-        </div>
-    </div>
+    <div id="rules-modal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeModal('rules-modal')">&times;</span><div class="modal-header"><h2>House Rules</h2></div><div class="modal-body"><p>Welcome to our home! To ensure everyone has a great stay, please follow these rules:</p><ul><li><strong>Check-in & Check-out:</strong> Check-in after 3:00 PM. Check-out before 11:00 AM.</li><li><strong>Occupancy:</strong> Max 10 guests. No unauthorized visitors.</li><li><strong>No Parties:</strong> Strict no-party policy.</li><li><strong>Quiet Hours:</strong> 10:00 PM - 8:00 AM.</li><li><strong>Smoking:</strong> 100% smoke-free property.</li><li><strong>Pets:</strong> No pets allowed.</li></ul><a href="docs/house-rules.pdf" class="download-pdf" target="_blank" download>Download PDF version</a></div></div></div>
+    <div id="privacy-modal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeModal('privacy-modal')">&times;</span><div class="modal-header"><h2>Privacy Policy</h2></div><div class="modal-body"><p>Effective Date: March 19, 2026</p><p>We collect information only to process your reservation and improve your stay. Your data is never sold.</p><a href="docs/privacy-policy.pdf" class="download-pdf" target="_blank" download>Download PDF version</a></div></div></div>
+    <div id="cancellation-modal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeModal('cancellation-modal')">&times;</span><div class="modal-header"><h2>Cancellation Policy</h2></div><div class="modal-body"><ul><li><strong>Full Refund (minus 3% processing fees):</strong> 30+ days before check-in.</li><li><strong>50% Refund:</strong> 7-14 days before check-in.</li><li><strong>No Refund:</strong> Less than 7 days before check-in.</li></ul><a href="docs/cancellation-policy.pdf" class="download-pdf" target="_blank" download>Download PDF version</a></div></div></div>
 
     <footer>
-        <p>© 2026 Casa de Pedra, Copacabana — All Rights Reserved</p>
+        <p>© 2026 Casa de Pedra, Copacabana — Rio de Janeiro</p>
+        <div class="seo-footer-links"><a href="copacabana-vacation-rental/">Vacation Rental</a><a href="luxury-villa-rio-de-janeiro/">Luxury Villa Rio</a><a href="copacabana-guide/">Copacabana Guide</a><a href="pt-br/aluguel-temporada-copacabana/" lang="pt-BR">Português</a></div>
     </footer>
-
 </body>
-
 </html>
