@@ -13,7 +13,8 @@ on:
       - "pnpm-workspace.yaml"
       - ".github/workflows/deploy-pricing-casadepedra-rio.yml"
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    # keep only the closed type so we don't deploy when PRs are opened or updated
+    types: [closed]
     branches: [main]
     paths:
       - "apps/pricing-casadepedra-rio/**"
@@ -27,7 +28,7 @@ on:
 
 jobs:
   build_and_deploy:
-    if: github.event_name == 'push' || github.event.action != 'closed'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
