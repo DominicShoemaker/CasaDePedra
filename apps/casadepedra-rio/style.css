@@ -206,7 +206,7 @@ body {
 .experience-card {
     background: white;
     border-radius: var(--border-radius);
-    overflow: hidden;
+    overflow: visible;
     box-shadow: var(--shadow-md);
     transition: var(--transition);
 }
