@@ -623,3 +623,35 @@ footer {
     font-size: 0.9rem;
     text-align: center;
 }
+
+
+/* -------------------- AIRBNB REVIEWS -------------------- */
+#reviews {
+    text-align: center;
+}
+
+.airbnb-review-embed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px 0;
+    overflow: hidden;
+}
+
+.airbnb-review-embed .airbnb-embed-frame {
+    max-width: 100% !important;
+}
+
+@media (max-width: 520px) {
+    .airbnb-review-embed {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .airbnb-review-embed .airbnb-embed-frame {
+        width: 100% !important;
+        max-width: 450px !important;
+    }
+}
