@@ -1,11 +1,18 @@
 {
-  "id": "casa-de-pedra-rio-2026-2029-v1",
-  "notice": "Sanitized calendar snapshot with calculated Gregorian New Year, Rio Carnival, Western Easter, and fixed Brazil Independence Day facts for pricing evaluation.",
+  "id": "casa-de-pedra-rio-2026-2029-v2",
+  "notice": "Host-approved 2026-2027 event pricing dates plus calculated recurring holidays. Carnival ranges include all priced nights. Todo Mundo no Rio May 2-7, 2027 is a tentative host-approved pricing window, not a confirmed concert date. World Cup Rio fixtures: https://www.netflix.com/tudum/articles/fifa-womens-world-cup-2027-match-schedule . All localEndExclusive dates exclude their night.",
   "expiresAt": "2029-12-31T23:59:59Z",
   "coverage": {
     "from": "2026-01-01",
     "through": "2029-12-31",
     "resolvedKeys": [
+      "br.aparecida",
+      "br.rj.rio.nfl",
+      "br.rj.rio.todo-mundo",
+      "fifa.womens-world-cup",
+      "fifa.womens-world-cup.rio-match",
+      "fifa.womens-world-cup.rio-semifinal",
+      "fifa.womens-world-cup.final",
       "br.independence-day",
       "br.rj.rio.carnival",
       "br.rj.rio.rock-in-rio",
@@ -14,6 +21,80 @@
     ]
   },
   "events": [
+    {
+      "key": "br.rj.rio.rock-in-rio",
+      "localStart": "2026-09-04",
+      "localEndExclusive": "2026-09-14",
+      "status": "confirmed"
+    },
+    {
+      "key": "br.rj.rio.nfl",
+      "date": "2026-09-27",
+      "status": "confirmed"
+    },
+    {
+      "key": "br.aparecida",
+      "localStart": "2026-10-09",
+      "localEndExclusive": "2026-10-13",
+      "status": "confirmed"
+    },
+    {
+      "key": "br.rj.rio.todo-mundo",
+      "localStart": "2027-05-02",
+      "localEndExclusive": "2027-05-08",
+      "status": "tentative"
+    },
+    {
+      "key": "fifa.womens-world-cup",
+      "localStart": "2027-06-24",
+      "localEndExclusive": "2027-07-26",
+      "status": "confirmed"
+    },
+    {
+      "key": "fifa.womens-world-cup.rio-match",
+      "date": "2027-06-24",
+      "status": "confirmed"
+    },
+    {
+      "key": "fifa.womens-world-cup.rio-match",
+      "date": "2027-06-26",
+      "status": "confirmed"
+    },
+    {
+      "key": "fifa.womens-world-cup.rio-match",
+      "date": "2027-06-30",
+      "status": "confirmed"
+    },
+    {
+      "key": "fifa.womens-world-cup.rio-match",
+      "date": "2027-07-03",
+      "status": "confirmed"
+    },
+    {
+      "key": "fifa.womens-world-cup.rio-match",
+      "date": "2027-07-05",
+      "status": "confirmed"
+    },
+    {
+      "key": "fifa.womens-world-cup.rio-match",
+      "date": "2027-07-07",
+      "status": "confirmed"
+    },
+    {
+      "key": "fifa.womens-world-cup.rio-match",
+      "date": "2027-07-16",
+      "status": "confirmed"
+    },
+    {
+      "key": "fifa.womens-world-cup.rio-semifinal",
+      "date": "2027-07-21",
+      "status": "confirmed"
+    },
+    {
+      "key": "fifa.womens-world-cup.final",
+      "date": "2027-07-25",
+      "status": "confirmed"
+    },
     {
       "key": "gregorian.new-year",
       "date": "2026-01-01",
@@ -41,26 +122,26 @@
     },
     {
       "key": "br.rj.rio.carnival",
-      "localStart": "2026-02-15",
-      "localEndExclusive": "2026-02-18",
+      "localStart": "2026-02-13",
+      "localEndExclusive": "2026-02-19",
       "status": "calculated"
     },
     {
       "key": "br.rj.rio.carnival",
-      "localStart": "2027-02-07",
-      "localEndExclusive": "2027-02-10",
+      "localStart": "2027-02-05",
+      "localEndExclusive": "2027-02-15",
+      "status": "confirmed"
+    },
+    {
+      "key": "br.rj.rio.carnival",
+      "localStart": "2028-02-25",
+      "localEndExclusive": "2028-03-02",
       "status": "calculated"
     },
     {
       "key": "br.rj.rio.carnival",
-      "localStart": "2028-02-27",
-      "localEndExclusive": "2028-03-01",
-      "status": "calculated"
-    },
-    {
-      "key": "br.rj.rio.carnival",
-      "localStart": "2029-02-11",
-      "localEndExclusive": "2029-02-14",
+      "localStart": "2029-02-09",
+      "localEndExclusive": "2029-02-15",
       "status": "calculated"
     },
     {

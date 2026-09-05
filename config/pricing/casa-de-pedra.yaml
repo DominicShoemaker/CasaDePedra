@@ -15,7 +15,7 @@ schema: pmc.price-rules/v1
 
 rule_set:
   id: casa-de-pedra-copacabana-direct
-  version: 2
+  version: 3
   effective_from: 2026-01-01
 
 listing_context:
@@ -145,6 +145,126 @@ rules:
       minimum_stay: 4
     suppresses: [annual-season, length-of-stay]
 
+  - id: nfl-rio
+    name: NFL Rio game travel window
+    layer: event
+    group: major-event
+    priority: 810
+    stacking: exclusive
+    when:
+      event:
+        key: br.rj.rio.nfl
+        days_before: 2
+        days_after: 0
+        accepted_status: [confirmed]
+    apply:
+      set_final_nightly: "550.00"
+      minimum_stay: 3
+    suppresses: [annual-season, length-of-stay]
+
+  - id: aparecida-holiday
+    name: Nossa Senhora Aparecida holiday
+    layer: event
+    group: major-event
+    priority: 770
+    stacking: exclusive
+    when:
+      event:
+        key: br.aparecida
+        days_before: 0
+        days_after: 0
+        accepted_status: [confirmed]
+    apply:
+      set_final_nightly: "480.00"
+      minimum_stay: 3
+    suppresses: [annual-season, length-of-stay]
+
+  - id: womens-world-cup
+    name: FIFA Women's World Cup tournament
+    layer: event
+    group: major-event
+    priority: 780
+    stacking: exclusive
+    when:
+      event:
+        key: fifa.womens-world-cup
+        days_before: 0
+        days_after: 0
+        accepted_status: [confirmed]
+    apply:
+      set_final_nightly: "500.00"
+      minimum_stay: 3
+    suppresses: [annual-season, length-of-stay]
+
+  - id: womens-world-cup-rio-match
+    name: Women's World Cup Rio match nights
+    layer: event
+    group: major-event
+    priority: 820
+    stacking: exclusive
+    when:
+      event:
+        key: fifa.womens-world-cup.rio-match
+        days_before: 1
+        days_after: 0
+        accepted_status: [confirmed]
+    apply:
+      set_final_nightly: "600.00"
+      minimum_stay: 3
+    suppresses: [annual-season, length-of-stay]
+
+  - id: womens-world-cup-rio-semifinal
+    name: Women's World Cup Rio semifinal
+    layer: event
+    group: major-event
+    priority: 830
+    stacking: exclusive
+    when:
+      event:
+        key: fifa.womens-world-cup.rio-semifinal
+        days_before: 1
+        days_after: 0
+        accepted_status: [confirmed]
+    apply:
+      set_final_nightly: "650.00"
+      minimum_stay: 3
+    suppresses: [annual-season, length-of-stay]
+
+  - id: womens-world-cup-final
+    name: Women's World Cup final weekend
+    layer: event
+    group: major-event
+    priority: 840
+    stacking: exclusive
+    when:
+      event:
+        key: fifa.womens-world-cup.final
+        days_before: 2
+        days_after: 0
+        accepted_status: [confirmed]
+    apply:
+      set_final_nightly: "750.00"
+      minimum_stay: 3
+    suppresses: [annual-season, length-of-stay]
+
+  - id: todo-mundo-no-rio
+    name: Todo Mundo no Rio provisional host pricing window
+    layer: event
+    group: major-event
+    priority: 850
+    stacking: exclusive
+    when:
+      event:
+        key: br.rj.rio.todo-mundo
+        days_before: 0
+        days_after: 0
+        accepted_status: [tentative, confirmed]
+    apply:
+      set_final_nightly: "650.00"
+      minimum_stay: 3
+    suppresses: [annual-season, length-of-stay]
+
+  # Calendar Carnival ranges include all priced nights; no extra padding.
   - id: rio-carnival
     name: Rio Carnival
     layer: event
@@ -154,8 +274,8 @@ rules:
     when:
       event:
         key: br.rj.rio.carnival
-        days_before: 2
-        days_after: 1
+        days_before: 0
+        days_after: 0
         accepted_status: [confirmed, calculated]
     apply:
       set_final_nightly: "820.00"
@@ -172,8 +292,8 @@ rules:
       all:
         - event:
             key: br.rj.rio.carnival
-            days_before: 2
-            days_after: 1
+            days_before: 0
+            days_after: 0
             accepted_status: [confirmed, calculated]
         - weekday: [fri, sat, sun]
     apply:

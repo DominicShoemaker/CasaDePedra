@@ -30,7 +30,7 @@ async function startTestService(t) {
 test("loads and hashes the Casa YAML rule file", async () => {
   const loaded = await loadRuleFile(rulesPath);
   assert.equal(loaded.ruleSet.rule_set.id, "casa-de-pedra-copacabana-direct");
-  assert.equal(loaded.ruleSet.rules.length, 17);
+  assert.equal(loaded.ruleSet.rules.length, 24);
   assert.match(loaded.hash, /^sha256:[0-9a-f]{64}$/);
   assert.equal(loaded.ruleSet.base.weekday, "380.00");
 });
@@ -61,6 +61,40 @@ test("the approved Casa YAML produces the proposed seasonal and event prices", a
   assert.deepEqual(carnival.nights.map((night) => night.final), ["950.00", "950.00", "950.00", "820.00", "820.00", "820.00"]);
   assert.equal(newYearTail.dates[0].final, "800.00");
   assert.equal(independence.dates[0].final, "600.00");
+});
+
+test("approved event windows have exact boundaries, overrides and minimum stays", async () => {
+  const loaded = await loadRuleFile(rulesPath);
+  const calendar = JSON.parse(await readFile(calendarPath, "utf8"));
+  const engine = createPriceEngine(loaded.ruleSet);
+  const cases = [
+    ["2026-09-03", "380.00", null], ["2026-09-04", "720.00", 4],
+    ["2026-09-07", "720.00", 4], ["2026-09-13", "720.00", 4], ["2026-09-14", "380.00", null],
+    ["2026-09-24", "380.00", null], ["2026-09-25", "550.00", 3],
+    ["2026-09-27", "550.00", 3], ["2026-09-28", "380.00", null],
+    ["2026-10-08", "380.00", null], ["2026-10-09", "480.00", 3],
+    ["2026-10-12", "480.00", 3], ["2026-10-13", "380.00", null],
+    ["2027-02-04", "435.00", null], ["2027-02-05", "950.00", 6],
+    ["2027-02-11", "820.00", 6], ["2027-02-14", "950.00", 6], ["2027-02-15", "435.00", null],
+    ["2027-05-01", "420.00", null], ["2027-05-02", "650.00", 3],
+    ["2027-05-07", "650.00", 3], ["2027-05-08", "420.00", null],
+    ["2027-06-22", "340.00", null], ["2027-06-23", "600.00", 3],
+    ["2027-06-24", "600.00", 3], ["2027-06-27", "500.00", 3],
+    ["2027-07-01", "500.00", 3], ["2027-07-15", "600.00", 3],
+    ["2027-07-16", "600.00", 3], ["2027-07-17", "500.00", 3],
+    ["2027-07-20", "650.00", 3], ["2027-07-21", "650.00", 3],
+    ["2027-07-22", "500.00", 3], ["2027-07-23", "750.00", 3],
+    ["2027-07-25", "750.00", 3], ["2027-07-26", "420.00", null],
+  ];
+  for (const [date, price, minimum] of cases) {
+    const day = engine.evaluateCalendar({ from: date, through: date, assumedStayNights: 3, calendarSnapshot: calendar }).dates[0];
+    assert.equal(day.final, price, date);
+    assert.equal(day.restrictions.minimumStay, minimum, date);
+  }
+  for (const nights of [1, 2, 7, 28]) {
+    const day = engine.evaluateCalendar({ from: "2027-07-23", through: "2027-07-23", assumedStayNights: nights, calendarSnapshot: calendar }).dates[0];
+    assert.equal(day.final, "750.00", "Event price must suppress stay adjustments");
+  }
 });
 
 test("the approved Casa YAML selects every length-of-stay boundary exactly", async () => {
@@ -107,7 +141,7 @@ test("serves readiness, normalized rules with ETag, and backend prices", async (
   assert.equal(calendarResponse.status, 200);
   const calendarBody = await calendarResponse.json();
   assert.match(calendarBody.metadata.hash, /^sha256:[0-9a-f]{64}$/);
-  assert.equal(calendarBody.calendarSnapshot.id, "casa-de-pedra-rio-2026-2029-v1");
+  assert.equal(calendarBody.calendarSnapshot.id, "casa-de-pedra-rio-2026-2029-v2");
 
   const response = await fetch(`${baseUrl}/v1/pricing/evaluate-stay`, {
     method: "POST",

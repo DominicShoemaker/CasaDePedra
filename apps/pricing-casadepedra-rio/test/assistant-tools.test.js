@@ -66,11 +66,11 @@ test("answers common numeric questions from deterministic rule and calendar data
   );
   assert.match(
     createDeterministicAnswer(rules, "When is Carnival in Brazil?", calendar),
-    /2027-02-07 through 2027-02-09 \(calculated\)/,
+    /2027-02-05 through 2027-02-14 \(confirmed\)/,
   );
-  assert.equal(
+  assert.match(
     createDeterministicAnswer(rules, "When is Rock in Rio?", calendar),
-    "The loaded calendar does not contain a Rock in Rio date. Its pricing key is declared, but the rule cannot apply until a confirmed event record is added; I will not invent a date.",
+    /2026-09-04 through 2026-09-13 \(confirmed\)/,
   );
   assert.equal(
     createDeterministicAnswer(rules, "What is the price for New Year reservation?", calendar),
