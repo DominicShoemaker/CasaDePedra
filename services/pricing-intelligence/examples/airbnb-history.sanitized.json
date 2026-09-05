@@ -1,0 +1,17 @@
+{
+  "schema": "pmc.sanitized-booking-history/v1",
+  "provider": "airbnb",
+  "source": "owner Airbnb earnings export uploaded 2026-08-23",
+  "privacy": "guest names, confirmation/reference codes, payout destinations and payment details removed",
+  "reservations": [
+    {"bookingDate":"2026-08-01","start":"2026-08-06","endExclusive":"2026-08-11","nights":5,"currency":"BRL","hostAmount":"9214.08","serviceFee":"383.92","cleaningFee":"0.00","grossEarnings":"9598.00","remittedTax":"0.00"},
+    {"bookingDate":"2026-07-29","start":"2026-07-30","endExclusive":"2026-08-04","nights":5,"currency":"BRL","hostAmount":"9213.70","serviceFee":"383.90","cleaningFee":"0.00","grossEarnings":"9597.60","remittedTax":"0.00"},
+    {"bookingDate":"2026-07-17","start":"2026-07-18","endExclusive":"2026-07-21","nights":3,"currency":"BRL","hostAmount":"5270.40","serviceFee":"219.60","cleaningFee":"0.00","grossEarnings":"5490.00","remittedTax":"0.00"},
+    {"bookingDate":"2026-05-19","start":"2026-06-04","endExclusive":"2026-06-07","nights":3,"currency":"BRL","hostAmount":"6240.00","serviceFee":"260.00","cleaningFee":"0.00","grossEarnings":"6500.00","remittedTax":"0.00"},
+    {"bookingDate":"2026-03-18","start":"2026-05-23","endExclusive":"2026-05-26","nights":3,"currency":"BRL","hostAmount":"5385.60","serviceFee":"224.40","cleaningFee":"0.00","grossEarnings":"5610.00","remittedTax":"0.00"},
+    {"bookingDate":"2026-04-19","start":"2026-04-19","endExclusive":"2026-04-23","nights":4,"currency":"BRL","hostAmount":"6201.60","serviceFee":"258.40","cleaningFee":"0.00","grossEarnings":"6460.00","remittedTax":"0.00"},
+    {"bookingDate":"2025-11-27","start":"2026-02-17","endExclusive":"2026-02-20","nights":3,"currency":"BRL","hostAmount":"4896.00","serviceFee":"204.00","cleaningFee":"0.00","grossEarnings":"5100.00","remittedTax":"0.00"},
+    {"bookingDate":"2025-11-20","start":"2026-02-09","endExclusive":"2026-02-17","nights":8,"currency":"BRL","hostAmount":"12631.68","serviceFee":"526.32","cleaningFee":"0.00","grossEarnings":"13158.00","remittedTax":"0.00"}
+  ],
+  "summary": {"reservations":8,"nights":34,"currency":"BRL","hostAmount":"59053.06","serviceFee":"2460.54","grossEarnings":"61513.60"}
+}

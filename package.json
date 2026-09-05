@@ -11,9 +11,11 @@
     "build": "node scripts/build-static.mjs",
     "build:static": "node scripts/build-static.mjs",
     "package:pricing-api": "node scripts/package-pricing-api.mjs",
+    "package:pricing-intelligence": "node scripts/package-pricing-intelligence.mjs",
     "test": "pnpm --recursive test",
     "test:engine": "pnpm --filter @pmc/price-engine test",
     "test:pricing-spa": "pnpm --filter @pmc/pricing-calendar-spa test",
-    "test:pricing-api": "pnpm --filter @pmc/pricing-api test"
+    "test:pricing-api": "pnpm --filter @pmc/pricing-api test",
+    "test:pricing-intelligence": "pnpm --filter @pmc/pricing-intelligence test"
   }
 }

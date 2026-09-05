@@ -1,0 +1,52 @@
+name: Validate pricing intelligence
+
+on:
+  pull_request:
+    paths:
+      - "services/pricing-intelligence/**"
+      - "config/intelligence/**"
+      - "infra/pricing-intelligence.bicep"
+      - "scripts/package-pricing-intelligence.mjs"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/validate-pricing-intelligence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: 24
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --no-frozen-lockfile
+      - name: Unit tests
+        run: pnpm test:pricing-intelligence
+      - name: Validate Python ETL syntax
+        run: python -m py_compile services/pricing-intelligence/scripts/build_inside_airbnb_snapshot.py
+      - name: Validate JavaScript syntax
+        run: |
+          node --check services/pricing-intelligence/src/ical.js
+          node --check services/pricing-intelligence/src/availability.js
+          node --check services/pricing-intelligence/src/airbnb-earnings.js
+          node --check services/pricing-intelligence/src/inside-airbnb.js
+          node --check services/pricing-intelligence/src/shadow-pricing.js
+          node --check services/pricing-intelligence/src/intelligence-snapshot.js
+          node --check services/pricing-intelligence/src/fx.js
+          node --check services/pricing-intelligence/src/secrets.js
+          node --check services/pricing-intelligence/src/storage.js
+          node --check services/pricing-intelligence/src/functions/daily-refresh.js
+      - name: Package service
+        run: pnpm package:pricing-intelligence
